@@ -1,0 +1,29 @@
+# Dependencies & build output
+node_modules
+.next
+out
+build
+.pglite
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Git & IDE
+.git
+.github
+.idea
+.vscode
+
+# Logs & debug
+*.log
+npm-debug.log*
+coverage
+
+# Prisma local DB
+prisma/*.db
+
+# Misc
+.DS_Store
+*.pem

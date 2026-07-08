@@ -1,0 +1,40 @@
+{
+  "name": "invisible-grills-safety-nets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static services website for Deva Safety Nets — invisible grills and safety nets in Kerala.",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "images:sync": "node scripts/sync-finalized-photos.mjs",
+    "images:enhance": "node scripts/enhance-images.mjs",
+    "images:prepare": "npm run images:sync && npm run images:enhance"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "sharp": "^0.33.5"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}
