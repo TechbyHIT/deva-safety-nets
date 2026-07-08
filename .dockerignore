@@ -23,7 +23,16 @@ coverage
 
 # Prisma local DB
 prisma/*.db
+.pglite
+.pglite-backup-*
 
-# Misc
+# Source photo archives (served copies live in public/images)
+FINIALIZED PHOTOS*
+FINIALIZED PHOTOS - *
+
+# Local artifacts
+home.html
+build-output.log
+.git-rewrite
 .DS_Store
 *.pem
