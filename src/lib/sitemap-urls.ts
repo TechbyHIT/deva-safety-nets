@@ -1,7 +1,7 @@
 import "server-only";
-import { absoluteUrl } from "./site";
+import { absoluteUrl, sitemapPageSize } from "./site";
 import { catalogServiceFilter, catalogCityFilter } from "./catalog";
-import { staticCatalog } from "./static-data/build-catalog";
+import { catalogIndex, staticCatalog } from "./static-data/build-catalog";
 
 export type SitemapEntry = {
   url: string;
@@ -17,21 +17,23 @@ export type SitemapEntry = {
   priority?: number;
 };
 
-export function getAllSitemapEntries(): SitemapEntry[] {
+function buildAllSitemapEntries(): SitemapEntry[] {
+  const supported = new Set(catalogCityFilter.slug.in);
+
   const services = staticCatalog.services.map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
   const coreServices = staticCatalog.services
     .filter((s) => s.order < catalogServiceFilter.order.lt)
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
   const cities = staticCatalog.cities
-    .filter((c) => catalogCityFilter.slug.in.includes(c.slug))
+    .filter((c) => supported.has(c.slug))
     .map((c) => ({ slug: c.slug, updatedAt: c.updatedAt }));
   const areas = staticCatalog.areas
     .filter((a) => {
-      const city = staticCatalog.cities.find((c) => c.id === a.cityId);
-      return city && catalogCityFilter.slug.in.includes(city.slug);
+      const city = catalogIndex.citiesById.get(a.cityId);
+      return city && supported.has(city.slug);
     })
     .map((a) => {
-      const city = staticCatalog.cities.find((c) => c.id === a.cityId)!;
+      const city = catalogIndex.citiesById.get(a.cityId)!;
       return { slug: a.slug, city: { slug: city.slug } };
     });
   const materials = staticCatalog.materials.map((m) => ({ slug: m.slug, updatedAt: m.updatedAt }));
@@ -115,4 +117,60 @@ export function getAllSitemapEntries(): SitemapEntry[] {
   }
 
   return entries;
+}
+
+// Built once per server process. The catalog is fully static (deterministic at
+// module load), so memoizing avoids rebuilding ~46k entries on every sitemap
+// shard request while a crawler walks the sitemap index.
+let cachedEntries: SitemapEntry[] | null = null;
+
+export function getAllSitemapEntries(): SitemapEntry[] {
+  if (!cachedEntries) cachedEntries = buildAllSitemapEntries();
+  return cachedEntries;
+}
+
+/** Number of segmented sitemap files needed at the configured page size. */
+export function getSitemapShardCount(): number {
+  const total = getAllSitemapEntries().length;
+  return Math.max(1, Math.ceil(total / sitemapPageSize));
+}
+
+/** Entries for a single segmented sitemap (0-indexed). Returns [] if out of range. */
+export function getSitemapShard(id: number): SitemapEntry[] {
+  if (!Number.isInteger(id) || id < 0) return [];
+  const start = id * sitemapPageSize;
+  return getAllSitemapEntries().slice(start, start + sitemapPageSize);
+}
+
+function xmlEscape(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+/** Serialize a shard of entries into a <urlset> sitemap document. */
+export function renderUrlsetXml(entries: SitemapEntry[]): string {
+  const urls = entries
+    .map((e) => {
+      const parts = [`<loc>${xmlEscape(e.url)}</loc>`];
+      if (e.lastModified) parts.push(`<lastmod>${e.lastModified.toISOString()}</lastmod>`);
+      if (e.changeFrequency) parts.push(`<changefreq>${e.changeFrequency}</changefreq>`);
+      if (typeof e.priority === "number") parts.push(`<priority>${e.priority.toFixed(1)}</priority>`);
+      return `<url>${parts.join("")}</url>`;
+    })
+    .join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
+}
+
+/** Serialize the top-level <sitemapindex> pointing at each segmented sitemap. */
+export function renderSitemapIndexXml(lastModified: Date = new Date()): string {
+  const count = getSitemapShardCount();
+  const items = Array.from({ length: count }, (_, id) => {
+    const loc = xmlEscape(absoluteUrl(`/sitemaps/${id}.xml`));
+    return `<sitemap><loc>${loc}</loc><lastmod>${lastModified.toISOString()}</lastmod></sitemap>`;
+  }).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${items}</sitemapindex>`;
 }

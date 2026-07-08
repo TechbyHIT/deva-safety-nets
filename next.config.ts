@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+// Sitemap is served as an index (/sitemap.xml) + segmented shards
+// (/sitemaps/[id].xml) via route handlers, so it scales past the 50k-URL limit.
 const isProd = process.env.NODE_ENV === "production";
 const cspDirectives = [
   "default-src 'self'",

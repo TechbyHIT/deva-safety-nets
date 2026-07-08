@@ -760,6 +760,37 @@ function buildCatalog(): StaticCatalog {
 
 export const staticCatalog = buildCatalog();
 
+/**
+ * O(1) lookup indexes built once at module load. Critical for scaling to
+ * 100k+ programmatic pages: per-request ISR renders and sitemap generation must
+ * never do linear `Array.find` scans over the full ~40k-record service catalog.
+ */
+export const catalogIndex = {
+  servicesBySlug: new Map(staticCatalog.services.map((s) => [s.slug, s])),
+  citiesBySlug: new Map(staticCatalog.cities.map((c) => [c.slug, c])),
+  citiesById: new Map(staticCatalog.cities.map((c) => [c.id, c])),
+  categoriesById: new Map(staticCatalog.categories.map((c) => [c.id, c])),
+  materialsBySlug: new Map(staticCatalog.materials.map((m) => [m.slug, m])),
+  industriesBySlug: new Map(staticCatalog.industries.map((i) => [i.slug, i])),
+  propertyTypesBySlug: new Map(staticCatalog.propertyTypes.map((p) => [p.slug, p])),
+  guidesBySlug: new Map(staticCatalog.guides.map((g) => [g.slug, g])),
+  comparisonsBySlug: new Map(staticCatalog.comparisons.map((c) => [c.slug, c])),
+  blogPostsBySlug: new Map(staticCatalog.blogPosts.map((b) => [b.slug, b])),
+} as const;
+
+/** Services grouped by materialId — avoids scanning all services per material page. */
+const servicesByMaterialId = (() => {
+  const map = new Map<string, StaticService[]>();
+  for (const service of staticCatalog.services) {
+    for (const sm of service.materials) {
+      const list = map.get(sm.materialId);
+      if (list) list.push(service);
+      else map.set(sm.materialId, [service]);
+    }
+  }
+  return map;
+})();
+
 export type SerializableCategory = Pick<
   StaticCategory,
   "id" | "slug" | "name" | "description" | "icon" | "order"
@@ -945,13 +976,13 @@ export function getCoreServices() {
 }
 
 export function getServiceBySlugStatic(slug: string): SerializableService | null {
-  const service = staticCatalog.services.find((s) => s.slug === slug);
+  const service = catalogIndex.servicesBySlug.get(slug);
   if (!service) return null;
   return serializeService(service);
 }
 
 export function getCityBySlugStatic(slug: string): SerializableCity | null {
-  const city = staticCatalog.cities.find((c) => c.slug === slug);
+  const city = catalogIndex.citiesBySlug.get(slug);
   if (!city) return null;
   return serializeCity(city);
 }
@@ -966,10 +997,9 @@ export function getAreaBySlugStatic(citySlug: string, areaSlug: string) {
 }
 
 export function getMaterialBySlugStatic(slug: string) {
-  const material = staticCatalog.materials.find((m) => m.slug === slug);
+  const material = catalogIndex.materialsBySlug.get(slug);
   if (!material) return null;
-  const services = staticCatalog.services
-    .filter((s) => s.materials.some((sm) => sm.materialId === material.id))
+  const services = (servicesByMaterialId.get(material.id) ?? [])
     .map((service) => ({
       service: {
         slug: service.slug,

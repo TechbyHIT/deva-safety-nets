@@ -6,6 +6,7 @@ import { PRIMARY_CITY_SLUG } from "./service-location-url";
 import { scoreIntentKeyword, matchesIntentPattern, type SeoIntentLink } from "./seo-intents";
 import { SERVICE_MENU } from "./service-menu";
 import {
+  catalogIndex,
   getAreaBySlugStatic,
   getCityBySlugStatic,
   getCoreServices,
@@ -247,7 +248,7 @@ export const getIndustries = unstable_cache(
 );
 
 export const getIndustryBySlug = cache(async (slug: string) =>
-  staticCatalog.industries.find((i) => i.slug === slug) ?? null,
+  catalogIndex.industriesBySlug.get(slug) ?? null,
 );
 
 export const getPropertyTypes = unstable_cache(
@@ -257,7 +258,7 @@ export const getPropertyTypes = unstable_cache(
 );
 
 export const getPropertyTypeBySlug = cache(async (slug: string) =>
-  staticCatalog.propertyTypes.find((p) => p.slug === slug) ?? null,
+  catalogIndex.propertyTypesBySlug.get(slug) ?? null,
 );
 
 export const getGeneralFaqs = unstable_cache(
@@ -276,7 +277,7 @@ export const getBlogPosts = unstable_cache(
 );
 
 export const getBlogPostBySlug = cache(async (slug: string) =>
-  staticCatalog.blogPosts.find((b) => b.slug === slug) ?? null,
+  catalogIndex.blogPostsBySlug.get(slug) ?? null,
 );
 
 export const getComparisons = unstable_cache(
@@ -286,7 +287,7 @@ export const getComparisons = unstable_cache(
 );
 
 export const getComparisonBySlug = cache(async (slug: string) => {
-  const comparison = staticCatalog.comparisons.find((c) => c.slug === slug);
+  const comparison = catalogIndex.comparisonsBySlug.get(slug);
   return comparison ? serializeComparison(comparison) : null;
 });
 
@@ -310,7 +311,7 @@ export const getReviews = unstable_cache(
 );
 
 export const getGuideBySlug = cache(async (slug: string) => {
-  const guide = staticCatalog.guides.find((g) => g.slug === slug);
+  const guide = catalogIndex.guidesBySlug.get(slug);
   return guide ? serializeGuide(guide) : null;
 });
 

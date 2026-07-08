@@ -1,9 +1,10 @@
 # InvisibleGrills & SafetyNets — Enterprise Programmatic SEO Platform
 
-A production-grade, database-driven **Next.js 16 + React 19** platform for the
-Invisible Grills & Safety Nets industry, architected to scale to **500,000+
-high-quality URLs** through combinations of curated entities — not thin,
-duplicate, or doorway pages.
+A production-grade **Next.js 16 + React 19** platform for the Invisible Grills &
+Safety Nets industry, architected to scale to **100,000+ high-quality URLs**
+through combinations of curated entities — not thin, duplicate, or doorway pages.
+Content is compiled from an in-repo static catalog (no runtime database) and
+served via ISR.
 
 Every generated page satisfies a distinct user need (a specific service, in a
 specific place, with local context, pricing, materials, FAQs, reviews and
@@ -18,10 +19,10 @@ engine that keeps each URL unique and useful.
 |---|---|
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Styling | Tailwind CSS v4 (60/30/10: white / royal blue / gold), dark + light mode |
-| Database | PostgreSQL + Prisma ORM |
-| Caching | Redis (optional) + Next.js Data Cache / ISR |
+| Data | In-repo **static catalog** compiled at module load (no runtime DB). Authored in `prisma/seed.ts` → generated to `src/lib/static-data/seed-data.ts` via `scripts/extract-seed-data.mjs` |
+| Caching | Next.js Data Cache / ISR + `unstable_cache` (tag-based revalidation) |
 | Rendering | Server Components, Server Actions, ISR, SSR, static where appropriate |
-| SEO | Dynamic Metadata API, JSON-LD, split XML sitemaps + index, robots |
+| SEO | Dynamic Metadata API, JSON-LD, sitemap index + segmented sitemaps, robots |
 | Security | CSP, secure headers, input validation (Zod), honeypot + rate limiting |
 
 ---
@@ -52,7 +53,7 @@ so you extend coverage by adding **locations once** and every service page
 inherits them. Each area carries a `tier` + `tierLabel`, and city pages group
 areas by tier automatically.
 
-**The multiplier math** (printed by `npm run db:seed`): with ~107 services,
+**The multiplier math**: with ~107 services,
 12+ cities, 190+ areas and 12 property types, the combination formula
 (service × city × area, service × city × property type, service × property type,
 property type × city, plus guides/FAQs/comparisons/blog) scales linearly to
@@ -84,8 +85,9 @@ Quality safeguards:
 ### 1. Prerequisites
 
 - Node.js ≥ 20.11
-- PostgreSQL 14+
-- (Optional) Redis 6+
+
+There is **no database, Redis or migration step** — all content is compiled from
+the in-repo static catalog.
 
 ### 2. Install
 
@@ -97,29 +99,28 @@ npm install
 
 ```bash
 cp .env.example .env
-# then edit .env — at minimum set DATABASE_URL and NEXT_PUBLIC_SITE_URL
+# then edit .env — at minimum set NEXT_PUBLIC_SITE_URL and REVALIDATE_SECRET
 ```
 
-### 4. Set up the database
-
-```bash
-npm run db:push      # create tables from the Prisma schema
-npm run db:seed      # populate categories, services, cities, areas, content
-```
-
-The seed prints the combinatorial URL capacity from the current data.
-
-### 5. Run
+### 4. Run
 
 ```bash
 npm run dev          # http://localhost:3000
 ```
 
-### 6. Build for production
+### 5. Build for production
 
 ```bash
 npm run build
 npm run start
+```
+
+### (Optional) Regenerate the static catalog
+
+Edit the curated data in `prisma/seed.ts`, then regenerate the compiled catalog:
+
+```bash
+node scripts/extract-seed-data.mjs   # writes src/lib/static-data/seed-data.ts
 ```
 
 ---
@@ -128,8 +129,9 @@ npm run start
 
 ```
 prisma/
-  schema.prisma        # data model (taxonomy, geography, content, leads)
-  seed.ts              # curated seed data + content
+  seed.ts              # curated seed data (authoring source for the static catalog)
+scripts/
+  extract-seed-data.mjs  # compiles seed.ts -> src/lib/static-data/seed-data.ts
 src/
   app/                 # App Router routes
     services/[service]/[city]/[area]/   # 3-level programmatic service pages
@@ -137,12 +139,15 @@ src/
     locations/[city]/[area]/            # location pages (areas grouped by tier)
     property-types/[propertyType]/[city]/   # property-type hubs & combos
     materials/, industries/, compare/, blog/, *-guide/
-    sitemap.ts         # split sitemaps + auto index (generateSitemaps)
+    sitemap.xml/route.ts   # sitemap INDEX
+    sitemaps/[id]/route.ts # segmented sitemap shards
     robots.ts, manifest.ts
     api/revalidate/    # on-demand ISR revalidation
   components/          # Header/MegaMenu, Footer, FloatingCTAs, Hero, forms, cards
   lib/
-    prisma.ts, redis.ts, queries.ts    # data access + caching
+    queries.ts                         # cached data access over the static catalog
+    static-data/build-catalog.ts       # builds the catalog + O(1) lookup indexes
+    sitemap-urls.ts                    # sitemap entry generation + XML serializers
     seo.ts, schema.ts                  # metadata + JSON-LD
     content.ts                         # deterministic content engine
     actions.ts                         # lead capture server action (validated)
@@ -185,8 +190,8 @@ produce meaningfully different, locally-relevant pages.
 - Dynamic, per-page metadata with canonical URLs, Open Graph & Twitter cards
 - JSON-LD: Organization, WebSite, LocalBusiness, Service, FAQPage, BreadcrumbList,
   Product/AggregateRating, BlogPosting, HowTo
-- Split XML sitemaps (≤ 45k URLs/file) + auto-generated sitemap index at
-  `/sitemap.xml`, scaling to 500k+ URLs
+- Sitemap **index** at `/sitemap.xml` + segmented shards at `/sitemaps/[id].xml`
+  (≤ `SITEMAP_PAGE_SIZE` URLs/file, default 45k), scaling to 100k+ URLs
 - `robots.txt`, breadcrumb navigation, internal-link automation (related
   services, nearby areas, other cities), topical clustering by category
 - Programmatic + local + semantic SEO built into every combination page
@@ -194,7 +199,7 @@ produce meaningfully different, locally-relevant pages.
 ## Performance
 
 - Server Components + streaming + `Suspense` (route-level `loading.tsx`)
-- ISR with tag-based revalidation; Redis cache-aside layer
+- ISR with tag-based revalidation; `unstable_cache` + O(1) catalog lookup indexes
 - AVIF/WebP image formats, font optimization (`next/font`), long-cache static assets
 - Route-level code splitting, `optimizePackageImports`
 
@@ -202,8 +207,8 @@ produce meaningfully different, locally-relevant pages.
 
 - Content Security Policy + secure headers (HSTS, X-Frame-Options, nosniff, etc.)
   in `next.config.ts`
-- Zod input validation, honeypot field and Redis-backed rate limiting on lead forms
-- Prisma parameterised queries (SQL-injection safe), secrets via env vars
+- Zod input validation and honeypot field on lead forms
+- No runtime database/ORM (static catalog); secrets via env vars
 
 ## Accessibility & UX
 
@@ -217,16 +222,87 @@ produce meaningfully different, locally-relevant pages.
 
 ## Editing content
 
-- Update taxonomy/geography/content in the database (Prisma Studio: `npm run db:studio`).
-- After edits, refresh caches without a redeploy:
+- Update taxonomy/geography/content in `prisma/seed.ts`, then regenerate the
+  static catalog: `node scripts/extract-seed-data.mjs`.
+- After deploying edits, refresh caches without a rebuild:
 
 ```bash
 curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
 
-## Deployment
+## Deployment (VPS: PM2 + Nginx + Cloudflare)
 
-Deploy to any Node host or Vercel. Put Cloudflare in front for CDN/edge caching.
-Set all environment variables from `.env.example` in your host, run migrations
-(`prisma migrate deploy`) and seed once.
+The app builds to a self-contained Node server (`output: "standalone"`) and ships
+with ready-to-use `ecosystem.config.cjs` (PM2) and `deploy/nginx.conf` (Nginx).
+Content is compiled from the in-repo static catalog, so **there is no database,
+migration or seed step** at deploy time.
+
+### 1. Server prerequisites
+
+```bash
+# Node.js ≥ 20.11 (nvm recommended) and PM2
+node -v
+npm i -g pm2
+```
+
+### 2. Build the app
+
+```bash
+git clone <repo> /var/www/deva && cd /var/www/deva
+cp .env.example .env      # set NEXT_PUBLIC_SITE_URL, REVALIDATE_SECRET, etc.
+npm ci
+npm run build
+```
+
+### 3. Run under PM2
+
+```bash
+pm2 start ecosystem.config.cjs --env production
+pm2 save
+pm2 startup               # run the printed command to persist across reboots
+```
+
+The app listens on `127.0.0.1:3000` (never exposed directly).
+
+### 4. Nginx reverse proxy
+
+```bash
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/deva-safety-nets
+sudo ln -s /etc/nginx/sites-available/deva-safety-nets /etc/nginx/sites-enabled/
+sudo mkdir -p /var/cache/nginx/deva
+# edit server_name + TLS cert paths in the file, then:
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+`deploy/nginx.conf` includes: HTTP→HTTPS redirect, HTTP/2, gzip, a full-HTML
+micro-cache that honors Next's `s-maxage`/`stale-while-revalidate`, hard caching
+for `/_next/static` and `/images`, and Cloudflare real-IP restoration
+(`CF-Connecting-IP`). Security headers come from `next.config.ts` (not duplicated
+in Nginx).
+
+### 5. Cloudflare
+
+- DNS: proxied (orange cloud) A/AAAA records to the VPS IP.
+- SSL/TLS mode: **Full (strict)** with a Cloudflare Origin CA cert installed at the
+  paths referenced in `deploy/nginx.conf`.
+- Caching: default; the origin already emits correct `Cache-Control`. Optionally add
+  a cache rule for `/_next/static/*` and `/images/*` (Edge Cache TTL a year).
+- Keep "Rocket Loader" off (it can interfere with hydration).
+
+### 6. Sitemaps & indexing
+
+- Sitemap **index** at `/sitemap.xml`, segmented shards at `/sitemaps/[id].xml`
+  (each ≤ `SITEMAP_PAGE_SIZE`, default 45,000 URLs — under the 50k/50MB spec limit),
+  scaling to 100k+ URLs unchanged. Submit `/sitemap.xml` to Google Search Console.
+- After editing catalog content, refresh caches without a redeploy:
+
+```bash
+curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
+# tags: catalog | locations | content
+```
+
+### Docker (alternative)
+
+`Dockerfile` + `docker-compose.yml` build the standalone server and expose a
+health check at `/api/health`. Put the same Nginx/Cloudflare layer in front.

@@ -7,7 +7,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/privacy", "/terms", "/*?*"],
+        // /privacy and /terms are intentionally NOT disallowed here: they carry a
+        // `noindex, follow` meta directive (see their page metadata). Blocking them
+        // in robots would stop crawlers reading that directive and leak link equity.
+        disallow: ["/api/", "/*?*"],
       },
     ],
     sitemap: absoluteUrl("/sitemap.xml"),
