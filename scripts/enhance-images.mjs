@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IMAGES_DIR = path.join(__dirname, "..", "public", "images");
 const LOGO_FILES = new Set(["deva-logo.jpg", "deva-logo.jpeg", "deva-logo.png"]);
 
-const MIN_OUTPUT_WIDTH = 1400;
+const MIN_OUTPUT_WIDTH = 1200;
 const IMAGE_EXT = /\.(jpe?g|png|webp)$/i;
 
 async function enhanceFile(filePath) {
@@ -26,7 +26,7 @@ async function enhanceFile(filePath) {
   let pipeline = sharp(filePath, { failOn: "none" }).rotate();
 
   if (meta.width < MIN_OUTPUT_WIDTH) {
-    const target = Math.min(1920, Math.max(MIN_OUTPUT_WIDTH, Math.round(meta.width * 1.5)));
+    const target = Math.min(1600, Math.max(MIN_OUTPUT_WIDTH, Math.round(meta.width * 1.25)));
     pipeline = pipeline.resize({
       width: target,
       withoutEnlargement: false,
@@ -43,7 +43,7 @@ async function enhanceFile(filePath) {
   } else if (ext === ".webp") {
     await pipeline.webp({ quality: 94, effort: 5 }).toFile(tmp);
   } else {
-    await pipeline.jpeg({ quality: 94, mozjpeg: true, chromaSubsampling: "4:4:4" }).toFile(tmp);
+    await pipeline.jpeg({ quality: 88, mozjpeg: true, chromaSubsampling: "4:2:0" }).toFile(tmp);
   }
 
   fs.renameSync(tmp, filePath);

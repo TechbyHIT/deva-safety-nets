@@ -1,7 +1,11 @@
 import { catalogCityFilter, KEYWORD_SERVICE_ORDER_FLOOR } from "./catalog";
 import { SERVICE_MENU } from "./service-menu";
 import { scoreIntentKeyword } from "./seo-intents";
-import { staticCatalog } from "./static-data/build-catalog";
+import {
+  serializeReviewPublic,
+  serializeService,
+  staticCatalog,
+} from "./static-data/build-catalog";
 import { STATIC_CITIES } from "./static-nav";
 
 function menuCategoryServices(catSlug: string) {
@@ -37,7 +41,10 @@ export const STATIC_FEATURED_SERVICES = staticCatalog.services
   .filter((s) => s.featured)
   .sort((a, b) => a.order - b.order)
   .slice(0, 8)
-  .map((s) => ({ ...s, category: s.category }));
+  .map((s) => {
+    const { category, reviews, faqs, materials, ...rest } = serializeService(s);
+    return { ...rest, category };
+  });
 
 export const STATIC_GENERAL_FAQS = staticCatalog.faqs
   .filter((f) => !f.serviceId)
@@ -45,7 +52,8 @@ export const STATIC_GENERAL_FAQS = staticCatalog.faqs
 
 export const STATIC_REVIEWS = [...staticCatalog.reviews]
   .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  .slice(0, 40);
+  .slice(0, 40)
+  .map(serializeReviewPublic);
 
 export const STATIC_CATALOG_COUNTS = {
   services: staticCatalog.services.length,

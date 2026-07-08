@@ -91,7 +91,6 @@ export function SiteNav({
             width={512}
             height={128}
             preset="logo"
-            priority
             objectFit="contain"
             className="h-11 w-auto max-w-[11rem] object-contain xl:h-[4.5rem] xl:max-w-[18rem]"
           />

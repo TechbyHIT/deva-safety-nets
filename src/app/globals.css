@@ -1371,7 +1371,15 @@ html.theme-switching .mega-menu {
 }
 
 /* Tier directory — defer off-screen paint for faster initial load */
-.area-tier-section {
+.area-tier-section,
+.lazy-section,
+.lazy-paint {
   content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+.area-tier-section {
   contain-intrinsic-size: auto 88px;
+}
+.lazy-paint {
+  contain-intrinsic-size: auto 112px;
 }

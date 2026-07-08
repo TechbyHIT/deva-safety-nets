@@ -36,8 +36,8 @@ export function HomePhotoBento({ images }: { images: SiteImageMeta[] }) {
   if (!featured) return null;
 
   return (
-    <div className="photo-bento-grid flex flex-col gap-3 md:gap-4">
-      <BentoCell img={featured} className="aspect-[16/10] md:aspect-[21/9]" priority />
+    <div className="photo-bento-grid lazy-section flex flex-col gap-3 md:gap-4">
+      <BentoCell img={featured} className="aspect-[16/10] md:aspect-[21/9]" />
 
       {grid.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
@@ -54,7 +54,7 @@ export function HomePhotoBento({ images }: { images: SiteImageMeta[] }) {
 export function HomePhotoStrip({ images }: { images: SiteImageMeta[] }) {
   const strip = [...images, ...images];
   return (
-    <div className="photo-strip overflow-hidden rounded-2xl border">
+    <div className="photo-strip lazy-section overflow-hidden rounded-2xl border">
       <div className="animate-hero-scroll flex w-max gap-3 p-3">
         {strip.map((img, i) => (
           <div

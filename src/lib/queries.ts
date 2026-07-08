@@ -11,6 +11,12 @@ import {
   getCoreServices,
   getMaterialBySlugStatic,
   getServiceBySlugStatic,
+  serializeCity,
+  serializeComparison,
+  serializeGuide,
+  serializeProject,
+  serializeReviewPublic,
+  serializeService,
   staticCatalog,
   type ContentOverride,
 } from "./static-data/build-catalog";
@@ -120,7 +126,10 @@ export const getFeaturedServices = unstable_cache(
       .filter((s) => s.featured)
       .sort((a, b) => a.order - b.order)
       .slice(0, 8)
-      .map((s) => ({ ...s, category: s.category })),
+      .map((s) => {
+        const { category, reviews, faqs, materials, ...rest } = serializeService(s);
+        return { ...rest, category };
+      }),
   ["featured-services"],
   { revalidate: DAY, tags: ["catalog"] },
 );
@@ -142,7 +151,8 @@ export const getAllCities = unstable_cache(
   async () =>
     staticCatalog.cities
       .filter((c) => catalogCityFilter.slug.in.includes(c.slug))
-      .sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order),
+      .sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order)
+      .map(serializeCity),
   ["all-cities-kerala"],
   { revalidate: DAY, tags: ["locations"] },
 );
@@ -270,18 +280,21 @@ export const getBlogPostBySlug = cache(async (slug: string) =>
 );
 
 export const getComparisons = unstable_cache(
-  async () => staticCatalog.comparisons,
+  async () => staticCatalog.comparisons.map(serializeComparison),
   ["comparisons"],
   { revalidate: DAY, tags: ["content"] },
 );
 
-export const getComparisonBySlug = cache(async (slug: string) =>
-  staticCatalog.comparisons.find((c) => c.slug === slug) ?? null,
-);
+export const getComparisonBySlug = cache(async (slug: string) => {
+  const comparison = staticCatalog.comparisons.find((c) => c.slug === slug);
+  return comparison ? serializeComparison(comparison) : null;
+});
 
 export const getProjects = unstable_cache(
   async () =>
-    [...staticCatalog.projects].sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime()),
+    [...staticCatalog.projects]
+      .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())
+      .map(serializeProject),
   ["projects"],
   { revalidate: DAY, tags: ["content"] },
 );
@@ -290,14 +303,16 @@ export const getReviews = unstable_cache(
   async () =>
     [...staticCatalog.reviews]
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, 40),
+      .slice(0, 40)
+      .map(serializeReviewPublic),
   ["reviews"],
   { revalidate: DAY, tags: ["content"] },
 );
 
-export const getGuideBySlug = cache(async (slug: string) =>
-  staticCatalog.guides.find((g) => g.slug === slug) ?? null,
-);
+export const getGuideBySlug = cache(async (slug: string) => {
+  const guide = staticCatalog.guides.find((g) => g.slug === slug);
+  return guide ? serializeGuide(guide) : null;
+});
 
 export const getContentOverride = cache(async (_routeKey: string): Promise<ContentOverride | null> => null);
 

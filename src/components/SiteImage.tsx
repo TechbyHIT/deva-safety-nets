@@ -17,7 +17,7 @@ type SiteImageProps = {
   objectFit?: "cover" | "contain";
 };
 
-/** Optimized wrapper for project photos — tuned for sharp HD delivery. */
+/** Optimized wrapper for project photos — tuned for fast load and sharp display. */
 export function SiteImage({
   src,
   alt,
@@ -48,6 +48,7 @@ export function SiteImage({
         fill
         className={imgClass}
         priority={priority}
+        fetchPriority={priority ? "high" : "auto"}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         sizes={resolvedSizes}
@@ -67,6 +68,7 @@ export function SiteImage({
       height={height}
       className={imgClass}
       priority={priority}
+      fetchPriority={priority ? "high" : "auto"}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       sizes={resolvedSizes}

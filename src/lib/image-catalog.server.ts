@@ -188,12 +188,13 @@ export function categorizeImages(paths: string[]) {
 
 
 
+let cachedCatalog: ReturnType<typeof categorizeImages> | null = null;
+
+/** Public images never change at runtime — scan the filesystem once and reuse. */
 export function getServerImageCatalog() {
-
-  const all = scanPublicImages();
-
-  return categorizeImages(all);
-
+  if (cachedCatalog) return cachedCatalog;
+  cachedCatalog = categorizeImages(scanPublicImages());
+  return cachedCatalog;
 }
 
 

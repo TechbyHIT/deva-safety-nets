@@ -47,7 +47,8 @@ export default async function GalleryPage() {
       caption: buildCaption("Project gallery", src),
     }));
 
-  const allGallery = [...projectImages, ...getAllGalleryImages(), ...extraFromCatalog];
+  const GALLERY_LIMIT = 60;
+  const allGallery = [...projectImages, ...getAllGalleryImages(), ...extraFromCatalog].slice(0, GALLERY_LIMIT);
 
   const hero = getHeroImage("gallery", `${site.name} installation gallery`);
 

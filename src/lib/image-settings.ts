@@ -1,15 +1,15 @@
-/** Shared image quality and responsive `sizes` presets for HD delivery. */
+/** Shared image quality and responsive `sizes` presets — tuned for fast load + sharp display. */
 export const IMAGE_QUALITY = {
   /** Hero backgrounds and full-bleed sections */
-  hero: 100,
+  hero: 85,
   /** Gallery, bento grids, service cards */
-  gallery: 98,
+  gallery: 80,
   /** Lightbox / zoom view */
-  full: 100,
+  full: 90,
   /** Small thumbnails in strips */
-  thumb: 98,
+  thumb: 75,
   /** Header/footer brand mark */
-  logo: 100,
+  logo: 90,
 } as const;
 
 export const IMAGE_SIZES = {
@@ -19,8 +19,8 @@ export const IMAGE_SIZES = {
   galleryWide: "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 840px",
   card: "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 480px",
   bento: "(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 560px",
-  strip: "640px",
-  stripSm: "480px",
+  strip: "320px",
+  stripSm: "240px",
   logo: "(max-width: 768px) 200px, 512px",
   lightbox: "100vw",
 } as const;

@@ -1,11 +1,9 @@
 import Link from "next/link";
+import nextDynamic from "next/dynamic";
 import { Award, Clock, MapPin, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 import { Hero } from "@/components/Hero";
 import { ServiceCard } from "@/components/ServiceCard";
-import { QuoteForm } from "@/components/QuoteForm";
-import { FaqAccordion } from "@/components/FaqAccordion";
 import { JsonLd } from "@/components/JsonLd";
-import { ImageGallery } from "@/components/ImageGallery";
 import { TrustBadges } from "@/components/TrustBadges";
 import { HomePhotoBento, HomePhotoStrip } from "@/components/HomePhotoBento";
 import { SiteImage } from "@/components/SiteImage";
@@ -31,6 +29,10 @@ import { getGallerySet, getCategoryImage, getProcessImages, getBestFolderImage, 
 import { BeforeAfterSection } from "@/components/ImageGallery";
 import { MaterialCard } from "@/components/ui";
 import { site } from "@/lib/site";
+
+const QuoteForm = nextDynamic(() => import("@/components/QuoteForm").then((m) => m.QuoteForm));
+const FaqAccordion = nextDynamic(() => import("@/components/FaqAccordion").then((m) => m.FaqAccordion));
+const ImageGallery = nextDynamic(() => import("@/components/ImageGallery").then((m) => m.ImageGallery));
 
 export const revalidate = 86400;
 export const dynamic = "force-static";
@@ -89,10 +91,10 @@ export default function HomePage() {
   const reviews = STATIC_REVIEWS;
   const counts = STATIC_CATALOG_COUNTS;
 
-  const homePhotos = pickUniquePageImages("homepage-photos", 48, GALLERY_IMAGES, `${site.name} Kerala installation`);
-  const galleryImages = homePhotos.slice(0, 24);
-  const bentoImages = homePhotos.slice(24, 34);
-  const stripImages = homePhotos.slice(34, 48);
+  const homePhotos = pickUniquePageImages("homepage-photos", 28, GALLERY_IMAGES, `${site.name} Kerala installation`);
+  const galleryImages = homePhotos.slice(0, 12);
+  const bentoImages = homePhotos.slice(12, 22);
+  const stripImages = homePhotos.slice(22, 28);
   const beforeAfter = {
     before: { src: getBestFolderImage("safety-nets-balcony"), alt: "Before safety net installation Kerala" },
     after: { src: getBestFolderImage("safety-nets-balcony", 1), alt: "After safety net installation Kerala" },
@@ -160,7 +162,7 @@ export default function HomePage() {
       </Section>
 
       {/* Photo showcase — bento grid */}
-      <Section muted>
+      <Section muted className="lazy-section">
         <SectionHeading
           eyebrow="Installation gallery"
           title="Premium finishes across Kerala homes"
@@ -321,7 +323,7 @@ export default function HomePage() {
       </Section>
 
       {/* Project gallery */}
-      <Section muted>
+      <Section muted className="lazy-section">
         <SectionHeading
           eyebrow="Our work"
           title="Real installations across Kerala"

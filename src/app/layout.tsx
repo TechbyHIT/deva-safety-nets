@@ -8,7 +8,6 @@ import { ClientEnhancements } from "@/components/ClientEnhancements";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { buildGlobalSeoKeywords } from "@/lib/seo-intents";
-import { PAGE_IMAGES } from "@/lib/images";
 import { site } from "@/lib/site";
 
 export const revalidate = 86400;
@@ -69,10 +68,6 @@ export default function RootLayout({
       style={{ colorScheme: "light" }}
       suppressHydrationWarning
     >
-      <head>
-        <link rel="preload" as="image" href={PAGE_IMAGES.hero} fetchPriority="high" />
-        <link rel="preload" as="image" href={PAGE_IMAGES.logo} />
-      </head>
       <body className="min-h-screen font-body antialiased">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <a

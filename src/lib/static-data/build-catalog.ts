@@ -760,16 +760,200 @@ function buildCatalog(): StaticCatalog {
 
 export const staticCatalog = buildCatalog();
 
+export type SerializableCategory = Pick<
+  StaticCategory,
+  "id" | "slug" | "name" | "description" | "icon" | "order"
+>;
+
+export type SerializableReview = Pick<
+  StaticReview,
+  "id" | "author" | "rating" | "body" | "verified" | "serviceId" | "cityId" | "createdAt"
+>;
+
+export type SerializableServiceRef = Pick<StaticService, "slug" | "name">;
+export type SerializableCityRef = Pick<StaticCity, "slug" | "name">;
+
+export type SerializableProject = Omit<StaticProject, "service" | "city"> & {
+  service: SerializableServiceRef;
+  city: SerializableCityRef;
+};
+
+export type SerializableReviewPublic = SerializableReview & {
+  service: SerializableServiceRef | null;
+  city: SerializableCityRef | null;
+};
+
+export type SerializableComparison = Omit<StaticComparison, "serviceA" | "serviceB"> & {
+  serviceA: SerializableServiceRef;
+  serviceB: SerializableServiceRef;
+};
+
+export type SerializableGuide = Omit<StaticGuide, "service"> & {
+  service: SerializableServiceRef | null;
+};
+
+export type SerializableService = Omit<StaticService, "category" | "reviews"> & {
+  category: SerializableCategory;
+  reviews: SerializableReview[];
+};
+
+export type SerializableCity = Omit<StaticCity, "reviews" | "projects"> & {
+  reviews: SerializableReview[];
+  projects: SerializableProject[];
+};
+
+function serializeCategory(category: StaticCategory): SerializableCategory {
+  return {
+    id: category.id,
+    slug: category.slug,
+    name: category.name,
+    description: category.description,
+    icon: category.icon,
+    order: category.order,
+  };
+}
+
+function serializeReview(review: StaticReview): SerializableReview {
+  return {
+    id: review.id,
+    author: review.author,
+    rating: review.rating,
+    body: review.body,
+    verified: review.verified,
+    serviceId: review.serviceId,
+    cityId: review.cityId,
+    createdAt: review.createdAt,
+  };
+}
+
+function serializeServiceRef(service: StaticService): SerializableServiceRef {
+  return { slug: service.slug, name: service.name };
+}
+
+function serializeCityRef(city: StaticCity): SerializableCityRef {
+  return { slug: city.slug, name: city.name };
+}
+
+export function serializeProject(project: StaticProject): SerializableProject {
+  return {
+    id: project.id,
+    slug: project.slug,
+    title: project.title,
+    summary: project.summary,
+    challenge: project.challenge,
+    solution: project.solution,
+    outcome: project.outcome,
+    images: project.images,
+    serviceId: project.serviceId,
+    cityId: project.cityId,
+    completedAt: project.completedAt,
+    updatedAt: project.updatedAt,
+    service: serializeServiceRef(project.service),
+    city: serializeCityRef(project.city),
+  };
+}
+
+export function serializeReviewPublic(review: StaticReview): SerializableReviewPublic {
+  return {
+    ...serializeReview(review),
+    service: review.service ? serializeServiceRef(review.service) : null,
+    city: review.city ? serializeCityRef(review.city) : null,
+  };
+}
+
+export function serializeComparison(comparison: StaticComparison): SerializableComparison {
+  return {
+    id: comparison.id,
+    slug: comparison.slug,
+    intro: comparison.intro,
+    verdict: comparison.verdict,
+    criteria: comparison.criteria,
+    serviceAId: comparison.serviceAId,
+    serviceBId: comparison.serviceBId,
+    updatedAt: comparison.updatedAt,
+    serviceA: serializeServiceRef(comparison.serviceA),
+    serviceB: serializeServiceRef(comparison.serviceB),
+  };
+}
+
+export function serializeGuide(guide: StaticGuide): SerializableGuide {
+  return {
+    id: guide.id,
+    slug: guide.slug,
+    title: guide.title,
+    type: guide.type,
+    excerpt: guide.excerpt,
+    body: guide.body,
+    readMinutes: guide.readMinutes,
+    steps: guide.steps,
+    published: guide.published,
+    serviceId: guide.serviceId,
+    updatedAt: guide.updatedAt,
+    service: guide.service ? serializeServiceRef(guide.service) : null,
+  };
+}
+
+/** Strip circular refs (category.services, review.service, etc.) for cache/RSC serialization. */
+export function serializeService(service: StaticService): SerializableService {
+  return {
+    id: service.id,
+    slug: service.slug,
+    name: service.name,
+    tagline: service.tagline,
+    summary: service.summary,
+    benefits: service.benefits,
+    features: service.features,
+    useCases: service.useCases,
+    keywords: service.keywords,
+    priceMin: service.priceMin,
+    priceMax: service.priceMax,
+    priceUnit: service.priceUnit,
+    order: service.order,
+    featured: service.featured,
+    specifications: service.specifications,
+    categoryId: service.categoryId,
+    materials: service.materials,
+    faqs: service.faqs,
+    updatedAt: service.updatedAt,
+    category: serializeCategory(service.category),
+    reviews: service.reviews.map(serializeReview),
+  };
+}
+
+export function serializeCity(city: StaticCity): SerializableCity {
+  return {
+    id: city.id,
+    slug: city.slug,
+    name: city.name,
+    state: city.state,
+    region: city.region,
+    featured: city.featured,
+    order: city.order,
+    intro: city.intro,
+    landmarks: city.landmarks,
+    latitude: city.latitude,
+    longitude: city.longitude,
+    areas: city.areas,
+    updatedAt: city.updatedAt,
+    reviews: city.reviews.map(serializeReview),
+    projects: city.projects.map(serializeProject),
+  };
+}
+
 export function getCoreServices() {
   return staticCatalog.services.filter((s) => s.order < KEYWORD_SERVICE_ORDER_FLOOR);
 }
 
-export function getServiceBySlugStatic(slug: string) {
-  return staticCatalog.services.find((s) => s.slug === slug) ?? null;
+export function getServiceBySlugStatic(slug: string): SerializableService | null {
+  const service = staticCatalog.services.find((s) => s.slug === slug);
+  if (!service) return null;
+  return serializeService(service);
 }
 
-export function getCityBySlugStatic(slug: string) {
-  return staticCatalog.cities.find((c) => c.slug === slug) ?? null;
+export function getCityBySlugStatic(slug: string): SerializableCity | null {
+  const city = staticCatalog.cities.find((c) => c.slug === slug);
+  if (!city) return null;
+  return serializeCity(city);
 }
 
 export function getAreaBySlugStatic(citySlug: string, areaSlug: string) {
@@ -786,6 +970,12 @@ export function getMaterialBySlugStatic(slug: string) {
   if (!material) return null;
   const services = staticCatalog.services
     .filter((s) => s.materials.some((sm) => sm.materialId === material.id))
-    .map((service) => ({ service: { slug: service.slug, name: service.name, category: service.category } }));
+    .map((service) => ({
+      service: {
+        slug: service.slug,
+        name: service.name,
+        category: serializeCategory(service.category),
+      },
+    }));
   return { ...material, services };
 }

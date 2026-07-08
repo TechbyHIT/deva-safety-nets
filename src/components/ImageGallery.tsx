@@ -66,7 +66,7 @@ export function LightboxGallery({
 
   return (
     <>
-      <div className={`${colClass} gap-4 ${className}`}>
+      <div className={`lazy-section ${colClass} gap-4 ${className}`}>
         {images.map((img, i) => (
           <figure
             key={`${img.src}-${i}`}

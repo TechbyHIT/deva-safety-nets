@@ -38,9 +38,9 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [256, 384, 512, 640, 750, 1080],
-    qualities: [75, 90, 92, 95, 98, 100],
+    deviceSizes: [640, 828, 1080, 1920],
+    imageSizes: [256, 384, 640],
+    qualities: [75, 80, 85, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
@@ -53,8 +53,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
     staleTimes: {
-      dynamic: 600,
-      static: 3600,
+      dynamic: 1800,
+      static: 86400,
     },
   },
   compiler: isProd
