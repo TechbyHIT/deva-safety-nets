@@ -40,6 +40,10 @@ yarn-error.log*
 /prisma/*.db
 .pglite/
 
+# PGlite database backups (large, not for version control)
+.pglite-backup-*/
+.pglite-backup*/
+
 # IDE
 .idea
 .vscode/*
