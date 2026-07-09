@@ -12,9 +12,36 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  check-config:
+    name: Check Hostinger config
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required variables
+        env:
+          VM_ID: ${{ vars.HOSTINGER_VM_ID }}
+        run: |
+          if [ -z "$VM_ID" ]; then
+            echo "::error::HOSTINGER_VM_ID is not set. Go to Settings → Secrets and variables → Actions → Variables"
+            exit 1
+          fi
+          echo "HOSTINGER_VM_ID is set"
+
+      - name: Verify required secrets exist
+        run: |
+          if [ -z "${{ secrets.HOSTINGER_API_KEY }}" ]; then
+            echo "::error::HOSTINGER_API_KEY secret is not set. Go to Settings → Secrets and variables → Actions → Secrets"
+            exit 1
+          fi
+          if [ -z "${{ secrets.REVALIDATE_SECRET }}" ]; then
+            echo "::error::REVALIDATE_SECRET secret is not set"
+            exit 1
+          fi
+          echo "Required secrets are set"
+
   build:
     name: Build Docker image
     runs-on: ubuntu-latest
+    needs: check-config
     permissions:
       contents: read
       packages: write
@@ -29,6 +56,7 @@ jobs:
         run: |
           REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "name=${{ env.REGISTRY }}/${REPO_LC}" >> "$GITHUB_OUTPUT"
+          echo "Image will be: ${{ env.REGISTRY }}/${REPO_LC}:latest"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -59,6 +87,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Deploy target
+        run: |
+          echo "Image: ${{ needs.build.outputs.image }}"
+          echo "VM ID: ${{ vars.HOSTINGER_VM_ID }}"
+          echo "After deploy: make GHCR package PUBLIC (Packages → settings) if pull fails"
 
       - name: Deploy via Hostinger API
         uses: hostinger/deploy-on-vps@v2

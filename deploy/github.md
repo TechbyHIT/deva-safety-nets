@@ -139,9 +139,33 @@ Open: `http://YOUR_VPS_IP:3000`
 
 ---
 
-## Troubleshooting
+## Troubleshooting failed Actions runs
 
-### Build job fails on GitHub
+Open the failed run → check **which job** is red:
+
+| Failed job | Time | Fix |
+|---|---|---|
+| **Check Hostinger config** | < 30s | Add `HOSTINGER_API_KEY`, `REVALIDATE_SECRET` secrets and `HOSTINGER_VM_ID` variable |
+| **Build Docker image** | ~5 min | Click job → read build log; usually Docker/npm build error |
+| **Deploy to Hostinger VPS** | < 1 min | See below |
+
+### Deploy job failures (most common after 5 min build)
+
+| Error in log | Fix |
+|---|---|
+| `Invalid API key` / `401` | Regenerate API key in hPanel → Profile → API → update `HOSTINGER_API_KEY` secret |
+| `Virtual machine not found` | Fix `HOSTINGER_VM_ID` (number from VPS URL, e.g. `123456`) |
+| `pull access denied` / `unauthorized` | GitHub → **Packages** → container → **Package settings** → **Public** |
+| `repository not found` / `could not read from remote` | **Private repo** — add Hostinger VPS SSH key to GitHub deploy keys ([guide](https://www.hostinger.com/support/how-to-deploy-from-private-github-repository-on-hostinger-docker-manager/)) |
+| `0 containers` in hPanel | Deploy job failed — fix error above, re-run workflow |
+
+### Old "Docker build & deploy" failures (18–21s)
+
+Those used a removed workflow (`docker.yml`). Ignore them. Only **Deploy to Hostinger** matters now.
+
+---
+
+## Troubleshooting (general)
 
 Actions → failed run → read **Build Docker image** logs.  
 Usually a TypeScript or `npm run build` error — fix locally, push again.

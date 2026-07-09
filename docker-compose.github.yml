@@ -3,7 +3,7 @@
 services:
   web:
     container_name: deva-safety-nets
-    image: ${DOCKER_IMAGE:?Set DOCKER_IMAGE to ghcr.io/owner/repo:latest}
+    image: ${DOCKER_IMAGE}
     restart: unless-stopped
     ports:
       - "${APP_PORT:-3000}:3000"
