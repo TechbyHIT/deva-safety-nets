@@ -140,7 +140,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
               {[...HERO_SCROLL_STRIP, ...HERO_SCROLL_STRIP].map((src, i) => (
                 <div
                   key={`${src}-${i}`}
-                  className="lazy-paint relative h-24 w-36 shrink-0 overflow-hidden rounded-lg md:h-28 md:w-48"
+                  className="relative h-24 w-36 shrink-0 overflow-hidden rounded-lg bg-[var(--bg-subtle)] md:h-28 md:w-48"
                 >
                   <SiteImage src={src} alt="" fill preset="strip" className="object-cover object-center" aria-hidden />
                 </div>

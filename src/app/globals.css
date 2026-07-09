@@ -1383,3 +1383,50 @@ html.theme-switching .mega-menu {
 .lazy-paint {
   contain-intrinsic-size: auto 112px;
 }
+
+/* ── Route loading skeleton (instant paint) ── */
+.page-skeleton {
+  animation: page-skeleton-pulse 1.1s ease-in-out infinite;
+}
+.page-skeleton__hero {
+  height: min(52vh, 22rem);
+  background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--surface) 100%);
+}
+.page-skeleton__body {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.page-skeleton__line {
+  height: 0.875rem;
+  border-radius: 0.5rem;
+  background: var(--bg-subtle);
+  margin-bottom: 0.75rem;
+}
+.page-skeleton__line--lg {
+  height: 1.5rem;
+  width: 66%;
+  margin-bottom: 1.25rem;
+}
+.page-skeleton__line--sm {
+  width: 83%;
+}
+.page-skeleton__grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+.page-skeleton__card {
+  aspect-ratio: 4 / 3;
+  border-radius: 1rem;
+  background: var(--bg-subtle);
+}
+@keyframes page-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}

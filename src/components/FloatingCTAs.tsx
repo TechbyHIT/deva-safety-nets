@@ -16,23 +16,25 @@ export function FloatingCTAs() {
   const waMsg = "Hi, I'd like a free site inspection for invisible grills / safety nets in Kerala.";
 
   return (
-    <>
+    <div className="fab-stack" aria-label="Quick contact">
       <Link
         href="/contact"
         aria-label="Free quote"
         title="Free quote"
-        className="fixed bottom-6 right-6 z-[900] hidden h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#e5c766] to-[#d4af37] text-[var(--charcoal)] shadow-lg md:flex"
+        className="fab fab-quote hidden md:inline-flex"
       >
         <FileText size={26} strokeWidth={2.25} />
+        <span className="fab-tooltip">Free quote</span>
       </Link>
 
       <a
         href={telHref()}
         aria-label={`Call ${site.phone}`}
         title={`Call ${site.phone}`}
-        className="fixed bottom-20 right-5 z-[900] hidden h-14 w-14 items-center justify-center rounded-full bg-[var(--charcoal)] text-white shadow-lg"
+        className="fab fab-call inline-flex"
       >
         <Phone size={26} strokeWidth={2.25} />
+        <span className="fab-tooltip">Call {site.phone}</span>
       </a>
 
       <a
@@ -41,10 +43,11 @@ export function FloatingCTAs() {
         rel="noopener noreferrer"
         aria-label="WhatsApp chat"
         title="WhatsApp chat"
-        className="fixed bottom-6 right-6 z-[900] hidden h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg md:flex"
+        className="fab fab-whatsapp inline-flex"
       >
         <WhatsAppIcon className="h-7 w-7" />
+        <span className="fab-tooltip">WhatsApp</span>
       </a>
-    </>
+    </div>
   );
 }

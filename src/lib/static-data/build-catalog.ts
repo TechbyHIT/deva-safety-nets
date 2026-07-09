@@ -14,6 +14,7 @@ import {
   buildServiceFaqs,
   slugify,
 } from "./seed-data";
+import { hydrateCatalog, type CatalogSnapshot } from "./catalog-snapshot";
 
 type CategoryMeta = {
   icon: string;
@@ -758,7 +759,18 @@ function buildCatalog(): StaticCatalog {
   };
 }
 
-export const staticCatalog = buildCatalog();
+function loadStaticCatalog(): StaticCatalog {
+  if (process.env.SKIP_CATALOG_HYDRATE === "1") return buildCatalog();
+  const snapshot = require("./catalog.snapshot.json") as CatalogSnapshot;
+  return hydrateCatalog(snapshot);
+}
+
+/** Build catalog from seed data — used only by scripts/catalog:build. */
+export function compileCatalog(): StaticCatalog {
+  return buildCatalog();
+}
+
+export const staticCatalog = loadStaticCatalog();
 
 /**
  * O(1) lookup indexes built once at module load. Critical for scaling to

@@ -1,0 +1,7 @@
+node_modules
+.git
+.next/cache
+.vscode
+.env.local
+.env
+npm-debug.log

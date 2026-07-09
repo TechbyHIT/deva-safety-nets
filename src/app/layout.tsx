@@ -3,7 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { GlobalSeoIntentLinks } from "@/components/GlobalSeoIntentLinks";
+import { DeferredGlobalSeoIntentLinks } from "@/components/DeferredGlobalSeoIntentLinks";
 import { ClientEnhancements } from "@/components/ClientEnhancements";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
@@ -49,6 +49,10 @@ export const metadata: Metadata = {
     url: site.url,
     siteName: site.name,
   },
+  icons: {
+    icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
@@ -80,7 +84,7 @@ export default function RootLayout({
         <main id="main" className="pb-36 md:pb-40">
           {children}
         </main>
-        <GlobalSeoIntentLinks />
+        <DeferredGlobalSeoIntentLinks />
         <Footer />
         <ClientEnhancements />
       </body>

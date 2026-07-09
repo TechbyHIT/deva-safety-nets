@@ -5,14 +5,16 @@
   "description": "Static services website for Deva Safety Nets — invisible grills and safety nets in Kerala.",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "npm run catalog:build && next build",
+    "start": "next start -H 0.0.0.0",
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "catalog:build": "npx tsx scripts/build-catalog-snapshot.mjs",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "images:sync": "node scripts/sync-finalized-photos.mjs",
     "images:enhance": "node scripts/enhance-images.mjs",
-    "images:prepare": "npm run images:sync && npm run images:enhance"
+    "images:prepare": "npm run images:sync && npm run images:enhance",
+    "favicons:generate": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

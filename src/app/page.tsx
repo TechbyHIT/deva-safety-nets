@@ -2,6 +2,7 @@ import Link from "next/link";
 import nextDynamic from "next/dynamic";
 import { Award, Clock, MapPin, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 import { Hero } from "@/components/Hero";
+import { HomeSeoProse } from "@/components/home/HomeSeoProse";
 import { ServiceCard } from "@/components/ServiceCard";
 import { JsonLd } from "@/components/JsonLd";
 import { TrustBadges } from "@/components/TrustBadges";
@@ -91,10 +92,10 @@ export default function HomePage() {
   const reviews = STATIC_REVIEWS;
   const counts = STATIC_CATALOG_COUNTS;
 
-  const homePhotos = pickUniquePageImages("homepage-photos", 28, GALLERY_IMAGES, `${site.name} Kerala installation`);
-  const galleryImages = homePhotos.slice(0, 12);
-  const bentoImages = homePhotos.slice(12, 22);
-  const stripImages = homePhotos.slice(22, 28);
+  const homePhotos = pickUniquePageImages("homepage-photos", 16, GALLERY_IMAGES, `${site.name} Kerala installation`);
+  const galleryImages = homePhotos.slice(0, 8);
+  const bentoImages = homePhotos.slice(8, 14);
+  const stripImages = homePhotos.slice(14, 16);
   const beforeAfter = {
     before: { src: getBestFolderImage("safety-nets-balcony"), alt: "Before safety net installation Kerala" },
     after: { src: getBestFolderImage("safety-nets-balcony", 1), alt: "After safety net installation Kerala" },
@@ -428,158 +429,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section muted>
-        <div className="prose-content mx-auto max-w-3xl">
-          <h2>Invisible Grills &amp; Safety Nets in Kerala — {site.name}</h2>
-          <p>
-            {site.name} helps Kerala homes and apartments stay safe without sacrificing light, air or
-            beautiful views. Our invisible grills and safety nets deliver near-invisible, engineered
-            protection for balconies, windows, staircases, terraces and open edges — installed by
-            experienced local teams who understand Kerala building types, society norms and coastal
-            weather conditions.
-          </p>
-          <h3>Invisible Grills in Kochi &amp; Ernakulam</h3>
-          <p>
-            Invisible grills use high-tensile stainless steel cables — SS304 for most Kerala homes
-            and marine-grade SS316 for coastal areas like Fort Kochi and Vypin — spaced to prevent
-            falls while staying almost invisible. They are the preferred choice for apartments in
-            Edapally, Kakkanad, Vyttila and high-rise towers across Ernakulam district.
-          </p>
-          <h3>Safety Nets for Balconies, Birds &amp; Children</h3>
-          <p>
-            Safety nets are the fast, affordable way to secure balconies, ducts and terraces across
-            Kerala. UV-stabilised nylon and HDPE nets allow full airflow, deter pigeons and birds,
-            and can be installed in hours — ideal for child safety, pet protection and bird control
-            in Kochi apartments and villas.
-          </p>
-          <h3>Professional installation across 160+ localities</h3>
-          <p>
-            Every project starts with a free on-site inspection and precise measurement. We use only
-            certified materials, install with our own trained technicians, and back every job with a
-            long-term warranty. Explore our{" "}
-            <Link href="/services" className="text-[var(--primary)]">
-              full range of services
-            </Link>
-            , find your{" "}
-            <Link href="/locations" className="text-[var(--primary)]">
-              Kerala city and locality
-            </Link>
-            , or browse by{" "}
-            <Link href="/property-types" className="text-[var(--primary)]">
-              property type
-            </Link>
-            . Ready to start?{" "}
-            <Link href="/contact" className="text-[var(--primary)]">
-              Request a free site inspection
-            </Link>{" "}
-            today.
-          </p>
-          <h3>Sports nets, cloth hangers and bird control</h3>
-          <p>
-            Beyond grills and nets, {site.name} installs cricket nets and sports enclosures, ceiling
-            and balcony cloth hangers, bird spikes and pigeon exclusion systems for homes and
-            businesses across Kerala. Each service follows the same standard: free inspection,
-            itemised quote, certified materials and warranty-backed installation.
-          </p>
-          <h3>Why Kerala homeowners choose Deva Safety Nets</h3>
-          <p>
-            We are a local Kerala team — not a call centre forwarding jobs to subcontractors. You get
-            honest advice on invisible grills versus safety nets, SS304 versus SS316 for your
-            exposure, and what your apartment society is likely to approve. That transparency, plus
-            thousands of completed installations and a 4.9-star customer rating, is why families in
-            Kochi, Ernakulam and across the state trust us for professional invisible grill and
-            safety net installation near them.
-          </p>
-          <h3>Industries and property types we serve</h3>
-          <p>
-            We work with apartments, villas, independent houses, penthouses, commercial offices,
-            warehouses, schools, hospitals and construction sites. Whether you need one balcony
-            secured or an entire tower outfitted, our project coordinators plan access, timelines
-            and finishes to match how your property is used. Visit our{" "}
-            <Link href="/property-types" className="text-[var(--primary)]">
-              property types
-            </Link>{" "}
-            and{" "}
-            <Link href="/industries" className="text-[var(--primary)]">
-              industries
-            </Link>{" "}
-            pages for tailored information, or read customer experiences on our{" "}
-            <Link href="/reviews" className="text-[var(--primary)]">
-              reviews
-            </Link>{" "}
-            page.
-          </p>
-          <h3>Our installation workflow</h3>
-          <p>
-            Every Deva Safety Nets project follows the same proven process: free site inspection and
-            measurement, written itemised quote within 24 hours, material preparation suited to your
-            Kerala location, professional installation by our own technicians, and a final quality
-            check with warranty documentation. Read our{" "}
-            <Link href="/installation-guide/invisible-grills" className="text-[var(--primary)]">
-              installation guides
-            </Link>{" "}
-            or compare options on our{" "}
-            <Link href="/compare" className="text-[var(--primary)]">
-              comparison pages
-            </Link>{" "}
-            before you book.
-          </p>
-          <h3>Material quality and safety standards</h3>
-          <p>
-            We use IS-compliant SS304 and SS316 stainless steel, high-tenacity nylon and UV-treated
-            HDPE — never unbranded wire or thin mesh. Cable spacing, anchor depth and tension are
-            tested before handover. For coastal Kochi and Ernakulam properties, we recommend
-            marine-grade SS316 where salt air accelerates corrosion.
-          </p>
-          <h3>Contact Deva Safety Nets</h3>
-          <p>
-            Call {site.phone}, WhatsApp us or submit the quote form on our{" "}
-            <Link href="/contact" className="text-[var(--primary)]">
-              contact page
-            </Link>
-            . We serve Kochi, Ernakulam and 160+ Kerala localities with free site inspections and
-            transparent pricing. Browse our{" "}
-            <Link href="/faq" className="text-[var(--primary)]">
-              FAQ
-            </Link>{" "}
-            for answers on invisible grills, safety nets, materials, maintenance and booking.
-          </p>
-          <h3>Residential, apartment and villa solutions</h3>
-          <p>
-            Families in Kerala choose different solutions depending on building type. Apartment
-            residents often need society-approved invisible grills or fast-install safety nets for
-            child and bird control. Villa owners may prefer bespoke cable layouts across French
-            windows, terraces and staircases. Independent homes benefit from flexible sizing and
-            mixed grill-and-net strategies. Deva Safety Nets assesses each property on site and
-            recommends what fits — never a one-size-fits-all kit.
-          </p>
-          <h3>Commercial and industrial safety</h3>
-          <p>
-            Offices, retail spaces, warehouses and factories require specifications beyond
-            residential defaults: higher load ratings, documented compliance, phased installation
-            and bird exclusion at scale. Our commercial coordinators plan access, timelines and
-            handover testing so operations continue with minimal disruption across Kerala.
-          </p>
-          <h3>Child, pet and bird safety priorities</h3>
-          <p>
-            Parents contact us after realising glass railings and open balconies are not enough for
-            active toddlers. Pet owners need mesh sized for cats and dogs. Bird and pigeon problems
-            in ducts and terraces drive demand for exclusion nets and spikes. Each priority changes
-            material choice and spacing — we explain trade-offs clearly during your free inspection.
-          </p>
-          <h3>Maintenance, repair and long-term support</h3>
-          <p>
-            Installations last longest when owners follow simple care routines and schedule
-            post-monsoon checks. Deva Safety Nets provides re-tensioning, cable replacement, net
-            patching and annual maintenance contracts so your investment stays safe year after year.
-            Read our{" "}
-            <Link href="/blog" className="text-[var(--primary)]">
-              blog
-            </Link>{" "}
-            and maintenance guides for seasonal tips.
-          </p>
-        </div>
-      </Section>
+      <HomeSeoProse />
 
       <CTABand imageSrc={PAGE_IMAGES.cta} />
     </>

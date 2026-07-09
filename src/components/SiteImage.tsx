@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { IMAGE_QUALITY, resolveImagePreset, type ImagePreset } from "@/lib/image-settings";
 
 type SiteImageProps = {
@@ -32,49 +35,47 @@ export function SiteImage({
   preset,
   objectFit = "cover",
 }: SiteImageProps) {
+  const [loaded, setLoaded] = useState(false);
   const isSvg = src.endsWith(".svg");
   const presetOpts = resolveImagePreset(preset);
   const resolvedQuality = quality ?? presetOpts?.quality ?? IMAGE_QUALITY.gallery;
   const resolvedSizes = sizes ?? presetOpts?.sizes ?? "(max-width: 768px) 100vw, 50vw";
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
-  const imgClass = `${fitClass} ${className}`.trim();
+  const imgClass = [
+    fitClass,
+    className,
+    "transition-opacity duration-300",
+    loaded ? "opacity-100" : "opacity-0",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const shared = {
+    src,
+    alt,
+    title: title ?? alt,
+    className: imgClass,
+    priority,
+    fetchPriority: priority ? ("high" as const) : ("auto" as const),
+    loading: priority ? ("eager" as const) : ("lazy" as const),
+    decoding: "async" as const,
+    sizes: resolvedSizes,
+    quality: resolvedQuality,
+    unoptimized: isSvg,
+    onLoad: () => setLoaded(true),
+  };
 
   if (fill) {
     return (
-      <Image
-        src={src}
-        alt={alt}
-        title={title ?? alt}
-        fill
-        className={imgClass}
-        priority={priority}
-        fetchPriority={priority ? "high" : "auto"}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        sizes={resolvedSizes}
-        quality={resolvedQuality}
-        placeholder="empty"
-        unoptimized={isSvg}
-      />
+      <span className="site-image site-image--fill relative block size-full bg-[var(--bg-subtle)]">
+        <Image {...shared} fill />
+      </span>
     );
   }
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      title={title ?? alt}
-      width={width}
-      height={height}
-      className={imgClass}
-      priority={priority}
-      fetchPriority={priority ? "high" : "auto"}
-      loading={priority ? "eager" : "lazy"}
-      decoding="async"
-      sizes={resolvedSizes}
-      quality={resolvedQuality}
-      placeholder="empty"
-      unoptimized={isSvg}
-    />
+    <span className="site-image relative inline-block max-w-full bg-[var(--bg-subtle)]">
+      <Image {...shared} width={width} height={height} />
+    </span>
   );
 }
