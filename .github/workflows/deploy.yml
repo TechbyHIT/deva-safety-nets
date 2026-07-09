@@ -15,15 +15,26 @@ jobs:
   check-config:
     name: Check Hostinger config
     runs-on: ubuntu-latest
+    outputs:
+      vm_id: ${{ steps.vm.outputs.id }}
     steps:
-      - name: Verify required variables
+      - name: Verify HOSTINGER_VM_ID
+        id: vm
         env:
-          VM_ID: ${{ vars.HOSTINGER_VM_ID }}
+          VM_ID_VAR: ${{ vars.HOSTINGER_VM_ID }}
+          VM_ID_SECRET: ${{ secrets.HOSTINGER_VM_ID }}
         run: |
+          VM_ID="$VM_ID_VAR"
           if [ -z "$VM_ID" ]; then
-            echo "::error::HOSTINGER_VM_ID is not set. Go to Settings → Secrets and variables → Actions → Variables"
+            VM_ID="$VM_ID_SECRET"
+          fi
+          if [ -z "$VM_ID" ]; then
+            echo "::error::HOSTINGER_VM_ID is not set."
+            echo "::error::Add it as a Variable OR Secret named exactly HOSTINGER_VM_ID"
+            echo "::error::Settings → Secrets and variables → Actions"
             exit 1
           fi
+          echo "id=$VM_ID" >> "$GITHUB_OUTPUT"
           echo "HOSTINGER_VM_ID is set"
 
       - name: Verify required secrets exist
@@ -83,7 +94,7 @@ jobs:
 
   deploy:
     name: Deploy to Hostinger VPS
-    needs: build
+    needs: [check-config, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -91,14 +102,14 @@ jobs:
       - name: Deploy target
         run: |
           echo "Image: ${{ needs.build.outputs.image }}"
-          echo "VM ID: ${{ vars.HOSTINGER_VM_ID }}"
+          echo "VM ID: ${{ needs.check-config.outputs.vm_id }}"
           echo "After deploy: make GHCR package PUBLIC (Packages → settings) if pull fails"
 
       - name: Deploy via Hostinger API
         uses: hostinger/deploy-on-vps@v2
         with:
           api-key: ${{ secrets.HOSTINGER_API_KEY }}
-          virtual-machine: ${{ vars.HOSTINGER_VM_ID }}
+          virtual-machine: ${{ needs.check-config.outputs.vm_id }}
           project-name: deva-safety-nets
           docker-compose-path: docker-compose.github.yml
           environment-variables: |

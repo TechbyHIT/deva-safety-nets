@@ -68,13 +68,14 @@ Repo → **Settings** → **Secrets and variables** → **Actions**
 | Name | Value |
 |---|---|
 | `HOSTINGER_API_KEY` | Your Hostinger API key |
-| `REVALIDATE_SECRET` | Long random string |
+| `REVALIDATE_SECRET` | Long random string (you make this up) |
+| `HOSTINGER_VM_ID` | VM ID from step 2 — **can also go in Variables** | `123456` |
 
 ### Variables (plain text)
 
 | Name | Value | Example |
 |---|---|---|
-| `HOSTINGER_VM_ID` | VM ID from step 2 | `123456` |
+| `HOSTINGER_VM_ID` | VM ID from step 2 — **or put in Secrets instead** | `123456` |
 | `NEXT_PUBLIC_SITE_URL` | Your live domain | `https://devasafetynets.in` |
 | `NEXT_PUBLIC_SITE_NAME` | Site name | `Deva Safety Nets` |
 | `NEXT_PUBLIC_BRAND_PHONE` | Phone | `+917558844405` |
