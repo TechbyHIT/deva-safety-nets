@@ -136,6 +136,36 @@ jobs:
           echo "VM ID: $VM_ID"
           echo "After deploy: make GHCR package PUBLIC (Packages → settings) if pull fails"
 
+      - name: Prepare deploy environment
+        id: env
+        env:
+          DOCKER_IMAGE: ${{ needs.build.outputs.image }}
+          APP_PORT: ${{ vars.APP_PORT }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+        run: |
+          # Hostinger requires strict KEY=value lines (no blanks, no multiline values).
+          PORT="${APP_PORT:-3000}"
+          SECRET="${REVALIDATE_SECRET//$'\n'/}"
+          SECRET="${SECRET//$'\r'/}"
+          if [ -z "$DOCKER_IMAGE" ]; then
+            echo "::error::DOCKER_IMAGE is empty — build job may have failed."
+            exit 1
+          fi
+          if [ -z "$SECRET" ]; then
+            echo "::error::REVALIDATE_SECRET is empty."
+            exit 1
+          fi
+          {
+            printf 'DOCKER_IMAGE=%s\n' "$DOCKER_IMAGE"
+            printf 'APP_PORT=%s\n' "$PORT"
+            printf 'REVALIDATE_SECRET=%s\n' "$SECRET"
+          } > deploy.env
+          echo "Deploy environment:"
+          sed 's/REVALIDATE_SECRET=.*/REVALIDATE_SECRET=***hidden***/' deploy.env
+          echo "env<<EOF" >> "$GITHUB_OUTPUT"
+          cat deploy.env >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Deploy via Hostinger API
         uses: hostinger/deploy-on-vps@v2
         with:
@@ -143,8 +173,4 @@ jobs:
           virtual-machine: ${{ steps.vm.outputs.id }}
           project-name: deva-safety-nets
           docker-compose-path: docker-compose.github.yml
-          environment-variables: |
-            DOCKER_IMAGE=${{ needs.build.outputs.image }}
-            APP_PORT=${{ vars.APP_PORT || '3000' }}
-            REVALIDATE_SECRET=${{ secrets.REVALIDATE_SECRET }}
-            SITEMAP_PAGE_SIZE=${{ vars.SITEMAP_PAGE_SIZE || '45000' }}
+          environment-variables: ${{ steps.env.outputs.env }}
