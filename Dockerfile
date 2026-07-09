@@ -12,6 +12,9 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# public/ may be absent if photos were not synced before deploy; Next still builds.
+RUN mkdir -p public/images
+
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_SITE_NAME
 ARG NEXT_PUBLIC_BRAND_PHONE
@@ -25,7 +28,8 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
     NEXT_PUBLIC_WHATSAPP=$NEXT_PUBLIC_WHATSAPP \
     NEXT_PUBLIC_EMAIL=$NEXT_PUBLIC_EMAIL \
     NEXT_PUBLIC_GOOGLE_MAPS_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_KEY \
-    NEXT_TELEMETRY_DISABLED=1
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_OPTIONS="--max-old-space-size=2048"
 
 RUN npm run build
 

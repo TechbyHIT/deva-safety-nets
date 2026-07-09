@@ -231,7 +231,20 @@ curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
 
-## Deployment (VPS: PM2 + Nginx + Cloudflare)
+## Deployment (GitHub → Hostinger VPS)
+
+**GitHub-only:** see **[deploy/github.md](deploy/github.md)**
+
+1. Push repo to GitHub
+2. Set secrets: `HOSTINGER_API_KEY`, `REVALIDATE_SECRET`
+3. Set variables: `HOSTINGER_VM_ID`, `NEXT_PUBLIC_SITE_URL`, …
+4. Push to `main` → Actions builds on GitHub and deploys to Hostinger
+
+The VPS pulls a pre-built image (no build on server). Optional Nginx/Cloudflare: `deploy/nginx.conf`.
+
+---
+
+## Deployment (PM2 + Nginx — alternative, no Docker)
 
 The app builds to a self-contained Node server (`output: "standalone"`) and ships
 with ready-to-use `ecosystem.config.cjs` (PM2) and `deploy/nginx.conf` (Nginx).

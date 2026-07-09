@@ -1,5 +1,10 @@
+# Hostinger Docker Manager: deploy this file from the repo root (not via File Manager
+# upload alone). "0 containers" means the image build failed or the container exited —
+# see deploy/hostinger.md for SSH log commands.
 services:
   web:
+    container_name: deva-safety-nets
+    image: deva-safety-nets:latest
     build:
       context: .
       dockerfile: Dockerfile

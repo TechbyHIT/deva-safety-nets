@@ -1,0 +1,74 @@
+name: Deploy to Hostinger
+
+# GitHub-only deploy: build image on GitHub → push to GHCR → Hostinger pulls & runs.
+# Setup: deploy/github.md
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.name }}:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image name (GHCR requires lowercase)
+        id: image
+        run: |
+          REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "name=${{ env.REGISTRY }}/${REPO_LC}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL || 'https://devasafetynets.in' }}
+            NEXT_PUBLIC_SITE_NAME=${{ vars.NEXT_PUBLIC_SITE_NAME || 'Deva Safety Nets' }}
+            NEXT_PUBLIC_BRAND_PHONE=${{ vars.NEXT_PUBLIC_BRAND_PHONE || '+917558844405' }}
+            NEXT_PUBLIC_WHATSAPP=${{ vars.NEXT_PUBLIC_WHATSAPP || '917558844405' }}
+            NEXT_PUBLIC_EMAIL=${{ vars.NEXT_PUBLIC_EMAIL || 'devasafetynetskochi@gmail.com' }}
+            NEXT_PUBLIC_GOOGLE_MAPS_KEY=${{ vars.NEXT_PUBLIC_GOOGLE_MAPS_KEY || '' }}
+
+  deploy:
+    name: Deploy to Hostinger VPS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via Hostinger API
+        uses: hostinger/deploy-on-vps@v2
+        with:
+          api-key: ${{ secrets.HOSTINGER_API_KEY }}
+          virtual-machine: ${{ vars.HOSTINGER_VM_ID }}
+          project-name: deva-safety-nets
+          docker-compose-path: docker-compose.github.yml
+          environment-variables: |
+            DOCKER_IMAGE=${{ needs.build.outputs.image }}
+            APP_PORT=${{ vars.APP_PORT || '3000' }}
+            REVALIDATE_SECRET=${{ secrets.REVALIDATE_SECRET }}
+            SITEMAP_PAGE_SIZE=${{ vars.SITEMAP_PAGE_SIZE || '45000' }}
