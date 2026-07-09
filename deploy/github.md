@@ -57,6 +57,9 @@ Required files in the repo (already in project):
 2. VM ID is in the URL: `https://hpanel.hostinger.com/vps/123456/overview` → ID is **123456**
 3. Or from hostname `srv123456.hstgr.cloud` → ID is **123456**
 
+**Use only the number** — not the full URL. Wrong values cause:
+`virtual-machines/https:/hpanel.hostinger.com/vps/.../docker could not be found`
+
 ---
 
 ## Step 3 — GitHub secrets & variables

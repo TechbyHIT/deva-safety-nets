@@ -34,8 +34,15 @@ jobs:
             echo "::error::Settings → Secrets and variables → Actions"
             exit 1
           fi
+          if echo "$VM_ID" | grep -qE '[^0-9]'; then
+            echo "::error::HOSTINGER_VM_ID must be NUMBERS ONLY."
+            echo "::error::Wrong: https://hpanel.hostinger.com/vps/847291/overview"
+            echo "::error::Right: 847291"
+            echo "::error::Delete any duplicate HOSTINGER_VM_ID in Secrets if you use Variables."
+            exit 1
+          fi
           echo "id=$VM_ID" >> "$GITHUB_OUTPUT"
-          echo "HOSTINGER_VM_ID is set"
+          echo "HOSTINGER_VM_ID is set (numeric)"
 
       - name: Verify required secrets exist
         run: |
