@@ -3,7 +3,7 @@
  * fallbacks so the app renders even before .env is filled in.
  */
 export const site = {
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://devasafetynets.in").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://devasafetynets.com").replace(/\/$/, ""),
   name: process.env.NEXT_PUBLIC_SITE_NAME ?? "Deva Safety Nets",
   shortName: "Deva",
   description:

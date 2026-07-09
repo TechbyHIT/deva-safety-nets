@@ -3,13 +3,9 @@ import type { NextConfig } from "next";
 // Sitemap is served as an index (/sitemap.xml) + segmented shards
 // (/sitemaps/[id].xml) via route handlers, so it scales past the 50k-URL limit.
 const isProd = process.env.NODE_ENV === "production";
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://devasafetynets.in";
-const tlsAtEdge = siteUrl.startsWith("https://");
 
 const cspDirectives = [
   "default-src 'self'",
-  // Next.js requires 'unsafe-inline' for its inline runtime bootstrap; in prod
-  // prefer nonces via middleware if you tighten this further.
   `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://maps.googleapis.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
@@ -20,24 +16,15 @@ const cspDirectives = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  // Do not set upgrade-insecure-requests here — it breaks CSS/JS when the app
-  // is reached over plain HTTP (e.g. IP:3000 before Nginx/Cloudflare TLS).
 ].join("; ");
 
-const securityHeaders = [
+/** Applied to HTML routes only — never attach CSP/HSTS to static assets. */
+const pageSecurityHeaders = [
   { key: "Content-Security-Policy", value: cspDirectives },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
-  ...(tlsAtEdge
-    ? [
-        {
-          key: "Strict-Transport-Security",
-          value: "max-age=63072000; includeSubDomains; preload",
-        },
-      ]
-    : []),
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 
@@ -67,6 +54,9 @@ const nextConfig: NextConfig = {
       static: 86400,
     },
   },
+  outputFileTracingIncludes: {
+    "/*": ["./node_modules/sharp/**/*", "./node_modules/@img/**/*"],
+  },
   compiler: isProd
     ? {
         removeConsole: { exclude: ["error", "warn"] },
@@ -89,8 +79,9 @@ const nextConfig: NextConfig = {
 
     return [
       {
-        source: "/:path*",
-        headers: securityHeaders,
+        source:
+          "/((?!_next/static|_next/image|images|icon|apple-icon|manifest|robots|sitemap|favicon).*)",
+        headers: pageSecurityHeaders,
       },
       {
         source: "/_next/static/:path*",

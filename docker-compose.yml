@@ -5,6 +5,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: https://devasafetynets.com
+        NEXT_PUBLIC_SITE_NAME: Deva Safety Nets
+        NEXT_PUBLIC_BRAND_PHONE: "+917558844405"
+        NEXT_PUBLIC_WHATSAPP: "917558844405"
+        NEXT_PUBLIC_EMAIL: devasafetynetskochi@gmail.com
     container_name: deva-safety-nets
     restart: unless-stopped
     ports:
@@ -14,9 +20,8 @@ services:
       HOSTNAME: 0.0.0.0
       PORT: 3000
       NEXT_TELEMETRY_DISABLED: "1"
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      NEXT_PUBLIC_SITE_URL: https://devasafetynets.com
+      NEXT_PUBLIC_SITE_NAME: Deva Safety Nets
+      NEXT_PUBLIC_BRAND_PHONE: "+917558844405"
+      NEXT_PUBLIC_WHATSAPP: "917558844405"
+      NEXT_PUBLIC_EMAIL: devasafetynetskochi@gmail.com

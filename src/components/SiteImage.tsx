@@ -35,7 +35,7 @@ export function SiteImage({
   preset,
   objectFit = "cover",
 }: SiteImageProps) {
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(priority ?? false);
   const isSvg = src.endsWith(".svg");
   const presetOpts = resolveImagePreset(preset);
   const resolvedQuality = quality ?? presetOpts?.quality ?? IMAGE_QUALITY.gallery;
@@ -44,38 +44,52 @@ export function SiteImage({
   const imgClass = [
     fitClass,
     className,
-    "transition-opacity duration-300",
     loaded ? "opacity-100" : "opacity-0",
+    "transition-opacity duration-300",
   ]
     .filter(Boolean)
     .join(" ");
 
-  const shared = {
-    src,
-    alt,
-    title: title ?? alt,
-    className: imgClass,
-    priority,
-    fetchPriority: priority ? ("high" as const) : ("auto" as const),
-    loading: priority ? ("eager" as const) : ("lazy" as const),
-    decoding: "async" as const,
-    sizes: resolvedSizes,
-    quality: resolvedQuality,
-    unoptimized: isSvg,
-    onLoad: () => setLoaded(true),
-  };
+  const finishLoad = () => setLoaded(true);
 
   if (fill) {
     return (
-      <span className="site-image site-image--fill relative block size-full bg-[var(--bg-subtle)]">
-        <Image {...shared} fill />
-      </span>
+      <Image
+        src={src}
+        alt={alt}
+        title={title ?? alt}
+        fill
+        className={imgClass}
+        priority={priority}
+        fetchPriority={priority ? "high" : "auto"}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        sizes={resolvedSizes}
+        quality={resolvedQuality}
+        unoptimized={isSvg}
+        onLoad={finishLoad}
+        onError={finishLoad}
+      />
     );
   }
 
   return (
-    <span className="site-image relative inline-block max-w-full bg-[var(--bg-subtle)]">
-      <Image {...shared} width={width} height={height} />
-    </span>
+    <Image
+      src={src}
+      alt={alt}
+      title={title ?? alt}
+      width={width}
+      height={height}
+      className={imgClass}
+      priority={priority}
+      fetchPriority={priority ? "high" : "auto"}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      sizes={resolvedSizes}
+      quality={resolvedQuality}
+      unoptimized={isSvg}
+      onLoad={finishLoad}
+      onError={finishLoad}
+    />
   );
 }
