@@ -295,3 +295,5 @@ in Nginx).
 curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
+#   d e v a - s a f e t y - n e t s  
+ 
