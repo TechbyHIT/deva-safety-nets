@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 // Sitemap is served as an index (/sitemap.xml) + segmented shards
 // (/sitemaps/[id].xml) via route handlers, so it scales past the 50k-URL limit.
 const isProd = process.env.NODE_ENV === "production";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://devasafetynets.in";
+const tlsAtEdge = siteUrl.startsWith("https://");
+
 const cspDirectives = [
   "default-src 'self'",
   // Next.js requires 'unsafe-inline' for its inline runtime bootstrap; in prod
@@ -17,7 +20,8 @@ const cspDirectives = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  // Do not set upgrade-insecure-requests here — it breaks CSS/JS when the app
+  // is reached over plain HTTP (e.g. IP:3000 before Nginx/Cloudflare TLS).
 ].join("; ");
 
 const securityHeaders = [
@@ -26,10 +30,14 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
-  {
-    key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
-  },
+  ...(tlsAtEdge
+    ? [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]
+    : []),
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 
@@ -37,6 +45,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 828, 1080, 1920],

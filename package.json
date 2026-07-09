@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "npm run catalog:build && next build",
-    "start": "next start -H 0.0.0.0",
+    "start": "node .next/standalone/server.js",
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
     "catalog:build": "npx tsx scripts/build-catalog-snapshot.mjs",
     "lint": "tsc --noEmit",
@@ -22,6 +22,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
+    "sharp": "^0.33.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -30,8 +31,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.2",
-    "sharp": "^0.33.5"
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">=20.11.0"
