@@ -24,25 +24,31 @@ jobs:
           VM_ID_VAR: ${{ vars.HOSTINGER_VM_ID }}
           VM_ID_SECRET: ${{ secrets.HOSTINGER_VM_ID }}
         run: |
+          if [ -n "$VM_ID_SECRET" ]; then
+            echo "::warning::HOSTINGER_VM_ID exists in Secrets — delete it. Use Variables only."
+          fi
           VM_ID="$VM_ID_VAR"
-          if [ -z "$VM_ID" ]; then
-            VM_ID="$VM_ID_SECRET"
+          VM_ID="${VM_ID#"${VM_ID%%[![:space:]]*}"}"
+          VM_ID="${VM_ID%"${VM_ID##*[![:space:]]}"}"
+          if echo "$VM_ID" | grep -qE 'hpanel\.hostinger\.com/vps/[0-9]+'; then
+            VM_ID=$(echo "$VM_ID" | sed -n 's|.*/vps/\([0-9]*\).*|\1|p')
+            echo "::warning::Extracted VM ID from URL — store only $VM_ID in Variables next time."
           fi
           if [ -z "$VM_ID" ]; then
-            echo "::error::HOSTINGER_VM_ID is not set."
-            echo "::error::Add it as a Variable OR Secret named exactly HOSTINGER_VM_ID"
-            echo "::error::Settings → Secrets and variables → Actions"
+            echo "::error::HOSTINGER_VM_ID variable is empty."
+            echo "::error::Settings → Secrets and variables → Actions → Variables tab"
+            echo "::error::Name: HOSTINGER_VM_ID  Value: 1813883 (your number only)"
             exit 1
           fi
           if echo "$VM_ID" | grep -qE '[^0-9]'; then
             echo "::error::HOSTINGER_VM_ID must be NUMBERS ONLY."
-            echo "::error::Wrong: https://hpanel.hostinger.com/vps/847291/overview"
-            echo "::error::Right: 847291"
-            echo "::error::Delete any duplicate HOSTINGER_VM_ID in Secrets if you use Variables."
+            echo "::error::Current value looks like a URL — use only the number from the URL."
+            echo "::error::Wrong: https://hpanel.hostinger.com/vps/1813883/overview"
+            echo "::error::Right: 1813883"
             exit 1
           fi
           echo "id=$VM_ID" >> "$GITHUB_OUTPUT"
-          echo "HOSTINGER_VM_ID is set (numeric)"
+          echo "HOSTINGER_VM_ID OK (${#VM_ID} digits)"
 
       - name: Verify required secrets exist
         run: |
@@ -107,16 +113,34 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy target
+        id: vm
+        env:
+          VM_ID_OUTPUT: ${{ needs.check-config.outputs.vm_id }}
+          VM_ID_VAR: ${{ vars.HOSTINGER_VM_ID }}
         run: |
+          VM_ID="$VM_ID_OUTPUT"
+          if [ -z "$VM_ID" ]; then
+            VM_ID="$VM_ID_VAR"
+          fi
+          VM_ID="${VM_ID#"${VM_ID%%[![:space:]]*}"}"
+          VM_ID="${VM_ID%"${VM_ID##*[![:space:]]}"}"
+          if echo "$VM_ID" | grep -qE 'hpanel\.hostinger\.com/vps/[0-9]+'; then
+            VM_ID=$(echo "$VM_ID" | sed -n 's|.*/vps/\([0-9]*\).*|\1|p')
+          fi
+          if [ -z "$VM_ID" ] || echo "$VM_ID" | grep -qE '[^0-9]'; then
+            echo "::error::Deploy VM ID must be numbers only (e.g. 1813883)."
+            exit 1
+          fi
+          echo "id=$VM_ID" >> "$GITHUB_OUTPUT"
           echo "Image: ${{ needs.build.outputs.image }}"
-          echo "VM ID: ${{ needs.check-config.outputs.vm_id }}"
+          echo "VM ID: $VM_ID"
           echo "After deploy: make GHCR package PUBLIC (Packages → settings) if pull fails"
 
       - name: Deploy via Hostinger API
         uses: hostinger/deploy-on-vps@v2
         with:
           api-key: ${{ secrets.HOSTINGER_API_KEY }}
-          virtual-machine: ${{ needs.check-config.outputs.vm_id }}
+          virtual-machine: ${{ steps.vm.outputs.id }}
           project-name: deva-safety-nets
           docker-compose-path: docker-compose.github.yml
           environment-variables: |
