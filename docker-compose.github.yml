@@ -1,7 +1,5 @@
 # Production compose for GitHub → Hostinger deploy.
-# Image is built in GitHub Actions (GHCR) — VPS only pulls, no build on server.
-services:
-  web:
+services:  web:
     container_name: deva-safety-nets
     image: ${DOCKER_IMAGE}
     restart: unless-stopped
