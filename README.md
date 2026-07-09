@@ -19,7 +19,7 @@ engine that keeps each URL unique and useful.
 |---|---|
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Styling | Tailwind CSS v4 (60/30/10: white / royal blue / gold), dark + light mode |
-| Data | In-repo **static catalog** compiled at module load (no runtime DB). Authored in `prisma/seed.ts` → generated to `src/lib/static-data/seed-data.ts` via `scripts/extract-seed-data.mjs` |
+| Data | In-repo **static catalog** compiled at module load (no database). Curated directly in `src/lib/static-data/seed-data.ts` and assembled by `src/lib/static-data/build-catalog.ts` |
 | Caching | Next.js Data Cache / ISR + `unstable_cache` (tag-based revalidation) |
 | Rendering | Server Components, Server Actions, ISR, SSR, static where appropriate |
 | SEO | Dynamic Metadata API, JSON-LD, sitemap index + segmented sitemaps, robots |
@@ -46,7 +46,7 @@ reusable property-type dimension — rather than by inventing place names:
 /installation-guide/[service] , /maintenance-guide/[service] , /buying-guide/[service]
 ```
 
-**The reusable location hierarchy** (see `prisma/seed.ts`) models Kochi &
+**The reusable location hierarchy** (see `src/lib/kerala-locations.ts`) models Kochi &
 Ernakulam across 7 tiers — primary cities, municipalities, major localities, the
 Kakkanad/IT corridor, Vypin islands, residential belts and the airport region —
 so you extend coverage by adding **locations once** and every service page
@@ -115,23 +115,18 @@ npm run build
 npm run start
 ```
 
-### (Optional) Regenerate the static catalog
+### Editing catalog content
 
-Edit the curated data in `prisma/seed.ts`, then regenerate the compiled catalog:
-
-```bash
-node scripts/extract-seed-data.mjs   # writes src/lib/static-data/seed-data.ts
-```
+Edit the curated data directly in `src/lib/static-data/seed-data.ts`
+(materials, industries, property types, cities, blog posts and the content
+builders). `src/lib/static-data/build-catalog.ts` assembles it into the runtime
+catalog at module load — no database, migration or codegen step.
 
 ---
 
 ## Project structure
 
 ```
-prisma/
-  seed.ts              # curated seed data (authoring source for the static catalog)
-scripts/
-  extract-seed-data.mjs  # compiles seed.ts -> src/lib/static-data/seed-data.ts
 src/
   app/                 # App Router routes
     services/[service]/[city]/[area]/   # 3-level programmatic service pages
@@ -222,8 +217,7 @@ produce meaningfully different, locally-relevant pages.
 
 ## Editing content
 
-- Update taxonomy/geography/content in `prisma/seed.ts`, then regenerate the
-  static catalog: `node scripts/extract-seed-data.mjs`.
+- Update taxonomy/geography/content directly in `src/lib/static-data/seed-data.ts`.
 - After deploying edits, refresh caches without a rebuild:
 
 ```bash
@@ -231,20 +225,7 @@ curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
 
-## Deployment (GitHub → Hostinger VPS)
-
-**GitHub-only:** see **[deploy/github.md](deploy/github.md)**
-
-1. Push repo to GitHub
-2. Set secrets: `HOSTINGER_API_KEY`, `REVALIDATE_SECRET`
-3. Set variables: `HOSTINGER_VM_ID`, `NEXT_PUBLIC_SITE_URL`, …
-4. Push to `main` → Actions builds on GitHub and deploys to Hostinger
-
-The VPS pulls a pre-built image (no build on server). Optional Nginx/Cloudflare: `deploy/nginx.conf`.
-
----
-
-## Deployment (PM2 + Nginx — alternative, no Docker)
+## Deployment (PM2 + Nginx)
 
 The app builds to a self-contained Node server (`output: "standalone"`) and ships
 with ready-to-use `ecosystem.config.cjs` (PM2) and `deploy/nginx.conf` (Nginx).
@@ -314,8 +295,3 @@ in Nginx).
 curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
-
-### Docker (alternative)
-
-`Dockerfile` + `docker-compose.yml` build the standalone server and expose a
-health check at `/api/health`. Put the same Nginx/Cloudflare layer in front.

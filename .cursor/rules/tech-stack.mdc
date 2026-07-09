@@ -1,0 +1,43 @@
+---
+description: Approved technology stack — do not introduce new frameworks or dependencies
+alwaysApply: true
+---
+
+# Approved Technology Stack
+
+This project is intentionally minimal. **Use only the technologies below.**
+Do NOT add new frameworks, libraries, or dependencies without explicit approval.
+
+## Core stack (installed — do not downgrade)
+
+| Technology | Version / role |
+|------------|----------------|
+| Next.js | 16.x — App Router, SSR, ISR, route handlers |
+| React | 19.x — UI components |
+| TypeScript | 5.7 — type-safe codebase |
+| Tailwind CSS | 4.x (`@tailwindcss/postcss`) — styling |
+| Node.js | ≥ 20.11 — runtime |
+
+## Approved dependencies
+
+- `lucide-react` — icons
+- `zod` — schema validation
+- `server-only` — server module guard
+- `sharp` — build-time image processing (scripts only)
+
+## Architecture rules
+
+- **No database.** All content comes from static TypeScript data in
+  `src/lib/static-data/**` + slug resolution. Do not add an ORM, DB client, or
+  runtime data store.
+- **App Router only** (`src/app/**`). Server Components by default; add
+  `"use client"` only for interactive UI.
+- **SEO is programmatic**: metadata API, JSON-LD schema, sitemap index +
+  sharded urlsets, `robots.ts`.
+- **Styling**: Tailwind utilities first; `globals.css` only for what Tailwind
+  can't express.
+
+## Before adding anything new
+
+Prefer a built-in Next.js / React feature or existing util. If a new dependency
+seems necessary, ask first and explain why nothing already installed works.
