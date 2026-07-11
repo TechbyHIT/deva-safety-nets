@@ -31,7 +31,7 @@ export const INDUSTRIES = [
   { name: "Commercial & Retail", summary: "Malls, showrooms and hotels needing durable, tamper-resistant systems for high footfall.", challenges: ["Durability", "Brand aesthetics"], solutions: ["Heavy-duty hardware", "Discreet installs"] },
   { name: "Industrial & Warehousing", summary: "Factories and warehouses requiring certified fall arrest and bird exclusion.", challenges: ["Load certification", "Large areas"], solutions: ["IS-code nets", "Rack protection"] },
   { name: "Education & Healthcare", summary: "Schools and hospitals prioritising child safety and hygiene.", challenges: ["Child certification", "Hygiene"], solutions: ["Fall-arrest mesh", "Anti-microbial options"] },
-  { name: "Hospitality & Resorts", summary: "Hotels and resorts balancing guest safety with scenic views.", challenges: ["Aesthetics", "Coastal wear"], solutions: ["SS316 grills", "Coconut tree nets"] },
+  { name: "Hospitality & Resorts", summary: "Hotels and resorts balancing guest safety with scenic views.", challenges: ["Aesthetics", "Coastal wear"], solutions: ["SS316 grills", "Bird exclusion nets"] },
   { name: "Construction & Infrastructure", summary: "Active build sites requiring debris containment and worker fall protection.", challenges: ["Site safety compliance", "Changing layouts"], solutions: ["Debris & scaffold nets", "Rapid deployment"] },
 ];
 

@@ -25,7 +25,6 @@ export const WARM_SERVICE_SLUGS = [
   "cricket-nets",
   "children-safety-nets",
   "bird-spikes",
-  "cloth-hangers",
 ] as const;
 
 export function warmServicePaths() {

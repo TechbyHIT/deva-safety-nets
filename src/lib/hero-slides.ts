@@ -23,9 +23,9 @@ export const HERO_SLIDES: {
     serviceSlug: "balcony-safety-nets",
   },
   {
-    title: "Sports Nets, Cloth Hangers & Bird Control",
+    title: "Sports Nets & Bird Control",
     subtitle:
-      `${site.name} delivers cricket nets, cloth hangers and bird spikes with certified materials and up to 10-year warranty.`,
+      `${site.name} delivers cricket nets and bird spikes with certified materials and up to 10-year warranty.`,
     tag: "Deva Safety Nets Kerala",
     serviceSlug: "cricket-nets",
   },

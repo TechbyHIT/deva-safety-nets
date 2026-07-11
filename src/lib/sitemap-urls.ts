@@ -1,6 +1,5 @@
-import "server-only";
 import { absoluteUrl, sitemapPageSize } from "./site";
-import { catalogServiceFilter, catalogCityFilter } from "./catalog";
+import { catalogServiceFilter, catalogCityFilter, isExcludedService } from "./catalog";
 import { catalogIndex, staticCatalog } from "./static-data/build-catalog";
 
 export type SitemapEntry = {
@@ -20,9 +19,11 @@ export type SitemapEntry = {
 function buildAllSitemapEntries(): SitemapEntry[] {
   const supported = new Set(catalogCityFilter.slug.in);
 
-  const services = staticCatalog.services.map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
+  const services = staticCatalog.services
+    .filter((s) => !isExcludedService(s))
+    .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
   const coreServices = staticCatalog.services
-    .filter((s) => s.order < catalogServiceFilter.order.lt)
+    .filter((s) => s.order < catalogServiceFilter.order.lt && !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
   const cities = staticCatalog.cities
     .filter((c) => supported.has(c.slug))

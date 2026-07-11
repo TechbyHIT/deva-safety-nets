@@ -1,8 +1,8 @@
+import { KEYWORD_SERVICE_ORDER_FLOOR, isExcludedCategorySlug, isExcludedService, isExcludedServiceSlug } from "../catalog";
 import { buildKeywordServiceSeeds } from "../keyword-catalog";
 import { areaGroupsForCity } from "../kerala-locations";
 import { KEYWORD_CATEGORY_ALIASES, SERVICE_MENU } from "../service-menu";
 import { GENERAL_FAQS } from "../seed-content/general-faqs";
-import { KEYWORD_SERVICE_ORDER_FLOOR } from "../catalog";
 import {
   BLOG_POSTS,
   CITIES,
@@ -412,6 +412,7 @@ function buildCatalog(): StaticCatalog {
 
   for (let ci = 0; ci < SERVICE_MENU.length; ci++) {
     const menuCat = SERVICE_MENU[ci];
+    if (isExcludedCategorySlug(menuCat.slug)) continue;
     const meta = CATEGORY_META[menuCat.slug];
     if (!meta) continue;
 
@@ -431,7 +432,7 @@ function buildCatalog(): StaticCatalog {
     let order = 0;
     for (const menuItem of menuCat.services) {
       const slug = menuItem.slug;
-      if (seenServiceSlugs.has(slug)) continue;
+      if (seenServiceSlugs.has(slug) || isExcludedServiceSlug(slug, menuItem.name)) continue;
       seenServiceSlugs.add(slug);
 
       const priceMin = meta.defaults.priceMin;
@@ -498,9 +499,10 @@ function buildCatalog(): StaticCatalog {
   const keywordSeeds = buildKeywordServiceSeeds();
   for (const ks of keywordSeeds) {
     const slug = slugify(ks.name);
-    if (seenServiceSlugs.has(slug)) continue;
+    if (seenServiceSlugs.has(slug) || isExcludedServiceSlug(slug, ks.name)) continue;
     seenServiceSlugs.add(slug);
     const menuSlug = resolveCategorySlug(ks.categorySlug);
+    if (isExcludedCategorySlug(menuSlug)) continue;
     const categoryId = categoryIdBySlug.get(menuSlug);
     const cat = categoryDefaults.get(menuSlug);
     const category = categories.find((c) => c.id === categoryId);
@@ -571,7 +573,7 @@ function buildCatalog(): StaticCatalog {
       order: i,
       intro:
         c.intro ??
-        `Deva Safety Nets delivers premium invisible grills, safety nets, bird control, sports enclosures and cloth hangers across ${c.name}, ${c.state}.`,
+        `Deva Safety Nets delivers premium invisible grills, safety nets, bird control and sports enclosures across ${c.name}, ${c.state}.`,
       landmarks: [],
       latitude: coords.latitude,
       longitude: coords.longitude,
@@ -984,12 +986,14 @@ export function serializeCity(city: StaticCity): SerializableCity {
 }
 
 export function getCoreServices() {
-  return staticCatalog.services.filter((s) => s.order < KEYWORD_SERVICE_ORDER_FLOOR);
+  return staticCatalog.services.filter(
+    (s) => s.order < KEYWORD_SERVICE_ORDER_FLOOR && !isExcludedService(s),
+  );
 }
 
 export function getServiceBySlugStatic(slug: string): SerializableService | null {
   const service = catalogIndex.servicesBySlug.get(slug);
-  if (!service) return null;
+  if (!service || isExcludedService(service)) return null;
   return serializeService(service);
 }
 

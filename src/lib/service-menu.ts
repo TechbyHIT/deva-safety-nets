@@ -89,26 +89,6 @@ export const SERVICE_MENU: ServiceMenuCategory[] = [
     ],
   },
   {
-    name: "Cloth Hangers",
-    slug: "cloth-hangers",
-    description:
-      "Ceiling, balcony and wall-mounted cloth drying systems — rust-free hardware built for Kerala humidity.",
-    services: [
-      item("Ceiling Cloth Hangers"),
-      item("Balcony Cloth Hangers"),
-      item("Wall Mounted Cloth Hangers"),
-      item("Pulley Cloth Hangers"),
-      item("SS Cloth Hangers"),
-      item("Stainless Steel Cloth Hangers"),
-      item("Cloth Drying Hangers"),
-      item("Manual Cloth Hangers"),
-      item("Automatic Cloth Hangers"),
-      item("Cloth Hanger Installation"),
-      item("Cloth Hanger Repair"),
-      item("Cloth Hanger Replacement"),
-    ],
-  },
-  {
     name: "Sports Nets",
     slug: "sports-nets",
     description:

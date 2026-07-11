@@ -1,8 +1,9 @@
+import { isExcludedCategorySlug, isExcludedServiceSlug } from "./catalog";
+
 /**
  * Programmatic SEO keyword catalog for Deva Safety Nets (Kerala).
  * Generates service records for long-tail search phrases (invisible grills,
- * safety nets, cloth hangers, sports nets, bird spikes) combined with
- * intent modifiers and use-case suffixes — each maps to /services/[slug]/[city]/[area].
+ * safety nets, sports nets, bird spikes) combined with intent modifiers.
  */
 
 export type KeywordServiceSeed = {
@@ -129,7 +130,6 @@ const PRIORITY_SEO_PHRASES: { phrase: string; category: string }[] = [
   { phrase: "best invisible grills kerala", category: "invisible-grills" },
   { phrase: "best balcony safety nets near me kerala", category: "safety-nets" },
   { phrase: "top cricket nets kerala", category: "sports-nets" },
-  { phrase: "best cloth hangers near me kerala", category: "cloth-hangers" },
   { phrase: "high quality bird spikes #1 kerala", category: "bird-spikes" },
 ];
 
@@ -170,15 +170,6 @@ const STANDARD_BASES: { phrase: string; category: string }[] = [
   { phrase: "balcony nets", category: "safety-nets" },
   { phrase: "balcony net", category: "safety-nets" },
   { phrase: "balcony safety nets", category: "safety-nets" },
-  { phrase: "cloth hanger", category: "cloth-hangers" },
-  { phrase: "cloth hangers", category: "cloth-hangers" },
-  { phrase: "clothes hanger", category: "cloth-hangers" },
-  { phrase: "clothes hangers", category: "cloth-hangers" },
-  { phrase: "cloth drying hanger", category: "cloth-hangers" },
-  { phrase: "clothes drying hanger", category: "cloth-hangers" },
-  { phrase: "ceiling cloth hanger", category: "cloth-hangers" },
-  { phrase: "ceiling cloth hangers", category: "cloth-hangers" },
-  { phrase: "balcony cloth hanger", category: "cloth-hangers" },
   { phrase: "sports nets", category: "sports-nets" },
   { phrase: "sports net", category: "sports-nets" },
   { phrase: "sports netting", category: "sports-nets" },
@@ -311,6 +302,7 @@ export function buildKeywordServiceSeeds(): KeywordServiceSeed[] {
   const addPhrase = (phrase: string, categorySlug: string) => {
     const normalized = phrase.trim().toLowerCase().replace(/\s+/g, " ");
     if (!normalized || seen.has(normalized)) return;
+    if (isExcludedCategorySlug(categorySlug) || isExcludedServiceSlug(normalized, normalized)) return;
     seen.add(normalized);
 
     const name = toServiceName(normalized);

@@ -1,7 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { catalogServiceFilter, catalogCityFilter, SUPPORTED_CITY_SLUGS, KEYWORD_SERVICE_ORDER_FLOOR } from "./catalog";
+import { catalogServiceFilter, catalogCityFilter, isExcludedService, SUPPORTED_CITY_SLUGS, KEYWORD_SERVICE_ORDER_FLOOR } from "./catalog";
 import { PRIMARY_CITY_SLUG } from "./service-location-url";
 import { scoreIntentKeyword, matchesIntentPattern, type SeoIntentLink } from "./seo-intents";
 import { SERVICE_MENU } from "./service-menu";
@@ -102,7 +102,10 @@ export async function getServiceBySlug(slug: string) {
 }
 
 export const getAllServiceSlugs = unstable_cache(
-  async () => staticCatalog.services.map(({ slug }) => ({ slug })),
+  async () =>
+    staticCatalog.services
+      .filter((s) => !isExcludedService(s))
+      .map(({ slug }) => ({ slug })),
   ["all-service-slugs"],
   { revalidate: DAY, tags: ["catalog"] },
 );

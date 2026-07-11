@@ -1,5 +1,5 @@
 import type { StaticCatalog, StaticCategory, StaticProject, StaticReview, StaticService } from "./build-catalog";
-import { KEYWORD_SERVICE_ORDER_FLOOR } from "../catalog";
+import { KEYWORD_SERVICE_ORDER_FLOOR, isExcludedService } from "../catalog";
 import { scoreIntentKeyword } from "../seo-intents";
 
 const KEYWORD_FIELD_DEFAULTS: Record<
@@ -140,7 +140,7 @@ function parseDate(value: Date | string): Date {
 /** Flatten catalog for JSON — no circular category ↔ service refs. */
 export function serializeCatalog(catalog: StaticCatalog): CatalogSnapshot {
   const priorityIntentLinks = catalog.services
-    .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
+    .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR && !isExcludedService(s))
     .map((s) => ({ s, score: scoreIntentKeyword(s.slug, s.name) }))
     .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
     .slice(0, 56)

@@ -18,6 +18,7 @@ const OUTPUTS = [
   { path: path.join(APP_DIR, "apple-icon.png"), size: 180 },
   { path: path.join(PUBLIC_DIR, "icon-192.png"), size: 192 },
   { path: path.join(PUBLIC_DIR, "icon-512.png"), size: 512 },
+  { path: path.join(PUBLIC_DIR, "favicon.ico"), size: 32 },
 ];
 
 async function main() {
@@ -44,7 +45,7 @@ async function main() {
     await emblem
       .clone()
       .resize(size, size, { fit: "cover", kernel: sharp.kernel.lanczos3 })
-      .png({ compressionLevel: 9 })
+      .toFormat(out.endsWith(".ico") ? "png" : "png", { compressionLevel: 9 })
       .toFile(out);
     console.log(`Wrote ${path.relative(ROOT, out)} (${size}x${size})`);
   }
