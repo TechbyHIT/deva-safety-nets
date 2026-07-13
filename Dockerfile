@@ -29,6 +29,7 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN test -f public/images/invisible-grill-balcony/i3.jpg
+RUN node scripts/validate-images.mjs
 RUN npm run build \
   && find .next -name '*.map' -delete \
   && rm -rf .next/cache node_modules \

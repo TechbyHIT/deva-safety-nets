@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { LightboxGallery } from "@/components/ImageGallery";
+import { GalleryGrid } from "@/components/GalleryGrid";
 import { PageHero, Section, CTABand, SectionHeading } from "@/components/ui";
 import { getProjects, getCategoriesWithServices } from "@/lib/queries";
-import { getAllGalleryImages, getHeroImage, getServiceImage, buildAltText, buildCaption } from "@/lib/images";
-import { getServerImageCatalog } from "@/lib/image-catalog.server";
+import { getHeroImage } from "@/lib/images";
+import { buildGalleryPageImages } from "@/lib/gallery-page-images";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -18,37 +18,8 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default async function GalleryPage() {
-  const [projects, categories, catalog] = await Promise.all([
-    getProjects(),
-    getCategoriesWithServices(),
-    Promise.resolve(getServerImageCatalog()),
-  ]);
-
-  const projectImages = projects.map((p, i) => {
-    const slug = p.service?.slug ?? "invisible-grills";
-    const meta = getServiceImage(slug, p.service?.name ?? p.title, p.city?.name);
-    const altSrc = catalog.gallery[i % Math.max(catalog.gallery.length, 1)] ?? meta.src;
-    return {
-      src: i % 2 === 0 ? meta.src : altSrc,
-      alt: meta.alt,
-      title: meta.title,
-      caption: `${p.service?.name ?? p.title}${p.city ? ` · ${p.city.name}` : ""} · ${site.name}`,
-    };
-  });
-
-  const seen = new Set(projectImages.map((p) => p.src));
-  const extraFromCatalog = catalog.all
-    .filter((src) => !seen.has(src))
-    .map((src) => ({
-      src,
-      alt: buildAltText("Installation project", src),
-      title: `Gallery | ${site.name}`,
-      caption: buildCaption("Project gallery", src),
-    }));
-
-  const GALLERY_LIMIT = 60;
-  const allGallery = [...projectImages, ...getAllGalleryImages(), ...extraFromCatalog].slice(0, GALLERY_LIMIT);
-
+  const [projects, categories] = await Promise.all([getProjects(), getCategoriesWithServices()]);
+  const allGallery = buildGalleryPageImages(projects);
   const hero = getHeroImage("gallery", `${site.name} installation gallery`);
 
   return (
@@ -68,7 +39,7 @@ export default async function GalleryPage() {
           title="Balconies, windows, terraces & commercial projects"
           subtitle={`${allGallery.length} real installation photos from Deva Safety Nets projects across Kerala — invisible grills, safety nets, sports nets, cloth hangers and bird control.`}
         />
-        <LightboxGallery images={allGallery} columns={3} variant="masonry" />
+        <GalleryGrid images={allGallery} columns={3} variant="masonry" />
 
         <div className="mt-10 flex flex-wrap gap-2">
           {categories.flatMap((c) => c.services.slice(0, 2)).map((s) => (

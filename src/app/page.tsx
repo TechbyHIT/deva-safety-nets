@@ -90,9 +90,8 @@ export default function HomePage() {
   const reviews = STATIC_REVIEWS;
   const counts = STATIC_CATALOG_COUNTS;
 
-  const homePhotos = pickUniquePageImages("homepage-photos", 8, GALLERY_IMAGES, `${site.name} Kerala installation`);
-  const galleryImages = homePhotos.slice(0, 6);
-  const bentoImages = homePhotos.slice(6, 8);
+  const bentoImages = pickUniquePageImages("homepage-bento", 6, GALLERY_IMAGES, `${site.name} Kerala installation`);
+  const galleryImages = pickUniquePageImages("homepage-gallery", 6, GALLERY_IMAGES, `${site.name} project gallery`);
   const beforeAfter = {
     before: { src: getBestFolderImage("safety-nets-balcony"), alt: "Before safety net installation Kerala" },
     after: { src: getBestFolderImage("safety-nets-balcony", 1), alt: "After safety net installation Kerala" },

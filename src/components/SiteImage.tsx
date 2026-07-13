@@ -7,7 +7,7 @@ type SiteImageProps = OptimizedImageOptions & {
   fill?: boolean;
 };
 
-/** Server-friendly image — plain img, no client JS, optional responsive WebP srcSet. */
+/** Server-friendly image — plain img, no client JS, original /public paths only. */
 export function SiteImage({
   src,
   alt,

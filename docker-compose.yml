@@ -41,7 +41,7 @@ services:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       PORT: 3000
-      NODE_HEAP_MB: "256"
+      NODE_HEAP_MB: "384"
       NEXT_TELEMETRY_DISABLED: "1"
       NEXT_PUBLIC_SITE_URL: https://devasafetynets.com
       NEXT_PUBLIC_SITE_NAME: Deva Safety Nets
@@ -53,9 +53,9 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: 512M
+          memory: 768M
         reservations:
-          memory: 128M
+          memory: 256M
     healthcheck:
       test: ["CMD", "/ops/healthcheck.sh"]
       interval: 30s
