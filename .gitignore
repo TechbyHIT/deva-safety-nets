@@ -49,4 +49,3 @@ logs
 *.w640.webp
 *.w1280.webp
 *.enhancing
-src/lib/responsive-image-manifest.ts

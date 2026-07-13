@@ -1,5 +1,4 @@
 import { resolveImagePreset, type ImagePreset } from "@/lib/image-settings";
-import { resolveResponsiveImage } from "@/lib/responsive-images";
 
 export type OptimizedImageOptions = {
   src: string;
@@ -11,6 +10,7 @@ export type OptimizedImageOptions = {
   objectFit?: "cover" | "contain";
 };
 
+/** Always serve the original /public file — no srcSet (avoids missing WebP variants in Docker). */
 export function optimizedImageProps({
   src,
   alt,
@@ -20,11 +20,9 @@ export function optimizedImageProps({
   sizes,
 }: OptimizedImageOptions) {
   const presetOpts = resolveImagePreset(preset);
-  const responsive = resolveResponsiveImage(src);
 
   return {
     src,
-    srcSet: responsive?.srcSet,
     alt,
     title: title ?? alt,
     decoding: "async" as const,

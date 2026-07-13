@@ -28,6 +28,7 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
     NODE_OPTIONS="--max-old-space-size=4096"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN test -f public/images/invisible-grill-balcony/i3.jpg
 RUN npm run build \
   && find .next -name '*.map' -delete \
   && rm -rf .next/cache node_modules \
@@ -51,7 +52,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --chown=nextjs:nodejs deploy/healthcheck.sh deploy/startup.sh /ops/
-RUN chmod +x /ops/healthcheck.sh /ops/startup.sh
+RUN chmod +x /ops/healthcheck.sh /ops/startup.sh \
+  && test -f /app/public/images/invisible-grill-balcony/i3.jpg
 
 USER nextjs
 EXPOSE 3000
