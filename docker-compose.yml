@@ -34,7 +34,6 @@ services:
         NEXT_PUBLIC_WHATSAPP: "917558844405"
         NEXT_PUBLIC_EMAIL: devasafetynetskochi@gmail.com
         NEXT_PUBLIC_GOOGLE_ADS_ID: AW-18317175490
-      NEXT_PUBLIC_GOOGLE_ADS_ID: AW-18317175490
     container_name: deva-safety-nets
     ports:
       - "127.0.0.1:3000:3000"
