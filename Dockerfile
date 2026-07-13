@@ -8,6 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm ci && npm cache clean --force
 
 FROM base AS builder
+RUN apk add --no-cache python3 make g++ vips-dev fftw-dev
 ARG NEXT_PUBLIC_SITE_URL=https://devasafetynets.com
 ARG NEXT_PUBLIC_SITE_NAME=Deva Safety Nets
 ARG NEXT_PUBLIC_BRAND_PHONE=+917558844405

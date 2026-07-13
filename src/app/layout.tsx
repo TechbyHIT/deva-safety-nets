@@ -9,7 +9,7 @@ import { GoogleAdsTag } from "@/components/GoogleAdsTag";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { buildGlobalSeoKeywords } from "@/lib/seo-intents";
-import { LOGO_DEFAULT_SRC, LOGO_SIZES, LOGO_SRCSET } from "@/lib/logo";
+import { LOGO_DEFAULT_SRC } from "@/lib/logo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -77,13 +77,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link
-          rel="preload"
-          as="image"
-          href={LOGO_DEFAULT_SRC}
-          imageSrcSet={LOGO_SRCSET}
-          imageSizes={LOGO_SIZES}
-        />
+        <link rel="preload" as="image" href={LOGO_DEFAULT_SRC} />
       </head>
       <body className="min-h-screen font-body antialiased">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
