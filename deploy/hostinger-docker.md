@@ -57,11 +57,31 @@ chmod +x deploy/monitor.sh deploy/cleanup.sh
 
 See `deploy/OPTIMIZATION.md` for full reports.
 
-## 5. Use HTTP until SSL is configured
+## 5. HTTPS (free SSL)
 
-Before TLS is active on the domain, open **`http://devasafetynets.com`** (not `https://`).
+On the VPS:
 
-After Hostinger SSL / Cloudflare is enabled, use `https://devasafetynets.com`.
+```bash
+cd ~/deva-safety-nets
+git pull origin main
+chmod +x deploy/ssl-certbot.sh
+sudo bash deploy/ssl-certbot.sh
+```
+
+This installs **Let's Encrypt** and enables **https://devasafetynets.com**.
+
+Manual alternative:
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d devasafetynets.com -d www.devasafetynets.com
+```
+
+## 6. Use HTTP until SSL is configured
+
+Before running `ssl-certbot.sh`, use **`http://devasafetynets.com`**.
+
+After SSL is active, use **`https://devasafetynets.com`**.
 
 ## 6. Troubleshooting
 
