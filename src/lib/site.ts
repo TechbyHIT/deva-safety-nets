@@ -26,8 +26,6 @@ export const site = {
   ],
 } as const;
 
-export const sitemapPageSize = Number(process.env.SITEMAP_PAGE_SIZE ?? 45000);
-
 export function absoluteUrl(path = "/"): string {
   return `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
 }

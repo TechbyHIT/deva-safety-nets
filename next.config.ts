@@ -1,16 +1,14 @@
 import type { NextConfig } from "next";
 
-// Sitemap is served as an index (/sitemap.xml) + segmented shards
-// (/sitemaps/[id].xml) via route handlers, so it scales past the 50k-URL limit.
 const isProd = process.env.NODE_ENV === "production";
 
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://maps.googleapis.com`,
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} https://maps.googleapis.com https://www.googletagmanager.com https://www.googleadservices.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https:",
+  "connect-src 'self' https: https://www.google-analytics.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com",
   "frame-src 'self' https://www.google.com https://maps.google.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -18,7 +16,6 @@ const cspDirectives = [
   "frame-ancestors 'none'",
 ].join("; ");
 
-/** Applied to HTML routes only — never attach CSP/HSTS to static assets. */
 const pageSecurityHeaders = [
   { key: "Content-Security-Policy", value: cspDirectives },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -33,12 +30,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   output: "standalone",
+  productionBrowserSourceMaps: false,
   images: {
+    unoptimized: isProd,
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 828, 1080, 1920],
     imageSizes: [256, 384, 640],
     qualities: [75, 80, 85, 90],
-    minimumCacheTTL: 60 * 60 * 24 * 30,
+    minimumCacheTTL: isProd ? 0 : 60 * 60 * 24 * 30,
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -49,13 +48,13 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    staleTimes: {
-      dynamic: 1800,
-      static: 86400,
-    },
-  },
-  outputFileTracingIncludes: {
-    "/*": ["./node_modules/sharp/**/*", "./node_modules/@img/**/*"],
+    ...(isProd
+      ? {
+          staleTimes: { dynamic: 0, static: 1800 },
+        }
+      : {
+          staleTimes: { dynamic: 1800, static: 86400 },
+        }),
   },
   compiler: isProd
     ? {
@@ -70,7 +69,7 @@ const nextConfig: NextConfig = {
             headers: [
               {
                 key: "Cache-Control",
-                value: "public, s-maxage=86400, stale-while-revalidate=604800, stale-if-error=86400",
+                value: "public, s-maxage=3600, stale-while-revalidate=86400",
               },
             ],
           },
@@ -91,6 +90,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/images/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        source: "/logo-:width.webp",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],

@@ -16,15 +16,9 @@ import {
 import { buildMetadata, buildServiceLocationMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema, localBusinessSchema } from "@/lib/schema";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return [];
-}
-
 type Props = { params: Promise<{ service: string; city: string; area: string }> };
 
+export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: serviceSlug, city: citySlug, area: areaSlug } = await params;
   const [service, loc] = await Promise.all([

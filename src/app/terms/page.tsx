@@ -4,7 +4,6 @@ import { PageHero, Section } from "@/components/ui";
 import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
-
 export const metadata: Metadata = buildMetadata({
   title: "Terms of Service",
   description: "The terms and conditions governing the use of our website and services.",

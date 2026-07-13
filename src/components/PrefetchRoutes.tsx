@@ -16,10 +16,10 @@ export function PrefetchRoutes() {
     };
 
     if ("requestIdleCallback" in window) {
-      const id = window.requestIdleCallback(run, { timeout: 800 });
+      const id = window.requestIdleCallback(run, { timeout: 5000 });
       return () => window.cancelIdleCallback(id);
     }
-    const t = globalThis.setTimeout(run, 400);
+    const t = globalThis.setTimeout(run, 3500);
     return () => globalThis.clearTimeout(t);
   }, [router]);
 

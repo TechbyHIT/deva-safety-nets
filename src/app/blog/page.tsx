@@ -5,8 +5,7 @@ import { PageHero, Section, CTABand } from "@/components/ui";
 import { getBlogPosts } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 3600;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Blog — Invisible Grills & Safety Nets Guides | Deva Safety Nets Kerala",
   description:

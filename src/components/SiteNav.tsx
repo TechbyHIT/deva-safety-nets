@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { ChevronDown, Mail, MessageCircle, Phone } from "lucide-react";
 import { site, telHref, whatsappHref } from "@/lib/site";
-import { SiteImage } from "@/components/SiteImage";
-import { PAGE_IMAGES } from "@/lib/images";
+import { BrandLogo } from "@/components/BrandLogo";
 import { MobileNav } from "@/components/nav/MobileNav";
 import { NavLink } from "@/components/nav/NavLink";
 import { AreasMegaMenu } from "@/components/nav/AreasMegaMenu";
@@ -58,7 +57,7 @@ export function SiteNav({
   ).slice(0, 6);
 
   return (
-    <header className="sticky top-0 z-[1000] bg-[var(--header-bg)] shadow-md">
+    <header className="sticky top-0 z-[1000] bg-[var(--header-bg)] shadow-sm">
       <div className="hidden bg-[var(--brand-navy)] xl:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5 text-sm text-white/90 md:px-8">
           <p className="truncate font-medium text-white/95">
@@ -83,20 +82,15 @@ export function SiteNav({
         </div>
       </div>
 
-      <div className="mx-auto box-border flex h-[68px] w-full max-w-7xl items-center justify-between gap-3 border-t-[3px] border-t-[var(--gold)] px-4 md:px-8 xl:h-24">
-        <Link href="/" className="site-logo flex shrink-0 items-center" prefetch={true}>
-          <SiteImage
-            src={PAGE_IMAGES.logo}
+      <div className="site-header__bar mx-auto box-border w-full max-w-7xl border-t-2 border-t-[var(--gold)] px-2 sm:px-4 md:px-5 lg:px-8">
+        <Link href="/" className="site-logo" prefetch={true}>
+          <BrandLogo
             alt={`${site.name} — Invisible Grills & Safety Nets Kerala`}
-            width={512}
-            height={128}
-            preset="logo"
-            objectFit="contain"
-            className="h-11 w-auto max-w-[11rem] object-contain xl:h-[4.5rem] xl:max-w-[18rem]"
+            priority
           />
         </Link>
 
-        <nav className="hidden min-w-0 items-center justify-center gap-0.5 md:flex" aria-label="Primary">
+        <nav className="site-header__nav hidden md:flex" aria-label="Primary">
           <NavLink href="/" exact>
             Home
           </NavLink>
@@ -109,7 +103,7 @@ export function SiteNav({
           <NavLink href="/contact">Contact</NavLink>
         </nav>
 
-        <div className="hidden shrink-0 items-center gap-2 md:flex">
+        <div className="site-header__actions hidden shrink-0 items-center gap-2 md:flex">
           <a
             href={whatsappHref()}
             target="_blank"
@@ -125,23 +119,22 @@ export function SiteNav({
           </a>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 md:hidden">
+        <div className="site-header__mobile flex shrink-0 items-center gap-1 sm:gap-1.5 md:hidden">
           <a
             href={whatsappHref()}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-white shadow-md sm:h-9 sm:w-9"
             aria-label="WhatsApp"
           >
-            <MessageCircle size={21} strokeWidth={2.25} />
+            <MessageCircle size={18} strokeWidth={2.25} />
           </a>
           <a
             href={telHref()}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-gradient-to-b from-[#e5c766] to-[#d4af37] px-3 text-sm font-bold text-[#0b1d33] shadow-lg"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#e5c766] to-[#d4af37] text-[#0b1d33] shadow-md sm:h-9 sm:w-9"
             aria-label={`Call ${phone}`}
           >
-            <Phone size={16} strokeWidth={2.25} />
-            Call
+            <Phone size={15} strokeWidth={2.25} />
           </a>
           <MobileNav cities={cities} />
         </div>

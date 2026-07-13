@@ -5,7 +5,6 @@ import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
-
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
   description: "How we collect, use and protect your personal information.",

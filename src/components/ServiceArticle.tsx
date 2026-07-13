@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Award,
   BadgeCheck,
@@ -14,11 +15,9 @@ import {
   Sparkles,
   Wrench,
 } from "lucide-react";
-import { QuoteForm } from "./QuoteForm";
-import { FaqAccordion } from "./FaqAccordion";
 import { CheckList, Stars } from "./ui";
 import { SiteImage } from "./SiteImage";
-import { LightboxGallery, BeforeAfterSection } from "./ImageGallery";
+import { BeforeAfterSection } from "./BeforeAfterSection";
 import { generateContent, varyList, type LocationContext } from "@/lib/content";
 import { getServicePageImages } from "@/lib/images";
 import { KeywordServiceLinks } from "./KeywordServiceLinks";
@@ -26,6 +25,12 @@ import { IntentServiceLinks } from "./IntentServiceLinks";
 import { site } from "@/lib/site";
 import { ServiceDistrictAreaDirectory } from "./ServiceDistrictAreaDirectory";
 import type { DistrictAreaGroup } from "@/lib/queries";
+
+const QuoteForm = dynamic(() => import("./QuoteForm").then((m) => m.QuoteForm));
+const FaqAccordion = dynamic(() => import("./FaqAccordion").then((m) => m.FaqAccordion));
+const LightboxGallery = dynamic(() =>
+  import("./ImageGallery").then((m) => m.LightboxGallery),
+);
 
 type Material = { slug: string; name: string; grade: string | null; summary: string };
 type Faq = { question: string; answer: string };

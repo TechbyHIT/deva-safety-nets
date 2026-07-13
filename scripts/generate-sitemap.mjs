@@ -1,28 +1,21 @@
 /**
- * Write static sitemap XML files to public/ for Google Search Console submission.
- * Runs during `npm run build` — no runtime catalog work on /sitemap.xml requests.
+ * Write a single static sitemap.xml to public/ for Google Search Console.
+ * Runs during `npm run build` — no runtime work on /sitemap.xml requests.
  */
-import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { writeFileSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 process.env.NEXT_PUBLIC_SITE_URL ??= "https://devasafetynets.com";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const { getSitemapShardCount, getSitemapShard, getAllSitemapEntries, renderSitemapIndexXml, renderUrlsetXml } =
-  await import("../src/lib/sitemap-urls.ts");
+const root = join(fileURLToPath(new URL(".", import.meta.url)), "..");
+const { getAllSitemapEntries, renderUrlsetXml } = await import("../src/lib/sitemap-urls.ts");
 
 const publicDir = join(root, "public");
-const shardsDir = join(publicDir, "sitemaps");
-mkdirSync(shardsDir, { recursive: true });
-
 const entries = getAllSitemapEntries();
-const shardCount = getSitemapShardCount();
 
-for (let id = 0; id < shardCount; id++) {
-  writeFileSync(join(shardsDir, `${id}.xml`), renderUrlsetXml(getSitemapShard(id)));
-}
+writeFileSync(join(publicDir, "sitemap.xml"), renderUrlsetXml(entries));
 
-writeFileSync(join(publicDir, "sitemap.xml"), renderSitemapIndexXml());
+rmSync(join(publicDir, "sitemaps"), { recursive: true, force: true });
 
-console.log(`Wrote public/sitemap.xml (${shardCount} shards, ${entries.length} URLs)`);
+console.log(`Wrote public/sitemap.xml (${entries.length} URLs)`);

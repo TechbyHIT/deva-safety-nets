@@ -16,10 +16,7 @@ import { site } from "@/lib/site";
 
 
 
-export const revalidate = 86400;
-
-
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
 
   title: "Service Areas — Invisible Grills & Safety Nets Kerala",

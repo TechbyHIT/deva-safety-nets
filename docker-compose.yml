@@ -1,7 +1,29 @@
 version: "3.9"
 
+x-app-common: &app-common
+  restart: unless-stopped
+  init: true
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  ulimits:
+    nofile:
+      soft: 65536
+      hard: 65536
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+    - /app/.next/cache:size=64m,mode=755
+
 services:
   app:
+    <<: *app-common
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,17 +33,94 @@ services:
         NEXT_PUBLIC_BRAND_PHONE: "+917558844405"
         NEXT_PUBLIC_WHATSAPP: "917558844405"
         NEXT_PUBLIC_EMAIL: devasafetynetskochi@gmail.com
+        NEXT_PUBLIC_GOOGLE_ADS_ID: AW-18317175490
+      NEXT_PUBLIC_GOOGLE_ADS_ID: AW-18317175490
     container_name: deva-safety-nets
-    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       PORT: 3000
+      NODE_HEAP_MB: "256"
       NEXT_TELEMETRY_DISABLED: "1"
       NEXT_PUBLIC_SITE_URL: https://devasafetynets.com
       NEXT_PUBLIC_SITE_NAME: Deva Safety Nets
       NEXT_PUBLIC_BRAND_PHONE: "+917558844405"
       NEXT_PUBLIC_WHATSAPP: "917558844405"
       NEXT_PUBLIC_EMAIL: devasafetynetskochi@gmail.com
+      NEXT_PUBLIC_GOOGLE_ADS_ID: AW-18317175490
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "/ops/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  ops-monitor:
+    image: docker:27-cli
+    container_name: deva-ops-monitor
+    restart: unless-stopped
+    init: true
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - ./deploy:/ops:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ops-logs:/var/log/deva-ops
+    environment:
+      TARGET_CONTAINER: deva-safety-nets
+      MONITOR_INTERVAL: "60"
+      REPORT_DIR: /var/log/deva-ops
+    entrypoint: ["/bin/sh", "/ops/monitor-loop.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+
+  ops-cleanup:
+    image: docker:27-cli
+    container_name: deva-ops-cleanup
+    restart: unless-stopped
+    init: true
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - ./deploy:/ops:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ops-logs:/var/log/deva-ops
+    environment:
+      TARGET_CONTAINER: deva-safety-nets
+      CLEANUP_INTERVAL: "43200"
+      REPORT_DIR: /var/log/deva-ops
+      PRUNE_IMAGES: "true"
+      PRUNE_BUILD_CACHE: "true"
+    entrypoint: ["/bin/sh", "/ops/cleanup-loop.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+
+volumes:
+  ops-logs:

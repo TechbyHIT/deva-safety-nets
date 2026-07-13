@@ -7,26 +7,24 @@ import { CTABand } from "@/components/ui";
 import {
   getServiceBySlug,
   getRelatedServices,
-  getCoreServiceSlugs,
   getKeywordLinksForService,
   getIntentLinksForService,
   getAllCities,
   getPropertyTypes,
   getContentOverride,
   getDistrictAreasGrouped,
+  getAllServiceSlugs,
 } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema, reviewAggregateSchema } from "@/lib/schema";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
+type Props = { params: Promise<{ service: string }> };
+
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
-  const slugs = await getCoreServiceSlugs();
-  return slugs.map((s) => ({ service: s.slug }));
+  return getAllServiceSlugs();
 }
-
-type Props = { params: Promise<{ service: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: slug } = await params;

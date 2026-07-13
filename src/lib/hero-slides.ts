@@ -61,5 +61,5 @@ export function heroSlideImage(slide: (typeof HERO_SLIDES)[0]): SiteImageMeta {
   return { src, alt: buildAltText(context, src), title: `${context} | ${site.name}` };
 }
 
-/** Thumbnails for the auto-scrolling hero strip — kept small for fast paint. */
-export const HERO_SCROLL_STRIP = GALLERY_IMAGES.slice(0, 12);
+/** Thumbnails for the auto-scrolling hero strip — few images for fast paint. */
+export const HERO_SCROLL_STRIP = GALLERY_IMAGES.slice(0, 6);

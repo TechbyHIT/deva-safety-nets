@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin, Phone, ShieldCheck } from "lucide-react";
-import { SiteImage } from "./SiteImage";
 import { TrustBadges } from "./TrustBadges";
 import { HERO_SCROLL_STRIP, HERO_SLIDES, heroSlideImage } from "@/lib/hero-slides";
 import type { SiteImageMeta } from "@/lib/images";
+import { optimizedImageProps } from "@/lib/optimized-image-props";
 import { site, telHref } from "@/lib/site";
 
 export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [showStrip, setShowStrip] = useState(false);
+
+  useEffect(() => {
+    const run = () => setShowStrip(true);
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(run, { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const t = globalThis.setTimeout(run, 2000);
+    return () => globalThis.clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (paused) return;
@@ -33,13 +44,10 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
     >
       {showOverlay && (
         <div className="home-hero__bg absolute inset-0 z-[1]">
-          <SiteImage
-            key={img.src}
-            src={img.src}
-            alt={img.alt}
-            fill
-            preset="hero"
+          <img
+            {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "hero" })}
             className="animate-fade-in object-cover object-center"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
           <div className="absolute inset-0 hero-overlay" />
         </div>
@@ -113,12 +121,10 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
         <div className="relative hidden lg:block">
           <div className="card premium-shadow overflow-hidden rounded-2xl border-white/10">
             <div className="relative aspect-[4/3] w-full">
-              <SiteImage
-                src={img.src}
-                alt={img.alt}
-                fill
-                preset="heroSide"
+              <img
+                {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "heroSide" })}
                 className="object-cover object-center"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
           </div>
@@ -133,7 +139,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
         </div>
       </div>
 
-      {HERO_SCROLL_STRIP.length > 0 && (
+      {showStrip && HERO_SCROLL_STRIP.length > 0 && (
         <div className="relative z-10 hero-strip py-4">
           <div className="overflow-hidden">
             <div className="animate-hero-scroll flex w-max gap-3 px-4">
@@ -142,7 +148,12 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
                   key={`${src}-${i}`}
                   className="relative h-24 w-36 shrink-0 overflow-hidden rounded-lg bg-[var(--bg-subtle)] md:h-28 md:w-48"
                 >
-                  <SiteImage src={src} alt="" fill preset="strip" className="object-cover object-center" aria-hidden />
+                  <img
+                    {...optimizedImageProps({ src, alt: "", preset: "strip" })}
+                    aria-hidden
+                    className="object-cover object-center"
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  />
                 </div>
               ))}
             </div>

@@ -1,0 +1,109 @@
+# Multi-site template — copy per site and adjust PORT / container name / domain.
+# Example: site 2 on port 3001 → container deva-site-2, upstream 127.0.0.1:3001
+#
+#   cp docker-compose.site.yml docker-compose.site2.yml
+#   # edit CONTAINER_NAME, APP_PORT, NEXT_PUBLIC_SITE_URL
+#   docker compose -f docker-compose.site2.yml up -d --build
+
+version: "3.9"
+
+x-app-common: &app-common
+  restart: unless-stopped
+  init: true
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  ulimits:
+    nofile:
+      soft: 65536
+      hard: 65536
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+    - /app/.next/cache:size=64m,mode=755
+
+services:
+  app:
+    <<: *app-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME:-Site}
+        NEXT_PUBLIC_BRAND_PHONE: ${NEXT_PUBLIC_BRAND_PHONE:-}
+        NEXT_PUBLIC_WHATSAPP: ${NEXT_PUBLIC_WHATSAPP:-}
+        NEXT_PUBLIC_EMAIL: ${NEXT_PUBLIC_EMAIL:-}
+    container_name: ${CONTAINER_NAME:?set CONTAINER_NAME}
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NODE_HEAP_MB: "256"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      NEXT_PUBLIC_SITE_NAME: ${NEXT_PUBLIC_SITE_NAME:-Site}
+      NEXT_PUBLIC_BRAND_PHONE: ${NEXT_PUBLIC_BRAND_PHONE:-}
+      NEXT_PUBLIC_WHATSAPP: ${NEXT_PUBLIC_WHATSAPP:-}
+      NEXT_PUBLIC_EMAIL: ${NEXT_PUBLIC_EMAIL:-}
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "/ops/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  ops-monitor:
+    image: docker:27-cli
+    container_name: ${CONTAINER_NAME}-ops-monitor
+    restart: unless-stopped
+    init: true
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - ./deploy:/ops:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TARGET_CONTAINER: ${CONTAINER_NAME}
+      MONITOR_INTERVAL: "60"
+    entrypoint: ["/bin/sh", "/ops/monitor-loop.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  ops-cleanup:
+    image: docker:27-cli
+    container_name: ${CONTAINER_NAME}-ops-cleanup
+    restart: unless-stopped
+    init: true
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - ./deploy:/ops:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TARGET_CONTAINER: ${CONTAINER_NAME}
+      CLEANUP_INTERVAL: "43200"
+    entrypoint: ["/bin/sh", "/ops/cleanup-loop.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 64M

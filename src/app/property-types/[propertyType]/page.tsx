@@ -18,9 +18,7 @@ import {
 import { buildMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/schema";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const propertyTypes = await getPropertyTypes();
   return propertyTypes.map((p) => ({ propertyType: p.slug }));
@@ -28,6 +26,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ propertyType: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { propertyType: slug } = await params;
   const pt = await getPropertyTypeBySlug(slug);

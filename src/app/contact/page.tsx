@@ -9,8 +9,6 @@ import { buildMetadata } from "@/lib/seo";
 import { site, telHref, whatsappHref } from "@/lib/site";
 
 export const dynamic = "force-static";
-export const revalidate = 86400;
-
 export const metadata: Metadata = buildMetadata({
   title: "Contact Us — Free Site Inspection in Kerala",
   description:

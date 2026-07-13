@@ -1,7 +1,6 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { catalogServiceFilter, catalogCityFilter, isExcludedService, SUPPORTED_CITY_SLUGS, KEYWORD_SERVICE_ORDER_FLOOR } from "./catalog";
+import { catalogCityFilter, isExcludedService, SUPPORTED_CITY_SLUGS, KEYWORD_SERVICE_ORDER_FLOOR } from "./catalog";
 import { PRIMARY_CITY_SLUG } from "./service-location-url";
 import { scoreIntentKeyword, matchesIntentPattern, type SeoIntentLink } from "./seo-intents";
 import { SERVICE_MENU } from "./service-menu";
@@ -22,7 +21,7 @@ import {
   type ContentOverride,
 } from "./static-data/build-catalog";
 
-const DAY = 60 * 60 * 24;
+/** In-memory reads only — never writes to Next.js Data Cache on disk. */
 
 function menuCategoryServices(catSlug: string) {
   const menu = SERVICE_MENU.find((c) => c.slug === catSlug);
@@ -42,23 +41,20 @@ function menuCategoryServices(catSlug: string) {
   });
 }
 
-export const getCategoriesWithServices = unstable_cache(
-  async () =>
-    SERVICE_MENU.map((cat, order) => ({
-      id: `cat-${cat.slug}`,
-      slug: cat.slug,
-      name: cat.name,
-      description: cat.description,
-      icon: staticCatalog.categories.find((c) => c.slug === cat.slug)?.icon ?? "Grid2x2",
-      order,
-      services: menuCategoryServices(cat.slug),
-    })),
-  ["nav-categories-v3"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getCategoriesWithServices() {
+  return SERVICE_MENU.map((cat, order) => ({
+    id: `cat-${cat.slug}`,
+    slug: cat.slug,
+    name: cat.name,
+    description: cat.description,
+    icon: staticCatalog.categories.find((c) => c.slug === cat.slug)?.icon ?? "Grid2x2",
+    order,
+    services: menuCategoryServices(cat.slug),
+  }));
+}
 
-export const getSiteNavData = unstable_cache(
-  async () => ({
+export async function getSiteNavData() {
+  return {
     categories: SERVICE_MENU.map((cat) => ({
       slug: cat.slug,
       name: cat.name,
@@ -73,48 +69,34 @@ export const getSiteNavData = unstable_cache(
       .filter((c) => catalogCityFilter.slug.in.includes(c.slug))
       .sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order)
       .map(({ slug, name, featured }) => ({ slug, name, featured })),
-  }),
-  ["site-nav-data-v1"],
-  { revalidate: DAY, tags: ["catalog", "locations"] },
-);
-
-export const getFooterDirectoryData = unstable_cache(
-  async () => {
-    const city = getCityBySlugStatic(PRIMARY_CITY_SLUG);
-    return {
-      categories: SERVICE_MENU.map((cat) => ({
-        slug: cat.slug,
-        name: cat.name,
-        services: cat.services.map((s) => ({ slug: s.slug, name: s.name })),
-      })),
-      cityName: city?.name ?? "Kochi",
-    };
-  },
-  ["footer-directory-v1"],
-  { revalidate: DAY, tags: ["catalog", "locations"] },
-);
-
-export async function getServiceBySlug(slug: string) {
-  return unstable_cache(async () => getServiceBySlugStatic(slug), ["service-page", slug], {
-    revalidate: DAY,
-    tags: ["catalog", `service:${slug}`],
-  })();
+  };
 }
 
-export const getAllServiceSlugs = unstable_cache(
-  async () =>
-    staticCatalog.services
-      .filter((s) => !isExcludedService(s))
-      .map(({ slug }) => ({ slug })),
-  ["all-service-slugs"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getFooterDirectoryData() {
+  const city = getCityBySlugStatic(PRIMARY_CITY_SLUG);
+  return {
+    categories: SERVICE_MENU.map((cat) => ({
+      slug: cat.slug,
+      name: cat.name,
+      services: cat.services.map((s) => ({ slug: s.slug, name: s.name })),
+    })),
+    cityName: city?.name ?? "Kochi",
+  };
+}
 
-export const getCoreServiceSlugs = unstable_cache(
-  async () => getCoreServices().map(({ slug }) => ({ slug })),
-  ["core-service-slugs"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getServiceBySlug(slug: string) {
+  return getServiceBySlugStatic(slug);
+}
+
+export async function getAllServiceSlugs() {
+  return staticCatalog.services
+    .filter((s) => !isExcludedService(s))
+    .map(({ slug }) => ({ slug }));
+}
+
+export async function getCoreServiceSlugs() {
+  return getCoreServices().map(({ slug }) => ({ slug }));
+}
 
 export type GuideType = "INSTALLATION" | "MAINTENANCE" | "BUYING";
 
@@ -124,57 +106,40 @@ export async function getGuideServiceSlugs(type: GuideType) {
     .map((g) => g.service!.slug);
 }
 
-export const getFeaturedServices = unstable_cache(
-  async () =>
-    staticCatalog.services
-      .filter((s) => s.featured)
-      .sort((a, b) => a.order - b.order)
-      .slice(0, 8)
-      .map((s) => {
-        const { category, reviews, faqs, materials, ...rest } = serializeService(s);
-        return { ...rest, category };
-      }),
-  ["featured-services"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
-
-export async function getRelatedServices(categoryId: string, excludeId: string) {
-  return unstable_cache(
-    async () =>
-      staticCatalog.services
-        .filter((s) => s.categoryId === categoryId && s.id !== excludeId)
-        .sort((a, b) => a.order - b.order)
-        .slice(0, 6)
-        .map(({ slug, name, tagline }) => ({ slug, name, tagline })),
-    ["related-services", categoryId, excludeId],
-    { revalidate: DAY, tags: ["catalog"] },
-  )();
+export async function getFeaturedServices() {
+  return staticCatalog.services
+    .filter((s) => s.featured)
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 8)
+    .map((s) => {
+      const { category, reviews, faqs, materials, ...rest } = serializeService(s);
+      return { ...rest, category };
+    });
 }
 
-export const getAllCities = unstable_cache(
-  async () =>
-    staticCatalog.cities
-      .filter((c) => catalogCityFilter.slug.in.includes(c.slug))
-      .sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order)
-      .map(serializeCity),
-  ["all-cities-kerala"],
-  { revalidate: DAY, tags: ["locations"] },
-);
+export async function getRelatedServices(categoryId: string, excludeId: string) {
+  return staticCatalog.services
+    .filter((s) => s.categoryId === categoryId && s.id !== excludeId)
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 6)
+    .map(({ slug, name, tagline }) => ({ slug, name, tagline }));
+}
+
+export async function getAllCities() {
+  return staticCatalog.cities
+    .filter((c) => catalogCityFilter.slug.in.includes(c.slug))
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order)
+    .map(serializeCity);
+}
 
 export async function getCityBySlug(slug: string) {
   if (!SUPPORTED_CITY_SLUGS.includes(slug as (typeof SUPPORTED_CITY_SLUGS)[number])) return null;
-  return unstable_cache(async () => getCityBySlugStatic(slug), ["city-by-slug-v2", slug], {
-    revalidate: DAY,
-    tags: ["locations", `city:${slug}`],
-  })();
+  return getCityBySlugStatic(slug);
 }
 
 export async function getAreaBySlug(citySlug: string, areaSlug: string) {
   if (!SUPPORTED_CITY_SLUGS.includes(citySlug as (typeof SUPPORTED_CITY_SLUGS)[number])) return null;
-  return unstable_cache(async () => getAreaBySlugStatic(citySlug, areaSlug), ["area-by-slug-v2", citySlug, areaSlug], {
-    revalidate: DAY,
-    tags: ["locations", `city:${citySlug}`, `area:${areaSlug}`],
-  })();
+  return getAreaBySlugStatic(citySlug, areaSlug);
 }
 
 export type DistrictArea = {
@@ -193,36 +158,32 @@ export type DistrictAreaGroup = {
   areas: DistrictArea[];
 };
 
-export const getDistrictAreasGrouped = unstable_cache(
-  async (): Promise<DistrictAreaGroup[]> => {
-    const rows = staticCatalog.areas
-      .filter((a) => {
-        const city = staticCatalog.cities.find((c) => c.id === a.cityId);
-        return city && catalogCityFilter.slug.in.includes(city.slug);
-      })
-      .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+export async function getDistrictAreasGrouped(): Promise<DistrictAreaGroup[]> {
+  const rows = staticCatalog.areas
+    .filter((a) => {
+      const city = staticCatalog.cities.find((c) => c.id === a.cityId);
+      return city && catalogCityFilter.slug.in.includes(city.slug);
+    })
+    .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
 
-    const map = new Map<string, DistrictAreaGroup>();
-    for (const a of rows) {
-      const city = staticCatalog.cities.find((c) => c.id === a.cityId)!;
-      const label = a.tierLabel ?? "Localities";
-      const key = `${a.tier}:${label}`;
-      if (!map.has(key)) map.set(key, { tier: a.tier, label, areas: [] });
-      map.get(key)!.areas.push({
-        id: a.id,
-        slug: a.slug,
-        name: a.name,
-        tier: a.tier,
-        tierLabel: a.tierLabel,
-        citySlug: city.slug,
-        cityName: city.name,
-      });
-    }
-    return [...map.values()].sort((a, b) => a.tier - b.tier);
-  },
-  ["district-areas-grouped"],
-  { revalidate: DAY, tags: ["locations"] },
-);
+  const map = new Map<string, DistrictAreaGroup>();
+  for (const a of rows) {
+    const city = staticCatalog.cities.find((c) => c.id === a.cityId)!;
+    const label = a.tierLabel ?? "Localities";
+    const key = `${a.tier}:${label}`;
+    if (!map.has(key)) map.set(key, { tier: a.tier, label, areas: [] });
+    map.get(key)!.areas.push({
+      id: a.id,
+      slug: a.slug,
+      name: a.name,
+      tier: a.tier,
+      tierLabel: a.tierLabel,
+      citySlug: city.slug,
+      cityName: city.name,
+    });
+  }
+  return [...map.values()].sort((a, b) => a.tier - b.tier);
+}
 
 export async function getDistrictAreaStaticParams() {
   return staticCatalog.areas
@@ -236,82 +197,63 @@ export async function getDistrictAreaStaticParams() {
     });
 }
 
-export const getMaterials = unstable_cache(
-  async () => [...staticCatalog.materials].sort((a, b) => a.order - b.order),
-  ["materials"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getMaterials() {
+  return [...staticCatalog.materials].sort((a, b) => a.order - b.order);
+}
 
 export const getMaterialBySlug = cache(async (slug: string) => getMaterialBySlugStatic(slug));
 
-export const getIndustries = unstable_cache(
-  async () => [...staticCatalog.industries].sort((a, b) => a.order - b.order),
-  ["industries"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getIndustries() {
+  return [...staticCatalog.industries].sort((a, b) => a.order - b.order);
+}
 
 export const getIndustryBySlug = cache(async (slug: string) =>
   catalogIndex.industriesBySlug.get(slug) ?? null,
 );
 
-export const getPropertyTypes = unstable_cache(
-  async () => [...staticCatalog.propertyTypes].sort((a, b) => a.order - b.order),
-  ["property-types"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getPropertyTypes() {
+  return [...staticCatalog.propertyTypes].sort((a, b) => a.order - b.order);
+}
 
 export const getPropertyTypeBySlug = cache(async (slug: string) =>
   catalogIndex.propertyTypesBySlug.get(slug) ?? null,
 );
 
-export const getGeneralFaqs = unstable_cache(
-  async () => staticCatalog.faqs.filter((f) => !f.serviceId).sort((a, b) => a.order - b.order),
-  ["general-faqs"],
-  { revalidate: DAY, tags: ["content"] },
-);
+export async function getGeneralFaqs() {
+  return staticCatalog.faqs.filter((f) => !f.serviceId).sort((a, b) => a.order - b.order);
+}
 
-export const getBlogPosts = unstable_cache(
-  async () =>
-    staticCatalog.blogPosts
-      .filter((b) => b.published)
-      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()),
-  ["blog-posts"],
-  { revalidate: 60 * 60, tags: ["content"] },
-);
+export async function getBlogPosts() {
+  return staticCatalog.blogPosts
+    .filter((b) => b.published)
+    .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+}
 
 export const getBlogPostBySlug = cache(async (slug: string) =>
   catalogIndex.blogPostsBySlug.get(slug) ?? null,
 );
 
-export const getComparisons = unstable_cache(
-  async () => staticCatalog.comparisons.map(serializeComparison),
-  ["comparisons"],
-  { revalidate: DAY, tags: ["content"] },
-);
+export async function getComparisons() {
+  return staticCatalog.comparisons.map(serializeComparison);
+}
 
 export const getComparisonBySlug = cache(async (slug: string) => {
   const comparison = catalogIndex.comparisonsBySlug.get(slug);
   return comparison ? serializeComparison(comparison) : null;
 });
 
-export const getProjects = unstable_cache(
-  async () =>
-    [...staticCatalog.projects]
-      .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())
-      .map(serializeProject),
-  ["projects"],
-  { revalidate: DAY, tags: ["content"] },
-);
+export async function getProjects() {
+  return [...staticCatalog.projects]
+    .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())
+    .map(serializeProject);
+}
 
-export const getReviews = unstable_cache(
-  async () =>
-    [...staticCatalog.reviews]
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, 40)
-      .map(serializeReviewPublic),
-  ["reviews"],
-  { revalidate: DAY, tags: ["content"] },
-);
+export async function getReviews() {
+  return [...staticCatalog.reviews]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 40)
+    .map(serializeReviewPublic);
+}
 
 export const getGuideBySlug = cache(async (slug: string) => {
   const guide = catalogIndex.guidesBySlug.get(slug);
@@ -321,112 +263,90 @@ export const getGuideBySlug = cache(async (slug: string) => {
 export const getContentOverride = cache(async (_routeKey: string): Promise<ContentOverride | null> => null);
 
 export async function getKeywordLinksByCategory(limitPerCategory = 12) {
-  return unstable_cache(
-    async () =>
-      SERVICE_MENU.map((cat) => {
-        const category = staticCatalog.categories.find((c) => c.slug === cat.slug);
-        const links = staticCatalog.services
-          .filter((s) => s.categoryId === category?.id && s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
-          .sort((a, b) => a.order - b.order)
-          .slice(0, limitPerCategory)
-          .map(({ slug, name }) => ({ slug, name }));
-        return { slug: cat.slug, name: cat.name, links };
-      }),
-    ["keyword-links-by-category", String(limitPerCategory)],
-    { revalidate: DAY, tags: ["catalog"] },
-  )();
+  return SERVICE_MENU.map((cat) => {
+    const category = staticCatalog.categories.find((c) => c.slug === cat.slug);
+    const links = staticCatalog.services
+      .filter((s) => s.categoryId === category?.id && s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
+      .sort((a, b) => a.order - b.order)
+      .slice(0, limitPerCategory)
+      .map(({ slug, name }) => ({ slug, name }));
+    return { slug: cat.slug, name: cat.name, links };
+  });
 }
 
 export async function getKeywordLinksForService(serviceSlug: string, limit = 28) {
-  return unstable_cache(
-    async () => {
-      const svc = getServiceBySlugStatic(serviceSlug);
-      if (!svc) return [];
-      const words = serviceSlug.split("-").filter((w) => w.length > 3);
-      return staticCatalog.services
-        .filter((s) => s.categoryId === svc.categoryId && s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
-        .map((s) => {
-          let score = scoreIntentKeyword(s.slug, s.name);
-          if (s.slug.includes(serviceSlug)) score += 12;
-          for (const w of words) if (s.slug.includes(w)) score += 2;
-          return { s, score };
-        })
-        .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
-        .slice(0, limit)
-        .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name }));
-    },
-    ["keyword-links-for-service", serviceSlug, String(limit)],
-    { revalidate: DAY, tags: ["catalog"] },
-  )();
+  const svc = getServiceBySlugStatic(serviceSlug);
+  if (!svc) return [];
+  const words = serviceSlug.split("-").filter((w) => w.length > 3);
+  return staticCatalog.services
+    .filter((s) => s.categoryId === svc.categoryId && s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
+    .map((s) => {
+      let score = scoreIntentKeyword(s.slug, s.name);
+      if (s.slug.includes(serviceSlug)) score += 12;
+      for (const w of words) if (s.slug.includes(w)) score += 2;
+      return { s, score };
+    })
+    .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
+    .slice(0, limit)
+    .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name }));
 }
 
-export const getPriorityIntentKeywordLinks = unstable_cache(
-  async (limit = 48): Promise<SeoIntentLink[]> =>
-    staticCatalog.services
-      .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
-      .map((s) => ({ s, score: scoreIntentKeyword(s.slug, s.name) }))
-      .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
-      .slice(0, limit)
-      .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name })),
-  ["priority-intent-keyword-links"],
-  { revalidate: DAY, tags: ["catalog"] },
-);
+export async function getPriorityIntentKeywordLinks(limit = 48): Promise<SeoIntentLink[]> {
+  return staticCatalog.services
+    .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
+    .map((s) => ({ s, score: scoreIntentKeyword(s.slug, s.name) }))
+    .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
+    .slice(0, limit)
+    .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name }));
+}
 
 export async function getIntentLinksForService(serviceSlug: string): Promise<SeoIntentLink[]> {
-  return unstable_cache(
-    async () => {
-      const svc = getServiceBySlugStatic(serviceSlug);
-      if (!svc) return [];
-      const baseName = svc.name;
-      const patterns: { pattern: string; label: string }[] = [
-        { pattern: "best-near-me", label: `Best ${baseName} near me Kerala` },
-        { pattern: "top-kerala", label: `Top ${baseName} Kerala` },
-        { pattern: "high-quality-1", label: `High Quality #1 ${baseName} Kerala` },
-        { pattern: "best-kerala", label: `Best ${baseName} Kerala` },
-      ];
+  const svc = getServiceBySlugStatic(serviceSlug);
+  if (!svc) return [];
+  const baseName = svc.name;
+  const patterns: { pattern: string; label: string }[] = [
+    { pattern: "best-near-me", label: `Best ${baseName} near me Kerala` },
+    { pattern: "top-kerala", label: `Top ${baseName} Kerala` },
+    { pattern: "high-quality-1", label: `High Quality #1 ${baseName} Kerala` },
+    { pattern: "best-kerala", label: `Best ${baseName} Kerala` },
+  ];
 
-      const pool = staticCatalog.services.filter(
-        (s) => s.categoryId === svc.categoryId && s.order >= KEYWORD_SERVICE_ORDER_FLOOR,
-      );
+  const pool = staticCatalog.services.filter(
+    (s) => s.categoryId === svc.categoryId && s.order >= KEYWORD_SERVICE_ORDER_FLOOR,
+  );
 
-      const links: SeoIntentLink[] = [];
-      for (const { pattern, label } of patterns) {
-        const match = pool
-          .map((s) => ({
-            s,
-            score:
-              matchesIntentPattern(s.slug, s.name, pattern) * 100 +
-              scoreIntentKeyword(s.slug, s.name),
-          }))
-          .filter((x) => x.score > 0)
-          .sort((a, b) => b.score - a.score)[0];
-        if (match) {
-          links.push({ slug: match.s.slug, name: match.s.name, label });
-        }
-      }
-      return links;
-    },
-    ["intent-links-for-service", serviceSlug],
-    { revalidate: DAY, tags: ["catalog"] },
-  )();
+  const links: SeoIntentLink[] = [];
+  const usedSlugs = new Set<string>();
+
+  for (const { pattern, label } of patterns) {
+    const match = pool
+      .map((s) => ({
+        s,
+        score:
+          matchesIntentPattern(s.slug, s.name, pattern) * 100 +
+          scoreIntentKeyword(s.slug, s.name),
+      }))
+      .filter((x) => x.score > 0 && !usedSlugs.has(x.s.slug))
+      .sort((a, b) => b.score - a.score)[0];
+    if (match) {
+      usedSlugs.add(match.s.slug);
+      links.push({ slug: match.s.slug, name: match.s.name, label });
+    }
+  }
+  return links;
 }
 
 export async function getPopularKeywordLinks(limit = 36) {
-  return unstable_cache(
-    async () =>
-      staticCatalog.services
-        .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
-        .map((s) => ({ s, score: scoreIntentKeyword(s.slug, s.name) }))
-        .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
-        .slice(0, limit)
-        .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name })),
-    ["popular-keyword-links", String(limit)],
-    { revalidate: DAY, tags: ["catalog"] },
-  )();
+  return staticCatalog.services
+    .filter((s) => s.order >= KEYWORD_SERVICE_ORDER_FLOOR)
+    .map((s) => ({ s, score: scoreIntentKeyword(s.slug, s.name) }))
+    .sort((a, b) => b.score - a.score || a.s.order - b.s.order)
+    .slice(0, limit)
+    .map(({ s }) => ({ slug: s.slug, name: s.name, label: s.name }));
 }
 
-export const getCatalogCounts = unstable_cache(
-  async () => ({
+export async function getCatalogCounts() {
+  return {
     services: staticCatalog.services.length,
     cities: staticCatalog.cities.filter((c) => catalogCityFilter.slug.in.includes(c.slug)).length,
     areas: staticCatalog.areas.filter((a) => {
@@ -436,7 +356,5 @@ export const getCatalogCounts = unstable_cache(
     materials: staticCatalog.materials.length,
     industries: staticCatalog.industries.length,
     blog: staticCatalog.blogPosts.length,
-  }),
-  ["catalog-counts"],
-  { revalidate: DAY, tags: ["catalog", "locations"] },
-);
+  };
+}

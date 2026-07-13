@@ -39,7 +39,7 @@ export function InstantPrefetch() {
           observer.unobserve(entry.target);
         }
       },
-      { rootMargin: "600px" },
+      { rootMargin: "200px" },
     );
 
     const scanLinks = () => {
@@ -78,7 +78,6 @@ export function InstantPrefetch() {
     const start = () => {
       if (started) return;
       started = true;
-      scheduleScan();
       document.addEventListener("pointerdown", onPointerDown, { passive: true });
       document.addEventListener("mouseover", onPointerOver, { passive: true });
       mo.observe(document.body, { childList: true, subtree: true });
@@ -86,9 +85,16 @@ export function InstantPrefetch() {
 
     const mo = new MutationObserver(scheduleScan);
 
-    // Wait until after React hydration — never mutate link DOM attributes.
+    const idleStart = () => {
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(start, { timeout: 4000 });
+      } else {
+        globalThis.setTimeout(start, 3000);
+      }
+    };
+
     requestAnimationFrame(() => {
-      requestAnimationFrame(start);
+      requestAnimationFrame(idleStart);
     });
 
     return () => {

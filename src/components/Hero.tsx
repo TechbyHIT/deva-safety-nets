@@ -1,4 +1,4 @@
-import { SiteImage } from "./SiteImage";
+import { PriorityImage } from "./PriorityImage";
 import { HeroCarousel } from "./HeroCarousel";
 import { HERO_SLIDES, heroSlideImage } from "@/lib/hero-slides";
 
@@ -9,12 +9,10 @@ export function Hero() {
   return (
     <section className="home-hero relative overflow-hidden border-b">
       <div className="home-hero__bg absolute inset-0">
-        <SiteImage
+        <PriorityImage
           src={initialImage.src}
           alt={initialImage.alt}
           fill
-          priority
-          preset="hero"
           className="object-cover object-center"
         />
         <div className="absolute inset-0 hero-overlay" />

@@ -2,9 +2,8 @@ import Link from "next/link";
 import { Mail, MapPin, Phone, MessageCircle } from "lucide-react";
 import { FooterServiceDirectory } from "@/components/FooterServiceDirectory";
 import { KeywordServiceDirectory } from "@/components/KeywordServiceDirectory";
-import { SiteImage } from "@/components/SiteImage";
+import { BrandLogo } from "@/components/BrandLogo";
 import { STATIC_NAV_CATEGORIES, STATIC_CITIES } from "@/lib/static-nav";
-import { PAGE_IMAGES } from "@/lib/images";
 import { site, telHref, whatsappHref } from "@/lib/site";
 
 export function Footer() {
@@ -39,7 +38,7 @@ export function Footer() {
           <div className="footer-main__brand">
             <div className="footer-brand">
               <div className="footer-brand__logo">
-                <SiteImage src={PAGE_IMAGES.logo} alt={site.name} fill preset="logo" objectFit="contain" />
+                <BrandLogo alt={site.name} variant="footer" />
               </div>
               <div>
                 <p className="footer-brand__name">{site.name}</p>

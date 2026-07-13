@@ -314,19 +314,12 @@ export function MobileNav({
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
-        className="flex shrink-0 flex-col gap-1.5 md:hidden"
+        className="mobile-nav-toggle md:hidden"
+        data-open={open ? "true" : "false"}
       >
-        <span
-          className={`h-[3px] w-7 rounded bg-[var(--text)] transition-transform ${
-            open ? "translate-y-[9px] rotate-45" : ""
-          }`}
-        />
-        <span className={`h-[3px] w-7 rounded bg-[var(--text)] transition-opacity ${open ? "opacity-0" : ""}`} />
-        <span
-          className={`h-[3px] w-7 rounded bg-[var(--text)] transition-transform ${
-            open ? "-translate-y-[9px] -rotate-45" : ""
-          }`}
-        />
+        <span className="mobile-nav-toggle__bar" />
+        <span className="mobile-nav-toggle__bar" />
+        <span className="mobile-nav-toggle__bar" />
       </button>
       {drawer}
     </>

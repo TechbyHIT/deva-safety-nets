@@ -4,9 +4,7 @@ import { GuideView } from "@/components/GuideView";
 import { getGuideBySlug, getGuideServiceSlugs } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const slugs = await getGuideServiceSlugs("MAINTENANCE");
   return slugs.map((service) => ({ service }));
@@ -14,6 +12,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ service: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service } = await params;
   const guide = await getGuideBySlug(`maintenance-${service}`);

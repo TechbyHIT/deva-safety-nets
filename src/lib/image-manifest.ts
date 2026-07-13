@@ -426,7 +426,7 @@ export const ALL_IMAGES: readonly string[] = [
 ] as const;
 
 export const PAGE_IMAGES = {
-  logo: "/images/deva-logo.jpg",
+  logo: "/logo.png",
   hero: "/images/invisible-grill-balcony/img20251025132727jpg.jpeg",
   about: "/images/invisible-grill-balcony/i3.jpg",
   contact: "/images/cloth-hangers/cloth7.webp",

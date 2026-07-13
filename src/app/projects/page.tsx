@@ -8,8 +8,7 @@ import { getHeroImage, getServiceImage, pickImages } from "@/lib/images";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Projects & Case Studies — Deva Safety Nets Kerala",
   description:

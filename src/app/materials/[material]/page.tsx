@@ -6,9 +6,7 @@ import { PageHero, Section, CheckList, CTABand } from "@/components/ui";
 import { getMaterialBySlug, getMaterials } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const materials = await getMaterials();
   return materials.map((m) => ({ material: m.slug }));
@@ -16,6 +14,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ material: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { material: slug } = await params;
   const material = await getMaterialBySlug(slug);

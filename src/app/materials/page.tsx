@@ -5,8 +5,7 @@ import { PageHero, Section, CTABand } from "@/components/ui";
 import { getMaterials } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Materials — SS304, SS316, Nylon & HDPE",
   description:

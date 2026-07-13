@@ -21,17 +21,10 @@ import {
   reviewAggregateSchema,
 } from "@/lib/schema";
 
-// City-level combination pages are generated on demand (ISR) rather than all
-// pre-built, keeping the build fast while scaling to millions of URLs.
-export const revalidate = 86400;
-export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return [];
-}
-
+// City-level combination pages render on demand from the in-memory catalog (force-dynamic).
 type Props = { params: Promise<{ service: string; city: string }> };
 
+export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: serviceSlug, city: citySlug } = await params;
   const [service, city] = await Promise.all([

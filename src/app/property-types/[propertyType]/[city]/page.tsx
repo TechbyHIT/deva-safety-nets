@@ -17,16 +17,10 @@ import { buildMetadata } from "@/lib/seo";
 import { localBusinessSchema } from "@/lib/schema";
 import { generateContent } from "@/lib/content";
 
-// PropertyType x City pages generated on demand (ISR).
-export const revalidate = 86400;
-export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return [];
-}
-
+// PropertyType x City pages render on demand from the in-memory catalog (force-dynamic).
 type Props = { params: Promise<{ propertyType: string; city: string }> };
 
+export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { propertyType: ptSlug, city: citySlug } = await params;
   const [pt, city] = await Promise.all([

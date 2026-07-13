@@ -25,9 +25,7 @@ import { KeywordServiceLinks } from "@/components/KeywordServiceLinks";
 import { serviceLocationHref } from "@/lib/service-location-url";
 import { site } from "@/lib/site";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const cities = await getAllCities();
   return cities.map((c) => ({ city: c.slug }));
@@ -35,6 +33,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ city: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city: slug } = await params;
   const city = await getCityBySlug(slug);

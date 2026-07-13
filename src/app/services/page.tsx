@@ -7,9 +7,7 @@ import { STATIC_CATEGORIES_WITH_SERVICES } from "@/lib/static-home";
 import { STATIC_KEYWORD_LINKS_BY_CATEGORY } from "@/lib/static-footer";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
 export const dynamic = "force-static";
-
 export const metadata: Metadata = buildMetadata({
   title: "All Services — Invisible Grills, Safety Nets & More | Deva Safety Nets Kerala",
   description:

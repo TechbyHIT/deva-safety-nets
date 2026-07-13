@@ -6,7 +6,7 @@ import { HomeSeoProse } from "@/components/home/HomeSeoProse";
 import { ServiceCard } from "@/components/ServiceCard";
 import { JsonLd } from "@/components/JsonLd";
 import { TrustBadges } from "@/components/TrustBadges";
-import { HomePhotoBento, HomePhotoStrip } from "@/components/HomePhotoBento";
+import { HomePhotoBento } from "@/components/HomePhotoBento";
 import { SiteImage } from "@/components/SiteImage";
 import {
   Section,
@@ -27,16 +27,13 @@ import {
 } from "@/lib/static-home";
 import { faqSchema } from "@/lib/schema";
 import { getGallerySet, getCategoryImage, getProcessImages, getBestFolderImage, CLIENT_LOGOS, PAGE_IMAGES, GALLERY_IMAGES, pickUniquePageImages, type ImageFolderKey } from "@/lib/images";
-import { BeforeAfterSection } from "@/components/ImageGallery";
+import { BeforeAfterSection } from "@/components/BeforeAfterSection";
 import { MaterialCard } from "@/components/ui";
 import { site } from "@/lib/site";
 
 const QuoteForm = nextDynamic(() => import("@/components/QuoteForm").then((m) => m.QuoteForm));
 const FaqAccordion = nextDynamic(() => import("@/components/FaqAccordion").then((m) => m.FaqAccordion));
 const ImageGallery = nextDynamic(() => import("@/components/ImageGallery").then((m) => m.ImageGallery));
-
-export const revalidate = 86400;
-export const dynamic = "force-static";
 
 const WHY_US: {
   icon: typeof ShieldCheck;
@@ -84,6 +81,7 @@ const WHY_US: {
   },
 ];
 
+export const dynamic = "force-static";
 export default function HomePage() {
   const categories = STATIC_CATEGORIES_WITH_SERVICES;
   const featured = STATIC_FEATURED_SERVICES;
@@ -92,10 +90,9 @@ export default function HomePage() {
   const reviews = STATIC_REVIEWS;
   const counts = STATIC_CATALOG_COUNTS;
 
-  const homePhotos = pickUniquePageImages("homepage-photos", 16, GALLERY_IMAGES, `${site.name} Kerala installation`);
-  const galleryImages = homePhotos.slice(0, 8);
-  const bentoImages = homePhotos.slice(8, 14);
-  const stripImages = homePhotos.slice(14, 16);
+  const homePhotos = pickUniquePageImages("homepage-photos", 8, GALLERY_IMAGES, `${site.name} Kerala installation`);
+  const galleryImages = homePhotos.slice(0, 6);
+  const bentoImages = homePhotos.slice(6, 8);
   const beforeAfter = {
     before: { src: getBestFolderImage("safety-nets-balcony"), alt: "Before safety net installation Kerala" },
     after: { src: getBestFolderImage("safety-nets-balcony", 1), alt: "After safety net installation Kerala" },
@@ -313,16 +310,6 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Scrolling photo strip */}
-      <Section muted>
-        <SectionHeading
-          eyebrow="Our installations"
-          title="Every project, photographed on site"
-          subtitle="Scroll through recent invisible grill, safety net and bird control work across Kochi and Ernakulam."
-        />
-        <HomePhotoStrip images={stripImages} />
-      </Section>
-
       {/* Project gallery */}
       <Section muted className="lazy-section">
         <SectionHeading
@@ -409,7 +396,7 @@ export default function HomePage() {
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 md:gap-4">
           {CLIENT_LOGOS.map((src, i) => (
             <div key={src} className="card-hover relative aspect-square overflow-hidden rounded-xl">
-              <SiteImage src={src} alt={`Trusted installation ${i + 1} in Kerala`} fill preset="logo" />
+              <SiteImage src={src} alt={`Trusted installation ${i + 1} in Kerala`} fill preset="card" />
             </div>
           ))}
         </div>

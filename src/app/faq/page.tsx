@@ -8,8 +8,7 @@ import { getGeneralFaqs, getCategoriesWithServices } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 import { faqSchema } from "@/lib/schema";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Frequently Asked Questions — Deva Safety Nets Kerala",
   description:

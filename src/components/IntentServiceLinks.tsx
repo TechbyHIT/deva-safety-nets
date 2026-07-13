@@ -22,7 +22,7 @@ export function IntentServiceLinks({
           <li key={l.slug} className="mb-1.5 break-inside-avoid">
             <Link
               href={`/services/${l.slug}`}
-              prefetch={true}
+              prefetch={false}
               className="text-sm text-muted transition hover:text-[var(--primary)]"
             >
               {l.label}

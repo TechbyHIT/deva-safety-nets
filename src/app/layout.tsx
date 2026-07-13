@@ -4,13 +4,14 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { DeferredGlobalSeoIntentLinks } from "@/components/DeferredGlobalSeoIntentLinks";
-import { ClientEnhancements } from "@/components/ClientEnhancements";
+import { DeferredClientEnhancements } from "@/components/DeferredClientEnhancements";
+import { GoogleAdsTag } from "@/components/GoogleAdsTag";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { buildGlobalSeoKeywords } from "@/lib/seo-intents";
+import { LOGO_DEFAULT_SRC, LOGO_SIZES, LOGO_SRCSET } from "@/lib/logo";
 import { site } from "@/lib/site";
 
-export const revalidate = 86400;
 export const dynamic = "force-static";
 
 const inter = Inter({
@@ -26,7 +27,7 @@ const poppins = Poppins({
   weight: ["400", "700"],
   display: "swap",
   variable: "--font-poppins",
-  preload: true,
+  preload: false,
   adjustFontFallback: true,
 });
 
@@ -75,6 +76,15 @@ export default function RootLayout({
       style={{ colorScheme: "light" }}
       suppressHydrationWarning
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href={LOGO_DEFAULT_SRC}
+          imageSrcSet={LOGO_SRCSET}
+          imageSizes={LOGO_SIZES}
+        />
+      </head>
       <body className="min-h-screen font-body antialiased">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <a
@@ -89,7 +99,8 @@ export default function RootLayout({
         </main>
         <DeferredGlobalSeoIntentLinks />
         <Footer />
-        <ClientEnhancements />
+        <GoogleAdsTag />
+        <DeferredClientEnhancements />
       </body>
     </html>
   );

@@ -18,17 +18,10 @@ import {
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema } from "@/lib/schema";
 
-// Service x PropertyType pages generated on demand (ISR). The `for` segment is
-// a static sibling of the dynamic [city] segment, so there is no route clash.
-export const revalidate = 86400;
-export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return [];
-}
-
+// Service x PropertyType pages render on demand from the in-memory catalog (force-dynamic).
 type Props = { params: Promise<{ service: string; propertyType: string }> };
 
+export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: serviceSlug, propertyType: ptSlug } = await params;
   const [service, pt] = await Promise.all([

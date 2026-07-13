@@ -1,30 +1,17 @@
-/** High-traffic routes warmed on idle for instant client navigations. */
+/** High-traffic routes warmed on idle — kept small to protect LCP. */
 export const WARM_ROUTES = [
   "/",
   "/services",
-  "/locations",
-  "/about",
   "/contact",
-  "/gallery",
-  "/faq",
-  "/blog",
-  "/projects",
-  "/reviews",
-  "/compare",
-  "/property-types",
-  "/locations/kochi",
-  "/locations/ernakulam",
+  "/services/invisible-grills",
+  "/services/balcony-safety-nets",
 ] as const;
 
-/** Core services prefetched after first paint (top catalog). */
+/** Core services prefetched after idle (top catalog). */
 export const WARM_SERVICE_SLUGS = [
   "invisible-grills",
-  "balcony-invisible-grills",
   "balcony-safety-nets",
   "pigeon-safety-nets",
-  "cricket-nets",
-  "children-safety-nets",
-  "bird-spikes",
 ] as const;
 
 export function warmServicePaths() {

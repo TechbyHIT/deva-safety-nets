@@ -6,6 +6,7 @@ import { PageHero, Section } from "@/components/ui";
 import { buildMetadata } from "@/lib/seo";
 import { searchSite } from "@/lib/search";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
   title: "Search",
   description: "Search our services, locations, property types, guides and articles.",

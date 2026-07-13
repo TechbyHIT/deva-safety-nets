@@ -1,26 +1,13 @@
-"use client";
+import { optimizedImageProps, type OptimizedImageOptions } from "@/lib/optimized-image-props";
 
-import Image from "next/image";
-import { useState } from "react";
-import { IMAGE_QUALITY, resolveImagePreset, type ImagePreset } from "@/lib/image-settings";
-
-type SiteImageProps = {
-  src: string;
-  alt: string;
-  title?: string;
+type SiteImageProps = OptimizedImageOptions & {
   width?: number;
   height?: number;
   className?: string;
-  priority?: boolean;
   fill?: boolean;
-  sizes?: string;
-  quality?: number;
-  /** Applies HD quality + responsive sizes in one shot */
-  preset?: ImagePreset;
-  objectFit?: "cover" | "contain";
 };
 
-/** Optimized wrapper for project photos — tuned for fast load and sharp display. */
+/** Server-friendly image — plain img, no client JS, optional responsive WebP srcSet. */
 export function SiteImage({
   src,
   alt,
@@ -31,65 +18,28 @@ export function SiteImage({
   priority,
   fill,
   sizes,
-  quality,
   preset,
   objectFit = "cover",
 }: SiteImageProps) {
-  const [loaded, setLoaded] = useState(priority ?? false);
-  const isSvg = src.endsWith(".svg");
-  const presetOpts = resolveImagePreset(preset);
-  const resolvedQuality = quality ?? presetOpts?.quality ?? IMAGE_QUALITY.gallery;
-  const resolvedSizes = sizes ?? presetOpts?.sizes ?? "(max-width: 768px) 100vw, 50vw";
+  const img = optimizedImageProps({ src, alt, title, priority, preset, sizes });
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
-  const imgClass = [
-    fitClass,
-    className,
-    loaded ? "opacity-100" : "opacity-0",
-    "transition-opacity duration-300",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const finishLoad = () => setLoaded(true);
+  const imgClass = [fitClass, className].filter(Boolean).join(" ");
 
   if (fill) {
     return (
-      <Image
-        src={src}
-        alt={alt}
-        title={title ?? alt}
-        fill
+      <img
+        {...img}
         className={imgClass}
-        priority={priority}
-        fetchPriority={priority ? "high" : "auto"}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        sizes={resolvedSizes}
-        quality={resolvedQuality}
-        unoptimized={isSvg}
-        onLoad={finishLoad}
-        onError={finishLoad}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit,
+        }}
       />
     );
   }
 
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      title={title ?? alt}
-      width={width}
-      height={height}
-      className={imgClass}
-      priority={priority}
-      fetchPriority={priority ? "high" : "auto"}
-      loading={priority ? "eager" : "lazy"}
-      decoding="async"
-      sizes={resolvedSizes}
-      quality={resolvedQuality}
-      unoptimized={isSvg}
-      onLoad={finishLoad}
-      onError={finishLoad}
-    />
-  );
+  return <img {...img} width={width} height={height} className={imgClass} />;
 }

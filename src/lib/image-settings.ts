@@ -21,7 +21,7 @@ export const IMAGE_SIZES = {
   bento: "(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 560px",
   strip: "320px",
   stripSm: "240px",
-  logo: "(max-width: 768px) 200px, 512px",
+  logo: "(max-width: 640px) 280px, (max-width: 1024px) 360px, 512px",
   lightbox: "100vw",
 } as const;
 

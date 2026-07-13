@@ -8,9 +8,7 @@ import { getBlogPostBySlug, getBlogPosts } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 import { articleSchema } from "@/lib/schema";
 
-export const revalidate = 3600;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
   return posts.map((p) => ({ slug: p.slug }));
@@ -18,6 +16,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ slug: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);

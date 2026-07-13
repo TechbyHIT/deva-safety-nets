@@ -9,8 +9,7 @@ import { getServerImageCatalog } from "@/lib/image-catalog.server";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Gallery — Deva Safety Nets Installation Photos Kerala",
   description:

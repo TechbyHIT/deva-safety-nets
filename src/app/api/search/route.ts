@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { searchSite } from "@/lib/search";
 
 export const runtime = "nodejs";
-// Cache identical queries at the edge/CDN for snappy instant search.
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -11,6 +10,6 @@ export async function GET(request: Request) {
   const results = await searchSite(q, 20);
   return NextResponse.json(
     { query: q, results },
-    { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } },
+    { headers: { "Cache-Control": "private, no-store" } },
   );
 }

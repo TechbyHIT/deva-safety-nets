@@ -1,4 +1,4 @@
-import { absoluteUrl, sitemapPageSize } from "./site";
+import { absoluteUrl } from "./site";
 import { catalogServiceFilter, catalogCityFilter, isExcludedService } from "./catalog";
 import { catalogIndex, staticCatalog } from "./static-data/build-catalog";
 
@@ -120,27 +120,11 @@ function buildAllSitemapEntries(): SitemapEntry[] {
   return entries;
 }
 
-// Built once per server process. The catalog is fully static (deterministic at
-// module load), so memoizing avoids rebuilding ~46k entries on every sitemap
-// shard request while a crawler walks the sitemap index.
 let cachedEntries: SitemapEntry[] | null = null;
 
 export function getAllSitemapEntries(): SitemapEntry[] {
   if (!cachedEntries) cachedEntries = buildAllSitemapEntries();
   return cachedEntries;
-}
-
-/** Number of segmented sitemap files needed at the configured page size. */
-export function getSitemapShardCount(): number {
-  const total = getAllSitemapEntries().length;
-  return Math.max(1, Math.ceil(total / sitemapPageSize));
-}
-
-/** Entries for a single segmented sitemap (0-indexed). Returns [] if out of range. */
-export function getSitemapShard(id: number): SitemapEntry[] {
-  if (!Number.isInteger(id) || id < 0) return [];
-  const start = id * sitemapPageSize;
-  return getAllSitemapEntries().slice(start, start + sitemapPageSize);
 }
 
 function xmlEscape(value: string): string {
@@ -152,7 +136,7 @@ function xmlEscape(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/** Serialize a shard of entries into a <urlset> sitemap document. */
+/** Serialize all entries into a single <urlset> sitemap document. */
 export function renderUrlsetXml(entries: SitemapEntry[]): string {
   const urls = entries
     .map((e) => {
@@ -164,14 +148,4 @@ export function renderUrlsetXml(entries: SitemapEntry[]): string {
     })
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
-}
-
-/** Serialize the top-level <sitemapindex> pointing at each segmented sitemap. */
-export function renderSitemapIndexXml(lastModified: Date = new Date()): string {
-  const count = getSitemapShardCount();
-  const items = Array.from({ length: count }, (_, id) => {
-    const loc = xmlEscape(absoluteUrl(`/sitemaps/${id}.xml`));
-    return `<sitemap><loc>${loc}</loc><lastmod>${lastModified.toISOString()}</lastmod></sitemap>`;
-  }).join("");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${items}</sitemapindex>`;
 }

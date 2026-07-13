@@ -49,12 +49,7 @@ import { TIER_LABELS } from "@/lib/kerala-locations";
 
 
 
-export const revalidate = 86400;
-
-export const dynamicParams = true;
-
-
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
 
   return getDistrictAreaStaticParams();
@@ -67,6 +62,7 @@ type Props = { params: Promise<{ city: string; area: string }> };
 
 
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { city: citySlug, area: areaSlug } = await params;

@@ -6,9 +6,7 @@ import { PageHero, Section, CTABand } from "@/components/ui";
 import { getComparisonBySlug, getComparisons } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const comparisons = await getComparisons();
   return comparisons.map((c) => ({ comparison: c.slug }));
@@ -16,6 +14,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ comparison: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { comparison: slug } = await params;
   const c = await getComparisonBySlug(slug);

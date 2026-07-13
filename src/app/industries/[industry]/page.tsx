@@ -5,9 +5,7 @@ import { PageHero, Section, CheckList, CTABand } from "@/components/ui";
 import { getIndustryBySlug, getIndustries } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-export const dynamicParams = true;
-
+export const dynamicParams = false;
 export async function generateStaticParams() {
   const industries = await getIndustries();
   return industries.map((i) => ({ industry: i.slug }));
@@ -15,6 +13,7 @@ export async function generateStaticParams() {
 
 type Props = { params: Promise<{ industry: string }> };
 
+export const dynamic = "force-static";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { industry: slug } = await params;
   const industry = await getIndustryBySlug(slug);

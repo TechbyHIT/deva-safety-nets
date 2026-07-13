@@ -6,8 +6,7 @@ import { PageHero, Section, CTABand } from "@/components/ui";
 import { getComparisons } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Compare Invisible Grills vs Safety Nets — Deva Safety Nets Kerala",
   description:

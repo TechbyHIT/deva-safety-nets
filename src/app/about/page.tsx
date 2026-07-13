@@ -18,8 +18,6 @@ import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
-export const revalidate = 86400;
-
 export const metadata: Metadata = buildMetadata({
   title: "About Us — Kerala's Trusted Invisible Grills & Safety Nets Experts",
   description:

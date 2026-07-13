@@ -6,8 +6,7 @@ import { PageHero, Section, CTABand } from "@/components/ui";
 import { getPropertyTypes } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Solutions by Property Type",
   description:

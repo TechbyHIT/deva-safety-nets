@@ -1,23 +1,9 @@
-"use client";
-
-import { useServerInsertedHTML } from "next/navigation";
-
-/**
- * Renders JSON-LD via SSR stream injection (React 19 safe — no script in client tree).
- */
+/** Server-rendered JSON-LD — no client bundle. */
 export function JsonLd({ data }: { data: unknown | unknown[] }) {
   const items = (Array.isArray(data) ? data : [data]).filter(Boolean);
-  const json =
-    items.length > 0
-      ? JSON.stringify(items.length === 1 ? items[0] : items).replace(/</g, "\\u003c")
-      : null;
+  if (items.length === 0) return null;
 
-  useServerInsertedHTML(() => {
-    if (!json) return null;
-    return (
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
-    );
-  });
+  const json = JSON.stringify(items.length === 1 ? items[0] : items).replace(/</g, "\\u003c");
 
-  return null;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
 }

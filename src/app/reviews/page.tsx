@@ -10,8 +10,7 @@ import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { reviewAggregateSchema } from "@/lib/schema";
 
-export const revalidate = 86400;
-
+export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
   title: "Customer Reviews — Invisible Grills & Safety Nets Kerala",
   description:

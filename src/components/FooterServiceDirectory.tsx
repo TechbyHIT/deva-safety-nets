@@ -15,7 +15,7 @@ export function FooterServiceDirectory() {
   const displayCategories = categories.slice(0, FOOTER_CATEGORY_LIMIT);
 
   return (
-    <section className="footer-directory" aria-labelledby="footer-directory-heading">
+    <section className="footer-directory lazy-section" aria-labelledby="footer-directory-heading">
       <div className="container-page">
         <div className="footer-directory__header">
           <p className="eyebrow mb-2">All services · All Kerala areas</p>
@@ -36,7 +36,7 @@ export function FooterServiceDirectory() {
               <ul className="footer-directory__links">
                 {cat.services.slice(0, FOOTER_SERVICES_PER_CATEGORY).map((s) => (
                   <li key={s.slug}>
-                    <Link href={serviceLocationHref(s.slug, PRIMARY_CITY_SLUG)} prefetch={true}>
+                    <Link href={serviceLocationHref(s.slug, PRIMARY_CITY_SLUG)}>
                       {serviceLocationLabel(s.name, cityName)}
                     </Link>
                   </li>
@@ -46,7 +46,6 @@ export function FooterServiceDirectory() {
                     <Link
                       href={`/services#${cat.slug}`}
                       className="footer-directory__more"
-                      prefetch={true}
                     >
                       +{cat.services.length - FOOTER_SERVICES_PER_CATEGORY} more →
                     </Link>
@@ -57,7 +56,7 @@ export function FooterServiceDirectory() {
           ))}
         </div>
         <p className="footer-directory__footer-link">
-          <Link href="/locations" prefetch={true}>
+          <Link href="/locations">
             Browse all Kerala locations →
           </Link>
         </p>
