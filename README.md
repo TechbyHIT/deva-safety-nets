@@ -15,15 +15,112 @@ engine that keeps each URL unique and useful.
 
 ## Tech stack
 
-| Layer | Technology |
+This project uses the **same architecture** as a modern programmatic SEO site (App Router, SSG/ISR, static catalog, JSON-LD, sitemap) with **newer versions** tuned for Deva Safety Nets — **Kerala** (not Bengaluru), **Next.js 16**, **Tailwind 4**, and **Docker VPS** deploy.
+
+### Core
+
+| Technology | Version | Purpose |
+|---|---|---|
+| **Next.js** | 16.x | React framework (App Router, static + ISR, SEO) |
+| **React** | 19.x | UI components |
+| **TypeScript** | 5.7.x | Type-safe development |
+| **Node.js** | ≥ 20.11 | Build scripts, standalone server, tooling |
+
+### Styling & UI
+
+| Technology | Purpose |
 |---|---|
-| Framework | Next.js 16 (App Router), React 19, TypeScript |
-| Styling | Tailwind CSS v4 (60/30/10: white / royal blue / gold), dark + light mode |
-| Data | In-repo **static catalog** compiled at module load (no database). Curated directly in `src/lib/static-data/seed-data.ts` and assembled by `src/lib/static-data/build-catalog.ts` |
-| Caching | Next.js Data Cache / ISR + `unstable_cache` (tag-based revalidation) |
-| Rendering | Server Components, Server Actions, ISR, SSR, static where appropriate |
-| SEO | Dynamic Metadata API, JSON-LD, sitemap index + segmented sitemaps, robots |
-| Security | CSP, secure headers, input validation (Zod), honeypot + rate limiting |
+| **Tailwind CSS** 4.x (`@tailwindcss/postcss`) | Utility-first styling |
+| **Google Fonts** (`next/font`) | **Inter** (body), **Poppins** (headings) |
+| **Custom brand palette** | Charcoal + gold `#d4af37`, cream `#fdf9f3` |
+| **lucide-react** | Icons (no UI library) |
+
+### Architecture
+
+- **Next.js App Router** — `src/app/` directory structure
+- **Static + ISR** — core pages pre-rendered; service × city × area combos on demand
+- **Standalone output** — `output: "standalone"` for Docker / VPS
+- **Server + Client Components** — e.g. `SiteNav` (server) → `MobileNav` (client + portal)
+- **React Portals** — mobile drawer, floating WhatsApp / Call buttons
+- **No middleware** — sitemap is a static file in `public/sitemap.xml` (built at compile time)
+- **No database** — all content from `src/lib/static-data/**`
+
+### Programmatic SEO engine
+
+Built-in data-driven page generation for **Kerala** (Kochi, Ernakulam, 160+ localities):
+
+- **Services** — invisible grills, safety nets, bird spikes, cricket nets, etc.
+- **Cities & areas** — tiered Kerala location hierarchy (`src/lib/kerala-locations.ts`)
+- **Intents** — long-tail keyword links (`src/lib/seo-intents.ts`)
+- **Route patterns** — `/services/[service]/[city]/[area]`, property types, guides, compare
+- **SEO config** — metadata templates, canonical URLs, indexability rules
+- **Internal linking** — hub pages, breadcrumbs, cross-links on service pages
+
+~**44,000+ URLs** in `public/sitemap.xml` (regenerated on every `npm run build`).
+
+### SEO & structured data
+
+- **Metadata API** — titles, descriptions, Open Graph, canonical URLs
+- **JSON-LD** — Organization, LocalBusiness, WebSite, FAQ, Breadcrumbs
+- **Sitemap** — `scripts/generate-sitemap.mjs` → `public/sitemap.xml`
+- **`robots.txt`** — `src/app/robots.ts`
+- **Semantic HTML** — headings, nav landmarks, aria labels
+
+### Images & media
+
+- **`SiteImage` / `GalleryGrid`** — server-friendly plain `<img>` (reliable on VPS; no broken WebP srcSet)
+- **Image manifest** — `src/lib/image-manifest.ts` + `public/images/**`
+- **Build scripts** — `images:sync`, `logos:generate`, `validate-images.mjs` (Sharp in scripts only)
+- **Cache headers** — long-lived caching for `_next/static` and `/images/*`
+
+### Data layer (TypeScript files — no DB)
+
+| Location | Contents |
+|---|---|
+| `src/lib/static-data/seed-data.ts` | Curated services, cities, FAQs, blog |
+| `src/lib/static-data/build-catalog.ts` | Catalog assembly + serializers |
+| `src/lib/static-data/catalog.snapshot.json` | Compiled snapshot for fast load |
+| `src/lib/kerala-locations.ts` | Area tiers and locality metadata |
+| `src/lib/content.ts` | Deterministic unique copy per route |
+
+### Build & dev tools
+
+| Script | Command | Purpose |
+|---|---|---|
+| Dev | `npm run dev` | Turbopack dev server |
+| Build | `npm run build` | Logos → validate images → catalog → sitemap → Next build |
+| Build (PM2) | `npm run build:prod` | Build + copy assets into `.next/standalone` |
+| Start | `npm run start` | Standalone Node server |
+| PM2 | `bash deploy/pm2-deploy.sh` | VPS deploy without Docker |
+| Catalog | `npm run catalog:build` | Rebuild `catalog.snapshot.json` |
+| Sitemap | `npm run sitemap:build` | Write `public/sitemap.xml` |
+| Images | `npm run images:sync` | Sync photos into `public/images/` |
+
+### Performance & production
+
+- **Turbopack** in dev
+- **Dynamic imports** — quote form, FAQ accordion, homepage gallery (smaller initial JS)
+- **Console stripping** in production
+- **Compression** + immutable cache headers
+- **Google Ads tag** — `NEXT_PUBLIC_GOOGLE_ADS_ID` (lazy-loaded)
+- **PM2 + nginx** (recommended multi-site VPS) — see `deploy/PM2-DEPLOY.md`
+- **Docker + nginx** — see `docker-compose.yml` (optional)
+
+### Deployment
+
+- **VPS / PM2** (recommended, less disk) — `bash deploy/pm2-deploy.sh` — full guide: `deploy/PM2-DEPLOY.md`
+- **VPS / Docker** — `docker compose build && docker compose up -d` (avoid `--no-cache` unless needed)
+- **Vercel** — compatible (native Next.js)
+- **Windows** — supported for local development
+
+### What is NOT used
+
+- No database (PostgreSQL, MongoDB, Prisma, etc.)
+- No CMS (WordPress, Contentful, etc.)
+- No UI library (MUI, shadcn, Bootstrap)
+- No Redux / Zustand
+- No authentication or payment gateway
+- No `next/image` in production (plain images for VPS reliability)
 
 ---
 
@@ -295,5 +392,6 @@ in Nginx).
 curl -X POST "https://your-site/api/revalidate?tag=catalog&secret=YOUR_SECRET"
 # tags: catalog | locations | content
 ```
-#   d e v a - s a f e t y - n e t s  
+#   d e v a - s a f e t y - n e t s 
+ 
  

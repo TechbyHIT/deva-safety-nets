@@ -1,6 +1,8 @@
 /**
- * PM2 — production deploy without Docker (see deploy/PM2-DEPLOY.md).
- * Loads .env from project root. Run after: npm run build:prod
+ * Multi-site PM2 template — copy per site:
+ *   cp ecosystem.site.config.cjs.example ecosystem.site2.config.cjs
+ *   cp .env.example .env   # set APP_PORT=3001, PM2_APP_NAME=site-2-app
+ *   PM2_APP_NAME=site-2-app APP_PORT=3001 pm2 start ecosystem.site2.config.cjs --env production
  */
 const fs = require("node:fs");
 const path = require("node:path");
@@ -25,7 +27,7 @@ function loadEnv(file) {
 
 loadEnv(path.join(root, ".env"));
 
-const appName = process.env.PM2_APP_NAME || "deva-safety-nets";
+const appName = process.env.PM2_APP_NAME || "site-app";
 const port = Number(process.env.APP_PORT || 3000);
 const heap = Number(process.env.NODE_HEAP_MB || 384);
 const standalone = path.join(root, ".next/standalone");
