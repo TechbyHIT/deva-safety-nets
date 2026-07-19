@@ -16,11 +16,10 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
-# Load .env for build-time NEXT_PUBLIC_* and runtime PORT
-set -a
+# Load .env for build-time NEXT_PUBLIC_* and runtime PORT (supports quoted values)
 # shellcheck disable=SC1091
-. ./.env
-set +a
+. "$(dirname "$0")/load-env.sh"
+load_env_file .env
 
 export APP_PORT NODE_HEAP_MB PM2_APP_NAME="$APP_NAME"
 
