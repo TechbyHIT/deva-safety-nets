@@ -26,7 +26,7 @@ function loadEnv(file) {
 loadEnv(path.join(root, ".env"));
 
 const appName = process.env.PM2_APP_NAME || "deva-safety-nets";
-const port = Number(process.env.APP_PORT || 3002);
+const port = Number(process.env.APP_PORT || 3000);
 const heap = Number(process.env.NODE_HEAP_MB || 384);
 const standalone = path.join(root, ".next/standalone");
 

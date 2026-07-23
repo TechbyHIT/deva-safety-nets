@@ -87,15 +87,13 @@ Add nginx `server` block per domain → `proxy_pass http://127.0.0.1:3001;`
 
 ---
 
-## Disk per site (PM2 vs Docker)
+## Disk comparison
 
-| | Docker | **PM2 (your setup)** |
-|---|--------|----------------------|
-| Disk per site | ~1–1.5 GB | **~800 MB–1 GB** |
-| Build cache location | `/var/lib/containerd` (200 GB risk) | Project folder (auto-trimmed on deploy) |
-| 10 sites total | ~12–18 GB + cache bloat | **~8–12 GB** |
-
-After each `pm2-deploy.sh`, `node_modules` and extra `.next` files are removed. Only `.next/standalone` + `public` photos + git repo remain.
+| Method | ~10 sites |
+|--------|-----------|
+| Docker + no cleanup | 100–200 GB |
+| Docker + weekly cleanup | ~15 GB |
+| **PM2 (this guide)** | **~8–12 GB** |
 
 ---
 
