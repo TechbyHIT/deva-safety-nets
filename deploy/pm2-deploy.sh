@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 APP_NAME="${PM2_APP_NAME:-deva-safety-nets}"
-APP_PORT="${APP_PORT:-3000}"
+APP_PORT="${APP_PORT:-3002}"
 NODE_HEAP_MB="${NODE_HEAP_MB:-384}"
 
 log() { echo "[pm2-deploy] $(date -Iseconds) $*"; }
@@ -31,6 +31,10 @@ npm ci
 
 log "production build"
 npm run build:prod
+
+log "trim disk — remove node_modules and build cache (standalone bundle keeps running app)"
+rm -rf node_modules .next/cache
+find .next -mindepth 1 -maxdepth 1 ! -name standalone -exec rm -rf {} + 2>/dev/null || true
 
 log "restart PM2 app=$APP_NAME port=$APP_PORT"
 if pm2 describe "$APP_NAME" >/dev/null 2>&1; then

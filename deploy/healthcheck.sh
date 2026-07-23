@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-export HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:3000/api/health}"
+export HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:3002/api/health}"
 export HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-5}"
 exec node -e "
 const url = process.env.HEALTH_URL;
