@@ -1309,6 +1309,7 @@ html.theme-switching .mega-menu {
   .card-hover img,
   .card img {
     image-rendering: auto;
+    opacity: 1;
   }
 }
 
@@ -1498,18 +1499,15 @@ html.theme-switching .mega-menu {
   animation: nav-progress-slide 0.65s ease-in-out infinite;
 }
 
-/* Tier directory — defer off-screen paint for faster initial load */
+/* Tier directory — defer off-screen footer paint only (not images) */
 .area-tier-section,
-.lazy-section,
-.lazy-paint {
+.footer-directory,
+.footer-keywords {
   content-visibility: auto;
   contain-intrinsic-size: auto 500px;
 }
 .area-tier-section {
   contain-intrinsic-size: auto 88px;
-}
-.lazy-paint {
-  contain-intrinsic-size: auto 112px;
 }
 
 /* ── Route loading skeleton (instant paint) ── */

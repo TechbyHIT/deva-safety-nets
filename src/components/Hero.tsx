@@ -8,6 +8,7 @@ export function Hero() {
 
   return (
     <section className="home-hero relative overflow-hidden border-b">
+      <link rel="preload" as="image" href={initialImage.src} fetchPriority="high" />
       <div className="home-hero__bg absolute inset-0">
         <PriorityImage
           src={initialImage.src}

@@ -90,7 +90,7 @@ export function LightboxGallery({
 
   return (
     <>
-      <div className={`lazy-section ${colClass} gap-4 ${className}`}>
+      <div className={`${colClass} gap-4 ${className}`}>
         {images.map((img, i) => (
           <figure
             key={`${img.src}-${i}`}
@@ -98,7 +98,7 @@ export function LightboxGallery({
           >
             <button
               type="button"
-              className="relative block w-full overflow-hidden bg-[var(--bg-subtle)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+              className="relative block w-full overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
               style={{ aspectRatio: variant === "masonry" && i % 3 === 0 ? "3/4" : "4/3" }}
               onClick={() => setActive(i)}
               aria-label={`View ${img.alt}`}
@@ -108,6 +108,7 @@ export function LightboxGallery({
                 alt={img.alt}
                 title={img.title}
                 preset="gallery"
+                priority={i < 6}
                 className="transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute bottom-2 right-2 rounded-full bg-black/50 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100">

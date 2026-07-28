@@ -20,14 +20,15 @@ export function optimizedImageProps({
   sizes,
 }: OptimizedImageOptions) {
   const presetOpts = resolveImagePreset(preset);
+  const isHero = preset === "hero" || preset === "heroSide";
 
   return {
     src,
     alt,
     title: title ?? alt,
-    decoding: "async" as const,
-    fetchPriority: priority ? ("high" as const) : ("auto" as const),
-    loading: priority ? ("eager" as const) : ("lazy" as const),
+    decoding: priority || isHero ? ("sync" as const) : ("async" as const),
+    fetchPriority: priority || isHero ? ("high" as const) : ("auto" as const),
+    loading: "eager" as const,
     sizes: sizes ?? presetOpts?.sizes,
   };
 }

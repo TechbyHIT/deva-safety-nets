@@ -11,7 +11,7 @@ export function BeforeAfterSection({
   title?: string;
 }) {
   return (
-    <div className="lazy-section">
+    <div>
       <h3 className="mb-4 text-xl font-bold">{title}</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         {[
@@ -19,8 +19,8 @@ export function BeforeAfterSection({
           { ...after, label: "After" },
         ].map((item) => (
           <figure key={item.label} className="card-hover overflow-hidden">
-            <div className="relative aspect-[4/3] bg-[var(--bg-subtle)]">
-              <SiteImage src={item.src} alt={item.alt} title={item.title} fill preset="gallery" />
+            <div className="relative aspect-[4/3]">
+              <SiteImage src={item.src} alt={item.alt} title={item.title} fill preset="gallery" priority />
             </div>
             <figcaption className="border-t px-4 py-2 text-center text-sm font-semibold text-[var(--primary)]">
               {item.label}

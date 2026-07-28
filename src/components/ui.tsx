@@ -427,7 +427,7 @@ export function ProcessTimeline({
 
           {step.imageSrc && (
 
-            <div className="relative aspect-[16/10] bg-[var(--bg-subtle)]">
+            <div className="relative aspect-[16/10]">
 
               <SiteImage
                 src={step.imageSrc}
@@ -494,7 +494,7 @@ export function MaterialCard({
 
       {imageSrc && (
 
-        <div className="relative aspect-[16/9] bg-[var(--bg-subtle)]">
+        <div className="relative aspect-[16/9]">
 
           <SiteImage src={imageSrc} alt={name} fill preset="galleryWide" />
 

@@ -45,8 +45,8 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
       {showOverlay && (
         <div className="home-hero__bg absolute inset-0 z-[1]">
           <img
-            {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "hero" })}
-            className="animate-fade-in object-cover object-center"
+            {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "hero", priority: true })}
+            className="object-cover object-center"
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
           <div className="absolute inset-0 hero-overlay" />
@@ -122,7 +122,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
           <div className="card premium-shadow overflow-hidden rounded-2xl border-white/10">
             <div className="relative aspect-[4/3] w-full">
               <img
-                {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "heroSide" })}
+                {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "heroSide", priority: true })}
                 className="object-cover object-center"
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
               />

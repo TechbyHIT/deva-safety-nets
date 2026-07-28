@@ -159,7 +159,7 @@ export default function HomePage() {
       </Section>
 
       {/* Photo showcase — bento grid */}
-      <Section muted className="lazy-section">
+      <Section muted>
         <SectionHeading
           eyebrow="Installation gallery"
           title="Premium finishes across Kerala homes"
@@ -176,14 +176,15 @@ export default function HomePage() {
           subtitle="Seven specialist categories — one trusted local team for every balcony, window, terrace and commercial space across Kerala."
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {categories.map((cat) => (
+          {categories.map((cat, i) => (
             <div key={cat.slug} className="card-hover group overflow-hidden" id={cat.slug}>
-              <div className="relative aspect-[2/1] bg-[var(--bg-subtle)]">
+              <div className="relative aspect-[2/1]">
                 <SiteImage
                   src={getCategoryImage(cat.slug)}
                   alt={`${cat.name} services in Kerala`}
                   fill
                   preset="galleryWide"
+                  priority={i < 3}
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
@@ -265,12 +266,13 @@ export default function HomePage() {
             { title: "Bird Spikes & Control", slug: "bird-spikes", desc: "Humane bird deterrents for ledges, parapets and commercial façades." },
           ].map((item) => (
             <Link key={item.slug} href={`/services/${item.slug}`} className="card-hover group overflow-hidden">
-              <div className="relative aspect-[16/10] bg-[var(--bg-subtle)]">
+              <div className="relative aspect-[16/10]">
                 <SiteImage
                   src={getCategoryImage(item.slug.includes("bird") ? "bird-control" : item.slug.includes("safety") ? "safety-nets" : "invisible-grills")}
                   alt={item.title}
                   fill
                   preset="galleryWide"
+                  priority
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
@@ -286,14 +288,15 @@ export default function HomePage() {
       <Section>
         <SectionHeading eyebrow="Why Kerala trusts us" title="Premium standards, local expertise" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {WHY_US.map((w) => (
+          {WHY_US.map((w, i) => (
             <div key={w.title} className="card-hover overflow-hidden">
-              <div className="relative aspect-[16/9] bg-[var(--bg-subtle)]">
+              <div className="relative aspect-[16/9]">
                 <SiteImage
                   src={getBestFolderImage(w.folder, w.imageOffset ?? 0)}
                   alt={w.title}
                   fill
                   preset="galleryWide"
+                  priority={i < 2}
                   className="object-cover object-center"
                 />
               </div>
@@ -310,7 +313,7 @@ export default function HomePage() {
       </Section>
 
       {/* Project gallery */}
-      <Section muted className="lazy-section">
+      <Section muted>
         <SectionHeading
           eyebrow="Our work"
           title="Real installations across Kerala"

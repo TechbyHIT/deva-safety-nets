@@ -24,7 +24,7 @@ export function ServiceCard({
 
   return (
     <Link href={linkHref} prefetch={true} className="card-hover group flex flex-col overflow-hidden">
-      <div className="relative aspect-[16/10] overflow-hidden bg-[var(--bg-subtle)]">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <SiteImage
           src={src}
           alt={alt}

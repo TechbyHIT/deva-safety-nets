@@ -9,7 +9,7 @@ export function KeywordServiceDirectory() {
   if (withLinks.length === 0) return null;
 
   return (
-    <section className="footer-keywords lazy-section" aria-labelledby="footer-keywords-heading">
+    <section className="footer-keywords" aria-labelledby="footer-keywords-heading">
       <div className="container-page">
         <div className="footer-directory__header">
           <p className="eyebrow mb-2">Popular searches</p>

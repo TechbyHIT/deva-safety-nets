@@ -27,14 +27,14 @@ export function GalleryGrid({
           : "columns-2 md:columns-3";
 
   return (
-    <div className={`lazy-section ${colClass} gap-4 ${className}`}>
+    <div className={`${colClass} gap-4 ${className}`}>
       {images.map((img, i) => (
         <figure
           key={`${img.src}-${i}`}
           className={`card-hover group mb-4 overflow-hidden ${variant === "masonry" ? "break-inside-avoid" : ""}`}
         >
           <div
-            className="relative block w-full overflow-hidden bg-[var(--bg-subtle)]"
+            className="relative block w-full overflow-hidden"
             style={{ aspectRatio: variant === "masonry" && i % 3 === 0 ? "3/4" : "4/3" }}
           >
             <SiteImage
@@ -43,6 +43,7 @@ export function GalleryGrid({
               title={img.title}
               fill
               preset="gallery"
+              priority={i < 6}
               className="transition-transform duration-500 group-hover:scale-105"
             />
           </div>

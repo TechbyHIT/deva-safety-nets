@@ -15,7 +15,7 @@ export function FooterServiceDirectory() {
   const displayCategories = categories.slice(0, FOOTER_CATEGORY_LIMIT);
 
   return (
-    <section className="footer-directory lazy-section" aria-labelledby="footer-directory-heading">
+    <section className="footer-directory" aria-labelledby="footer-directory-heading">
       <div className="container-page">
         <div className="footer-directory__header">
           <p className="eyebrow mb-2">All services · All Kerala areas</p>
