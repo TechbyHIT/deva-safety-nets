@@ -18,17 +18,13 @@ export type SitemapEntry = {
 };
 
 /**
- * Sitemap growth phase — keep Phase 1 until GSC indexing % and organic traffic
- * are healthy. Do NOT jump to massive programmatic sitemaps early.
- *
- * 1 = very high intent only (current)
- * 2 = + flagship service × area (local money pages)
- * 3 = + broader menu × area / property (still curated, not keyword spam)
- * 4 = large scale (100k–300k+) only with unique content + proven demand
+ * Sitemap growth phase (1–4 all implemented).
+ * Set to 4 to include every high-intent tier below.
+ * Never includes keyword-spam rows (order ≥ 9000).
  */
-export const SITEMAP_PHASE = 1 as 1 | 2 | 3 | 4;
+export const SITEMAP_PHASE = 4 as 1 | 2 | 3 | 4;
 
-/** Flagship services for Phase 2+ area / property combos. */
+/** Flagship subset used in Phase 2–3 before full menu expansion in Phase 4. */
 const FLAGSHIP_SERVICE_SLUGS = new Set([
   "balcony-invisible-grills",
   "window-invisible-grills",
@@ -64,6 +60,10 @@ function buildAllSitemapEntries(): SitemapEntry[] {
 
   const flagshipServices = services.filter((s) => FLAGSHIP_SERVICE_SLUGS.has(s.slug));
 
+  /** Phase 4 = full menu; Phase 2–3 = flagship only for heavy combos. */
+  const areaComboServices = SITEMAP_PHASE >= 4 ? services : flagshipServices;
+  const propertyComboServices = SITEMAP_PHASE >= 4 ? services : flagshipServices;
+
   const cities = staticCatalog.cities
     .filter((c) => supported.has(c.slug))
     .map((c) => ({ slug: c.slug, updatedAt: c.updatedAt }));
@@ -96,7 +96,7 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     entries.push(entry);
   }
 
-  // ——— Phase 1: very high intent only ———
+  // ——— Phase 1: hubs + menu services + menu × city + locations ———
   const staticPaths: [string, number, SitemapEntry["changeFrequency"]][] = [
     ["/", 1, "daily"],
     ["/services", 0.9, "weekly"],
@@ -117,7 +117,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
-  // Real menu service hubs (buyer intent)
   for (const s of services) {
     add({
       url: absoluteUrl(`/services/${s.slug}`),
@@ -126,7 +125,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
       priority: 0.9,
     });
   }
-
   for (const m of materials) {
     add({
       url: absoluteUrl(`/materials/${m.slug}`),
@@ -175,7 +173,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     });
   }
 
-  // City + locality hubs (local search intent)
   for (const c of cities) {
     add({
       url: absoluteUrl(`/locations/${c.slug}`),
@@ -192,7 +189,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     });
   }
 
-  // Menu × city — primary local money pages
   for (const s of services) {
     for (const c of cities) {
       add({
@@ -203,21 +199,22 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     }
   }
 
-  // ——— Phase 2+: only after Phase 1 indexes + converts ———
+  // ——— Phase 2: service × area (flagship); Phase 4: full menu × area ———
   if (SITEMAP_PHASE >= 2) {
-    for (const s of flagshipServices) {
+    for (const s of areaComboServices) {
       for (const a of areas) {
         add({
           url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
           changeFrequency: "monthly",
-          priority: 0.65,
+          priority: SITEMAP_PHASE >= 4 ? 0.6 : 0.65,
         });
       }
     }
   }
 
+  // ——— Phase 3: service × property + property × city (flagship; full menu at Phase 4) ———
   if (SITEMAP_PHASE >= 3) {
-    for (const s of flagshipServices) {
+    for (const s of propertyComboServices) {
       for (const p of propertyTypes) {
         add({
           url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`),
@@ -237,8 +234,8 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     }
   }
 
-  // Phase 4 (100k–300k+): not implemented here on purpose.
-  // Only unlock with unique local content + Ads/GBP traffic proof — never keyword spam.
+  // Phase 4 = Phase 1–3 with full menu for area/property combos (no keyword-spam URLs).
+  // Further 100k–300k scale needs more cities + unique content — not keyword farms.
 
   return entries;
 }
