@@ -13,7 +13,6 @@ import {
   getDistrictAreasGrouped,
   getAllServiceSlugs,
 } from "@/lib/queries";
-import { isKeywordSeoService } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema, reviewAggregateSchema } from "@/lib/schema";
 
@@ -31,7 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getServiceBySlug(slug);
   if (!service) return {};
   const override = await getContentOverride(`services/${slug}`);
-  const noindex = isKeywordSeoService(service);
   return buildMetadata({
     title: override?.metaTitle ?? `${service.name} in Kerala — Free Survey & Install`,
     description:
@@ -39,7 +37,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${service.name} in Kochi, Ernakulam & Kerala. ${service.tagline} Free site inspection, expert install, up to 10-year warranty.`,
     path: `/services/${slug}`,
     keywords: service.keywords,
-    noindex,
   });
 }
 

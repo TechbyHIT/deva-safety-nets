@@ -1,25 +1,18 @@
-# Sitemap & indexing — all four phases
+# Sitemap & indexing
 
-## Control
+## Current (all phases + all service hubs)
 
-`SITEMAP_PHASE` in `src/lib/sitemap-urls.ts` — currently **`4`** (all phases on).
+| Indexable (in sitemap) | Noindex (not in sitemap) |
+|------------------------|--------------------------|
+| Home, hubs, blog, materials, guides | Privacy, terms, search |
+| **All** `/services/{slug}` hubs (~35k menu + long-tail) | Keyword service × city |
+| Menu × Kochi / Ernakulam | Keyword service × area |
+| Menu × areas + property combos | Keyword service × property |
+| Location city + area pages | |
 
-Keyword-spam services (`order ≥ 9000`, “best near me / #1”) stay **out of the sitemap** and **noindex**.
+`SITEMAP_PHASE = 4` in `src/lib/sitemap-urls.ts`.
 
-## What’s included
-
-| Phase | Content |
-|-------|---------|
-| **1** | Hubs, menu `/services/{slug}`, menu × Kochi/Ernakulam, location city/area, blog, materials, industries, property hubs, guides |
-| **2** | + service × area (flagship at phase 2–3; **full menu** at phase 4) |
-| **3** | + service × property type, property × city (flagship → **full menu** at phase 4) |
-| **4** | Same routes as 1–3 with **full menu** for area & property combos (~9–10k high-intent URLs with current Kochi/Ernakulam scope) |
-
-## Size reality
-
-With **2 cities + ~102 areas + ~80 menu services**, a quality sitemap tops out around **~10k URLs**, not 300k.
-
-**300k+** later only if you add more real cities/areas **and** unique local value — never by indexing keyword-farm pages.
+~**44k** URLs — under Google’s 50k/sitemap limit. Kochi+Ernakulam location combos stay menu-only (quality ceiling).
 
 ## After deploy
 

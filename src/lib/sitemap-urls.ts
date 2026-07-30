@@ -19,8 +19,8 @@ export type SitemapEntry = {
 
 /**
  * Sitemap growth phase (1–4 all implemented).
- * Set to 4 to include every high-intent tier below.
- * Never includes keyword-spam rows (order ≥ 9000).
+ * Set to 4 to include every high-intent location tier.
+ * All service hubs (menu + long-tail) are indexable; keyword×area stays noindex.
  */
 export const SITEMAP_PHASE = 4 as 1 | 2 | 3 | 4;
 
@@ -56,6 +56,11 @@ function buildAllSitemapEntries(): SitemapEntry[] {
 
   const services = staticCatalog.services
     .filter((s) => menuSlugs.has(s.slug) && !isExcludedService(s))
+    .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
+
+  /** Every published service hub — menu + long-tail (indexable). */
+  const allServiceHubs = staticCatalog.services
+    .filter((s) => !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
 
   const flagshipServices = services.filter((s) => FLAGSHIP_SERVICE_SLUGS.has(s.slug));
@@ -117,12 +122,12 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
-  for (const s of services) {
+  for (const s of allServiceHubs) {
     add({
       url: absoluteUrl(`/services/${s.slug}`),
       lastModified: s.updatedAt,
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: menuSlugs.has(s.slug) ? 0.9 : 0.65,
     });
   }
   for (const m of materials) {
@@ -234,8 +239,8 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     }
   }
 
-  // Phase 4 = Phase 1–3 with full menu for area/property combos (no keyword-spam URLs).
-  // Further 100k–300k scale needs more cities + unique content — not keyword farms.
+  // Phase 4 = full menu location/property combos.
+  // All service hubs are in the sitemap; keyword×city/area stay noindex (thin).
 
   return entries;
 }
