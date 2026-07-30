@@ -29,6 +29,10 @@ git pull origin main
 log "install dependencies"
 npm ci
 
+# Stale standalone output causes ENOTEMPTY during next build on VPS
+log "clean previous .next output"
+rm -rf .next
+
 log "production build"
 npm run build:prod
 

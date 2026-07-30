@@ -115,6 +115,18 @@ npm run build:prod
 pm2 restart deva-safety-nets
 ```
 
+**Build fails with `ENOTEMPTY: directory not empty, rmdir .../.next/standalone/...`**
+
+Leftover files from a previous standalone build. Clean and rebuild:
+
+```bash
+rm -rf .next
+npm run build:prod
+pm2 restart ecosystem.config.cjs --env production --update-env
+```
+
+(`pm2-deploy.sh` now runs `rm -rf .next` automatically before build.)
+
 **Out of memory**
 
 In `.env`: `NODE_HEAP_MB=512` then redeploy.
