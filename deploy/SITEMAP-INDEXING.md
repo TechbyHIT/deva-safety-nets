@@ -1,32 +1,56 @@
-# Sitemap & indexing (Google Search Console)
+# Sitemap & indexing — phased growth
 
-## Goal
+## Rule
 
-Only **high-intent, curated pages** in the sitemap. No keyword-spam URLs (“best near me”, “#1 Kerala”, etc.).
+**Very high-intent pages only** until they index well and bring traffic.  
+Do **not** publish 100k–300k+ URLs early. That burns crawl budget and creates thin-page debt.
 
-## Current sitemap (~2–3k URLs)
+## Phases
 
-| Included | Excluded / noindex |
-|----------|-------------------|
-| Home, hubs (services, locations, gallery, contact…) | Keyword SEO service hubs (`order ≥ 9000`) — **noindex** |
-| **Menu** `/services/{slug}` only | Priority-intent keyword JSON links |
-| Menu × Kochi / Ernakulam | Thin keyword × city / area (already noindex) |
-| **Flagship** services × areas (~15 money services) | Full menu × every area |
-| Flagship × property type | AI “complete guide” filler copy |
-| Location city + area pages | |
-| Materials, industries, blog, guides (menu services) | |
+| Phase | When to unlock | What’s in the sitemap | Approx size |
+|-------|----------------|----------------------|-------------|
+| **1 (now)** | Default | Hubs, menu services, menu × Kochi/Ernakulam, location city/area, blog, materials, guides | ~400–600 |
+| **2** | Phase 1 has solid index % + organic clicks | + flagship service × area | ~1.5–2.5k |
+| **3** | Phase 2 converting (calls / WhatsApp / forms) | + flagship × property, property × city | ~3–5k |
+| **4** | Strong brand + content ops | Large curated expansion (never keyword “best near me / #1” spam) | 100k–300k+ only with unique value |
 
-## Page copy
+Control: `SITEMAP_PHASE` in `src/lib/sitemap-urls.ts` (`1` | `2` | `3` | `4`).
 
-`src/lib/content.ts` uses short curated Kerala facts (standards, pricing factors, buying checks, maintenance, FAQs). No randomized long-form AI essays.
+## Phase 1 include / exclude
 
-## After deploy
+| In sitemap | Out of sitemap / noindex |
+|------------|--------------------------|
+| Home, contact, gallery, services hub… | Keyword SEO rows (`order ≥ 9000`) — **noindex** |
+| Menu `/services/{slug}` | “Best near me / Top Kerala / #1” spam hubs |
+| Menu × Kochi / Ernakulam | Service × every area (until Phase 2) |
+| `/locations/{city}` + areas | AI essay filler pages |
+| Blog, materials, industries, property hubs, guides | Mass programmatic keyword combos |
 
-1. `bash deploy/pm2-deploy.sh` (rebuilds `public/sitemap.xml`)
-2. GSC → **Sitemaps** → resubmit `https://devasafetynets.com/sitemap.xml`
-3. Expect old thin URLs to move to **Excluded by noindex** over 1–2 weeks
+## Go / no-go before Phase 2
 
-## Do not expect
+Wait until most of these are true (check GSC + analytics for 2–4 weeks):
 
-- All previously discovered URLs to stay indexed
-- Overnight ranking jumps
+- [ ] Sitemap processed (GSC shows current URL count)
+- [ ] Majority of Phase 1 money URLs indexed (or rising weekly)
+- [ ] Organic clicks growing on main services + Kochi/Ernakulam pages
+- [ ] Leads from organic (calls / forms), not only impressions
+
+Then set `SITEMAP_PHASE = 2`, rebuild, resubmit sitemap.
+
+## Phase 4 (300k+) — only later
+
+Allowed only if:
+
+1. Phases 1–3 index and convert  
+2. Each new URL has a clear search intent + non-duplicate value  
+3. No keyword-farm titles or AI long-form spam  
+
+Otherwise stay small and strong.
+
+## After every phase change
+
+```bash
+bash deploy/pm2-deploy.sh   # rebuilds public/sitemap.xml
+```
+
+Resubmit `https://devasafetynets.com/sitemap.xml` in Search Console.

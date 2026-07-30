@@ -1,8 +1,5 @@
 import { absoluteUrl } from "./site";
-import {
-  catalogCityFilter,
-  isExcludedService,
-} from "./catalog";
+import { catalogCityFilter, isExcludedService } from "./catalog";
 import { catalogIndex, staticCatalog } from "./static-data/build-catalog";
 import { SERVICE_MENU } from "./service-menu";
 
@@ -21,14 +18,21 @@ export type SitemapEntry = {
 };
 
 /**
- * Money-page services for area-level sitemap URLs only.
- * Full menu × 100+ areas creates thin duplicates — keep area combos tight.
+ * Sitemap growth phase — keep Phase 1 until GSC indexing % and organic traffic
+ * are healthy. Do NOT jump to massive programmatic sitemaps early.
+ *
+ * 1 = very high intent only (current)
+ * 2 = + flagship service × area (local money pages)
+ * 3 = + broader menu × area / property (still curated, not keyword spam)
+ * 4 = large scale (100k–300k+) only with unique content + proven demand
  */
-const FLAGSHIP_AREA_SERVICE_SLUGS = new Set([
+export const SITEMAP_PHASE = 1 as 1 | 2 | 3 | 4;
+
+/** Flagship services for Phase 2+ area / property combos. */
+const FLAGSHIP_SERVICE_SLUGS = new Set([
   "balcony-invisible-grills",
   "window-invisible-grills",
   "ss-invisible-grills",
-  "stainless-steel-invisible-grills",
   "balcony-safety-nets",
   "window-safety-nets",
   "children-safety-nets",
@@ -38,11 +42,8 @@ const FLAGSHIP_AREA_SERVICE_SLUGS = new Set([
   "pigeon-nets",
   "bird-nets",
   "bird-spikes",
-  "invisible-grill-installation",
-  "balcony-pigeon-nets",
 ]);
 
-/** Menu service slugs only — no keyword “best near me / #1” rows. */
 function getMenuServiceSlugs(): Set<string> {
   const slugs = new Set<string>();
   for (const cat of SERVICE_MENU) {
@@ -61,9 +62,7 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     .filter((s) => menuSlugs.has(s.slug) && !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
 
-  const locationServices = services;
-
-  const areaServices = services.filter((s) => FLAGSHIP_AREA_SERVICE_SLUGS.has(s.slug));
+  const flagshipServices = services.filter((s) => FLAGSHIP_SERVICE_SLUGS.has(s.slug));
 
   const cities = staticCatalog.cities
     .filter((c) => supported.has(c.slug))
@@ -97,6 +96,7 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     entries.push(entry);
   }
 
+  // ——— Phase 1: very high intent only ———
   const staticPaths: [string, number, SitemapEntry["changeFrequency"]][] = [
     ["/", 1, "daily"],
     ["/services", 0.9, "weekly"],
@@ -117,110 +117,128 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
-  for (const s of services)
+  // Real menu service hubs (buyer intent)
+  for (const s of services) {
     add({
       url: absoluteUrl(`/services/${s.slug}`),
       lastModified: s.updatedAt,
       changeFrequency: "weekly",
       priority: 0.9,
     });
-  for (const m of materials)
+  }
+
+  for (const m of materials) {
     add({
       url: absoluteUrl(`/materials/${m.slug}`),
       lastModified: m.updatedAt,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.55,
     });
-  for (const i of industries)
+  }
+  for (const i of industries) {
     add({
       url: absoluteUrl(`/industries/${i.slug}`),
       lastModified: i.updatedAt,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.55,
     });
-  for (const p of propertyTypes)
+  }
+  for (const p of propertyTypes) {
     add({
       url: absoluteUrl(`/property-types/${p.slug}`),
       lastModified: p.updatedAt,
       changeFrequency: "monthly",
       priority: 0.6,
     });
-  for (const c of comparisons)
+  }
+  for (const c of comparisons) {
     add({
       url: absoluteUrl(`/compare/${c.slug}`),
       lastModified: c.updatedAt,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.55,
     });
-  for (const b of blog)
+  }
+  for (const b of blog) {
     add({
       url: absoluteUrl(`/blog/${b.slug}`),
       lastModified: b.updatedAt,
       changeFrequency: "monthly",
       priority: 0.7,
     });
-  for (const g of guides)
+  }
+  for (const g of guides) {
     add({
       url: absoluteUrl(`/${g.type.toLowerCase()}-guide/${g.service.slug}`),
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.55,
     });
+  }
 
-  for (const c of cities)
+  // City + locality hubs (local search intent)
+  for (const c of cities) {
     add({
       url: absoluteUrl(`/locations/${c.slug}`),
       lastModified: c.updatedAt,
       changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.85,
     });
-  for (const a of areas)
+  }
+  for (const a of areas) {
     add({
       url: absoluteUrl(`/locations/${a.city.slug}/${a.slug}`),
       changeFrequency: "monthly",
       priority: 0.7,
     });
+  }
 
-  // Menu × city (primary local money pages)
-  for (const s of locationServices) {
+  // Menu × city — primary local money pages
+  for (const s of services) {
     for (const c of cities) {
       add({
         url: absoluteUrl(`/services/${s.slug}/${c.slug}`),
         changeFrequency: "weekly",
-        priority: 0.8,
+        priority: 0.85,
       });
     }
   }
 
-  // Flagship × area only (high-intent localities, not every menu × area)
-  for (const s of areaServices) {
-    for (const a of areas) {
-      add({
-        url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
-        changeFrequency: "monthly",
-        priority: 0.6,
-      });
+  // ——— Phase 2+: only after Phase 1 indexes + converts ———
+  if (SITEMAP_PHASE >= 2) {
+    for (const s of flagshipServices) {
+      for (const a of areas) {
+        add({
+          url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
+          changeFrequency: "monthly",
+          priority: 0.65,
+        });
+      }
     }
   }
 
-  // Flagship × property type
-  for (const s of areaServices) {
+  if (SITEMAP_PHASE >= 3) {
+    for (const s of flagshipServices) {
+      for (const p of propertyTypes) {
+        add({
+          url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`),
+          changeFrequency: "monthly",
+          priority: 0.55,
+        });
+      }
+    }
     for (const p of propertyTypes) {
-      add({
-        url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`),
-        changeFrequency: "monthly",
-        priority: 0.55,
-      });
+      for (const c of cities) {
+        add({
+          url: absoluteUrl(`/property-types/${p.slug}/${c.slug}`),
+          changeFrequency: "monthly",
+          priority: 0.5,
+        });
+      }
     }
   }
-  for (const p of propertyTypes) {
-    for (const c of cities) {
-      add({
-        url: absoluteUrl(`/property-types/${p.slug}/${c.slug}`),
-        changeFrequency: "monthly",
-        priority: 0.5,
-      });
-    }
-  }
+
+  // Phase 4 (100k–300k+): not implemented here on purpose.
+  // Only unlock with unique local content + Ads/GBP traffic proof — never keyword spam.
 
   return entries;
 }
@@ -241,7 +259,6 @@ function xmlEscape(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/** Serialize all entries into a single <urlset> sitemap document. */
 export function renderUrlsetXml(entries: SitemapEntry[]): string {
   const urls = entries
     .map((e) => {
