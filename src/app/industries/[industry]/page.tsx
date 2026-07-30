@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const industry = await getIndustryBySlug(slug);
   if (!industry) return {};
   return buildMetadata({
-    title: `${industry.name} — Safety Solutions`,
-    description: industry.summary,
+    title: `${industry.name} Safety Nets & Invisible Grills Kerala`,
+    description: `${industry.summary} Serving Kochi, Ernakulam and Kerala with free survey and warranty install.`,
     path: `/industries/${slug}`,
   });
 }

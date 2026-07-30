@@ -8,9 +8,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Compare Invisible Grills vs Safety Nets — Deva Safety Nets Kerala",
+  title: "Invisible Grills vs Safety Nets — Compare Kerala",
   description:
-    "Honest side-by-side comparisons of invisible grills, safety nets, bird spikes and more. Understand cost, appearance, installation time and best use cases for Kerala homes and businesses.",
+    "Compare invisible grills, safety nets and bird control for Kerala homes — cost, look, install time and best use. Choose with Deva Safety Nets.",
   path: "/compare",
 });
 

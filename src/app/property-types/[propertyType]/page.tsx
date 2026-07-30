@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pt = await getPropertyTypeBySlug(slug);
   if (!pt) return {};
   return buildMetadata({
-    title: `Invisible Grills & Safety Nets for ${pt.plural}`,
-    description: `Safety solutions designed for ${pt.plural.toLowerCase()}. ${pt.summary}`,
+    title: `Safety Nets & Invisible Grills for ${pt.plural} in Kerala`,
+    description: `${pt.plural} safety solutions in Kochi & Ernakulam. ${pt.summary} Free survey, expert install, warranty by Deva Safety Nets.`,
     path: `/property-types/${slug}`,
   });
 }

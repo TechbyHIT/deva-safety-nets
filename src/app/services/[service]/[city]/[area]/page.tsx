@@ -10,10 +10,9 @@ import {
   getAreaBySlug,
   getContentOverride,
   getDistrictAreasGrouped,
-  getKeywordLinksForService,
-  getIntentLinksForService,
 } from "@/lib/queries";
 import { buildMetadata, buildServiceLocationMetadata } from "@/lib/seo";
+import { isKeywordSeoService } from "@/lib/catalog";
 import { serviceSchema, faqSchema, localBusinessSchema } from "@/lib/schema";
 
 type Props = { params: Promise<{ service: string; city: string; area: string }> };
@@ -26,18 +25,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getAreaBySlug(citySlug, areaSlug),
   ]);
   if (!service || !loc) return {};
+  const noindex = isKeywordSeoService(service);
   const override = await getContentOverride(`services/${serviceSlug}/${citySlug}/${areaSlug}`);
   if (override?.metaTitle || override?.metaDesc) {
     return buildMetadata({
       title: override.metaTitle ?? `${service.name} in ${loc.area.name}, ${loc.city.name}`,
       description:
         override.metaDesc ??
-        `Doorstep ${service.name.toLowerCase()} in ${loc.area.name}, ${loc.city.name}. Local technicians, free measurement, fast installation and warranty.`,
+        `${service.name} in ${loc.area.name}, ${loc.city.name}, Kerala. Free measurement, fast install, warranty. Local Deva Safety Nets team.`,
       path: `/services/${serviceSlug}/${citySlug}/${areaSlug}`,
       keywords: [...service.keywords, loc.area.name, loc.city.name],
+      noindex,
     });
   }
-  return buildServiceLocationMetadata({
+  const meta = buildServiceLocationMetadata({
     serviceName: service.name,
     serviceKeywords: service.keywords,
     cityName: loc.city.name,
@@ -45,6 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     areaName: loc.area.name,
     path: `/services/${serviceSlug}/${citySlug}/${areaSlug}`,
   });
+  if (!noindex) return meta;
+  return { ...meta, robots: { index: false, follow: true } };
 }
 
 export default async function ServiceAreaPage({ params }: Props) {
@@ -56,11 +59,7 @@ export default async function ServiceAreaPage({ params }: Props) {
   ]);
   if (!service || !loc) notFound();
 
-  const [related, keywordLinks, intentLinks] = await Promise.all([
-    getRelatedServices(service.categoryId, service.id),
-    getKeywordLinksForService(serviceSlug),
-    getIntentLinksForService(serviceSlug),
-  ]);
+  const related = await getRelatedServices(service.categoryId, service.id);
   const path = `/services/${serviceSlug}/${citySlug}/${areaSlug}`;
   const routeKey = path.slice(1);
   const faqs = service.faqs.map((f) => ({ question: f.question, answer: f.answer }));
@@ -125,8 +124,6 @@ export default async function ServiceAreaPage({ params }: Props) {
         districtAreaGroups={districtAreas}
         currentCitySlug={citySlug}
         currentAreaSlug={areaSlug}
-        keywordLinks={keywordLinks}
-        intentLinks={intentLinks}
       />
       <CTABand
         title={`${service.name} in ${loc.area.name}`}

@@ -12,7 +12,6 @@ import {
   getAllCities,
   getCategoriesWithServices,
   getDistrictAreasGrouped,
-  getPopularKeywordLinks,
 } from "@/lib/queries";
 import { buildMetadata, buildLocationSeoKeywords } from "@/lib/seo";
 import { localBusinessSchema, breadcrumbSchema } from "@/lib/schema";
@@ -21,7 +20,6 @@ import { getHeroImage } from "@/lib/images";
 import { ServiceLocationDirectory } from "@/components/ServiceLocationDirectory";
 import { DistrictAreaDirectory } from "@/components/DistrictAreaDirectory";
 import { LocationSeoServiceLinks } from "@/components/LocationSeoServiceLinks";
-import { KeywordServiceLinks } from "@/components/KeywordServiceLinks";
 import { serviceLocationHref } from "@/lib/service-location-url";
 import { site } from "@/lib/site";
 
@@ -39,8 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = await getCityBySlug(slug);
   if (!city) return {};
   return buildMetadata({
-    title: `Best Invisible Grills & Safety Nets in ${city.name} — Near Me`,
-    description: `Premium invisible grills and safety nets in ${city.name}, ${city.state}. Best local installers near you — free site survey, transparent pricing and warranty. All Kochi–Ernakulam areas served.`,
+    title: `Invisible Grills & Safety Nets in ${city.name}`,
+    description: `Best invisible grills and safety nets in ${city.name}, ${city.state}. Free site survey, transparent pricing, warranty. Deva Safety Nets — local installers near you.`,
     path: `/locations/${slug}`,
     keywords: buildLocationSeoKeywords(city.name),
   });
@@ -48,11 +46,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CityPage({ params }: Props) {
   const { city: slug } = await params;
-  const [city, categories, districtAreas, keywordLinks] = await Promise.all([
+  const [city, categories, districtAreas] = await Promise.all([
     getCityBySlug(slug),
     getCategoriesWithServices(),
     getDistrictAreasGrouped(),
-    getPopularKeywordLinks(36),
   ]);
   if (!city) notFound();
 
@@ -102,9 +99,6 @@ export default async function CityPage({ params }: Props) {
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10">
             <p className="prose-content">{content.localInfo}</p>
-            {content.introParagraphs.slice(1).map((p, i) => (
-              <p key={i} className="prose-content">{p}</p>
-            ))}
 
             <div>
               <SectionHeading center={false} title={`All services in ${city.name}`} />
@@ -147,13 +141,6 @@ export default async function CityPage({ params }: Props) {
               services={seoServices}
               citySlug={slug}
               placeName={city.name}
-            />
-
-            <KeywordServiceLinks
-              links={keywordLinks}
-              title={`Best near me · Top Kerala · ${city.name}`}
-              subtitle="Best near me, top Kerala, high quality #1 and premium safety net & invisible grill searches."
-              max={36}
             />
 
             {city.reviews.length > 0 && (

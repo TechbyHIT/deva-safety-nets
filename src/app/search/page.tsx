@@ -8,8 +8,8 @@ import { searchSite } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata({
-  title: "Search",
-  description: "Search our services, locations, property types, guides and articles.",
+  title: "Search Services & Areas",
+  description: "Search Deva Safety Nets services, Kerala locations, property types and guides.",
   path: "/search",
   noindex: true,
 });

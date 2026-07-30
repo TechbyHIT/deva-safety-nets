@@ -7,7 +7,7 @@ export const site = {
   name: process.env.NEXT_PUBLIC_SITE_NAME ?? "Deva Safety Nets",
   shortName: "Deva",
   description:
-    "Kerala's trusted invisible grills and safety nets specialists — premium installation in Kochi, Ernakulam and across Kerala. Free site inspection, certified materials and up to 10-year warranty.",
+    "Best invisible grills and safety nets in Kochi, Ernakulam & Kerala. Free site inspection, certified materials, expert install and up to 10-year warranty.",
   phone: process.env.NEXT_PUBLIC_BRAND_PHONE ?? "+917558844405",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "917558844405",
   email: process.env.NEXT_PUBLIC_EMAIL ?? "devasafetynetskochi@gmail.com",

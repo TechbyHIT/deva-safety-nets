@@ -20,8 +20,6 @@ import { SiteImage } from "./SiteImage";
 import { BeforeAfterSection } from "./BeforeAfterSection";
 import { generateContent, varyList, type LocationContext } from "@/lib/content";
 import { getServicePageImages } from "@/lib/images";
-import { KeywordServiceLinks } from "./KeywordServiceLinks";
-import { IntentServiceLinks } from "./IntentServiceLinks";
 import { site } from "@/lib/site";
 import { ServiceDistrictAreaDirectory } from "./ServiceDistrictAreaDirectory";
 import type { DistrictAreaGroup } from "@/lib/queries";
@@ -66,8 +64,6 @@ export function ServiceArticle({
   otherCities,
   alsoFor,
   alsoForHeading = "Also available for",
-  keywordLinks,
-  intentLinks,
 }: {
   service: {
     name: string;
@@ -95,8 +91,6 @@ export function ServiceArticle({
   otherCities?: { slug: string; name: string; href: string }[];
   alsoFor?: { slug: string; name: string; href: string }[];
   alsoForHeading?: string;
-  keywordLinks?: LinkItem[];
-  intentLinks?: { slug: string; name: string; label: string }[];
 }) {
   const content = generateContent(service.name, routeKey, location);
   const specs = (service.specifications ?? {}) as Record<string, string>;
@@ -110,7 +104,7 @@ export function ServiceArticle({
   });
   const { hero: heroImage, gallery: galleryImages, beforeAfter, inline: inlineImage } = pageImages;
 
-  // Merge editorial (DB) FAQs with generated, location/property-aware FAQs.
+  // Editorial FAQs first; add a few high-intent location FAQs only
   const faqSeen = new Set<string>();
   const allFaqs: Faq[] = [...faqs, ...content.generatedFaqs]
     .filter((f) => {
@@ -119,7 +113,7 @@ export function ServiceArticle({
       faqSeen.add(key);
       return true;
     })
-    .slice(0, 14);
+    .slice(0, 10);
 
   return (
     <>
@@ -180,9 +174,6 @@ export function ServiceArticle({
               {placeLabel ? `${service.name} in ${placeLabel}` : `About our ${service.name.toLowerCase()}`}
             </h2>
             <p className="prose-content mt-3">{service.summary}</p>
-            {content.introParagraphs.slice(1).map((p, i) => (
-              <p key={i} className="prose-content mt-3">{p}</p>
-            ))}
             <p className="prose-content mt-3">{content.localInfo}</p>
           </section>
 
@@ -315,7 +306,8 @@ export function ServiceArticle({
             </div>
           </section>
 
-          {/* Complete guide (long-form, unique per route) */}
+          {/* Complete guide — only when curated sections exist (not AI filler) */}
+          {content.guideSections.length > 0 && (
           <section className="space-y-8">
             <h2 className="flex items-center gap-2 text-2xl font-bold">
               <BookOpen size={22} className="text-[var(--primary)]" /> Complete guide to {service.name.toLowerCase()}
@@ -329,6 +321,7 @@ export function ServiceArticle({
               </div>
             ))}
           </section>
+          )}
 
           {/* Buying considerations */}
           <section>
@@ -466,20 +459,6 @@ export function ServiceArticle({
                 ))}
               </div>
             </section>
-          )}
-
-          {/* Keyword service links */}
-          {intentLinks && intentLinks.length > 0 && (
-            <IntentServiceLinks links={intentLinks} serviceName={service.name} />
-          )}
-
-          {keywordLinks && keywordLinks.length > 0 && (
-            <KeywordServiceLinks
-              links={keywordLinks}
-              title={`Best near me · Top Kerala · ${service.name}`}
-              subtitle="Keyword pages for best near me, top Kerala, high quality #1, pricing, installation and repair across Kerala."
-              max={28}
-            />
           )}
 
           {/* FAQs */}

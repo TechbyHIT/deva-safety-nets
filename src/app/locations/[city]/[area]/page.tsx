@@ -27,7 +27,6 @@ import {
   getDistrictAreasGrouped,
 
   getDistrictAreaStaticParams,
-  getPopularKeywordLinks,
 } from "@/lib/queries";
 
 import { buildMetadata, buildLocationSeoKeywords } from "@/lib/seo";
@@ -41,7 +40,6 @@ import { ServiceLocationDirectory } from "@/components/ServiceLocationDirectory"
 import { DistrictAreaDirectory } from "@/components/DistrictAreaDirectory";
 
 import { LocationSeoServiceLinks } from "@/components/LocationSeoServiceLinks";
-import { KeywordServiceLinks } from "@/components/KeywordServiceLinks";
 
 import { serviceLocationHref } from "@/lib/service-location-url";
 
@@ -74,15 +72,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const place = `${loc.area.name}, ${loc.city.name}`;
 
   return buildMetadata({
-
-    title: `Best ${loc.area.name} Invisible Grills & Safety Nets — Near Me`,
-
-    description: `Premium invisible grills and safety nets in ${place}, Kerala. Best installers near you — free site survey, fast installation and warranty. ${loc.area.tierLabel ?? "Local"} service area.`,
-
+    title: `Invisible Grills & Safety Nets in ${loc.area.name}`,
+    description: `Invisible grills and safety nets in ${place}, Kerala. Free survey, fast install, warranty. Local Deva Safety Nets team near you.`,
     path: `/locations/${citySlug}/${areaSlug}`,
-
     keywords: buildLocationSeoKeywords(loc.area.name, loc.city.name),
-
   });
 
 }
@@ -93,15 +86,13 @@ export default async function AreaPage({ params }: Props) {
 
   const { city: citySlug, area: areaSlug } = await params;
 
-  const [loc, categories, districtAreas, keywordLinks] = await Promise.all([
+  const [loc, categories, districtAreas] = await Promise.all([
 
     getAreaBySlug(citySlug, areaSlug),
 
     getCategoriesWithServices(),
 
     getDistrictAreasGrouped(),
-
-    getPopularKeywordLinks(32),
 
   ]);
 
@@ -185,12 +176,6 @@ export default async function AreaPage({ params }: Props) {
 
             <p className="prose-content">{content.localInfo}</p>
 
-            {content.introParagraphs.slice(1).map((p, i) => (
-
-              <p key={i} className="prose-content">{p}</p>
-
-            ))}
-
             <div>
 
               <SectionHeading center={false} title={`All services in ${loc.area.name}`} />
@@ -260,20 +245,6 @@ export default async function AreaPage({ params }: Props) {
               placeName={loc.area.name}
 
               areaSlug={areaSlug}
-
-            />
-
-
-
-            <KeywordServiceLinks
-
-              links={keywordLinks}
-
-              title={`Best near me · Top Kerala · ${loc.area.name}`}
-
-              subtitle="Best near me, top Kerala, high quality #1 and premium installation keyword pages."
-
-              max={32}
 
             />
 

@@ -34,7 +34,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} | Invisible Grills & Safety Nets Kerala`,
+    default: `Invisible Grills & Safety Nets in Kerala | ${site.name}`,
     template: `%s | ${site.name}`,
   },
   description: site.description,

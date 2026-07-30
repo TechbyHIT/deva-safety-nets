@@ -18,15 +18,9 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-
-  title: "Service Areas — Invisible Grills & Safety Nets Kerala",
-
-  description:
-
-    `${site.name} installs invisible grills and safety nets across Kochi, Ernakulam and 160+ Kerala localities. Find your area for local services, FAQs and free site inspection.`,
-
+  title: "Service Areas — Kochi, Ernakulam & Kerala",
+  description: `${site.name} installs invisible grills and safety nets across Kochi, Ernakulam and 160+ Kerala localities. Find your area and book a free survey.`,
   path: "/locations",
-
 });
 
 

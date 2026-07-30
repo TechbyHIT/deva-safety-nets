@@ -7,20 +7,20 @@ import { CTABand } from "@/components/ui";
 import {
   getServiceBySlug,
   getRelatedServices,
-  getKeywordLinksForService,
-  getIntentLinksForService,
   getAllCities,
   getPropertyTypes,
   getContentOverride,
   getDistrictAreasGrouped,
   getAllServiceSlugs,
 } from "@/lib/queries";
+import { isKeywordSeoService } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema, reviewAggregateSchema } from "@/lib/schema";
 
 type Props = { params: Promise<{ service: string }> };
 
 export const dynamic = "force-static";
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   return getAllServiceSlugs();
@@ -31,13 +31,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getServiceBySlug(slug);
   if (!service) return {};
   const override = await getContentOverride(`services/${slug}`);
+  const noindex = isKeywordSeoService(service);
   return buildMetadata({
-    title: override?.metaTitle ?? `${service.name} — Materials, Installation & Kerala Service`,
+    title: override?.metaTitle ?? `${service.name} in Kerala — Free Survey & Install`,
     description:
       override?.metaDesc ??
-      `${service.tagline} Free site inspection, expert Kerala installation and long-term warranty.`,
+      `${service.name} in Kochi, Ernakulam & Kerala. ${service.tagline} Free site inspection, expert install, up to 10-year warranty.`,
     path: `/services/${slug}`,
     keywords: service.keywords,
+    noindex,
   });
 }
 
@@ -46,13 +48,11 @@ export default async function ServicePage({ params }: Props) {
   const service = await getServiceBySlug(slug);
   if (!service) notFound();
 
-  const [related, cities, propertyTypes, districtAreas, keywordLinks, intentLinks] = await Promise.all([
+  const [related, cities, propertyTypes, districtAreas] = await Promise.all([
     getRelatedServices(service.categoryId, service.id),
     getAllCities(),
     getPropertyTypes(),
     getDistrictAreasGrouped(),
-    getKeywordLinksForService(slug),
-    getIntentLinksForService(slug),
   ]);
 
   const path = `/services/${slug}`;
@@ -111,8 +111,6 @@ export default async function ServicePage({ params }: Props) {
           name: c.name,
           href: `/services/${slug}/${c.slug}`,
         }))}
-        keywordLinks={keywordLinks}
-        intentLinks={intentLinks}
       />
       <CTABand />
     </>

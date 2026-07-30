@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const material = await getMaterialBySlug(slug);
   if (!material) return {};
   return buildMetadata({
-    title: `${material.name} — Properties, Advantages & Uses`,
-    description: material.summary,
+    title: `${material.name} for Invisible Grills & Safety Nets`,
+    description: `${material.name} used in Kerala invisible grills and safety nets — ${material.summary}`,
     path: `/materials/${slug}`,
   });
 }

@@ -13,10 +13,34 @@ type BuildMetaArgs = {
   publishedTime?: string;
 };
 
+/** Strip brand suffix — layout template already appends `| Deva Safety Nets`. */
+export function normalizePageTitle(title: string): string {
+  const brand = site.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  let t = title
+    .replace(new RegExp(`\\s*[|–—-]\\s*${brand}\\s+Kerala\\s*$`, "i"), "")
+    .replace(new RegExp(`\\s*[|–—-]\\s*${brand}\\s*$`, "i"), "")
+    .replace(/\s+/g, " ")
+    .trim();
+  // Keep Google-friendly length for the page segment (~50–55 chars + brand)
+  if (t.length > 58) {
+    const cut = t.slice(0, 55);
+    const lastSpace = cut.lastIndexOf(" ");
+    t = (lastSpace > 30 ? cut.slice(0, lastSpace) : cut).trim();
+  }
+  return t;
+}
+
+/** Ensure guide/article titles mention Kerala when missing (better local CTR). */
+export function withKeralaTitle(title: string): string {
+  const t = normalizePageTitle(title);
+  if (/kerala|kochi|ernakulam/i.test(t)) return t;
+  return normalizePageTitle(`${t} Kerala`);
+}
+
 /**
  * Single source of truth for page metadata: canonical URLs, Open Graph,
- * Twitter cards and robots directives. Titles are clamped and templated by the
- * root layout, so pass the page-specific portion only.
+ * Twitter cards and robots directives. Pass the page-specific title only —
+ * root layout adds `| Deva Safety Nets`.
  */
 export function buildMetadata({
   title,
@@ -28,19 +52,21 @@ export function buildMetadata({
   keywords,
   publishedTime,
 }: BuildMetaArgs): Metadata {
+  const cleanTitle = normalizePageTitle(title);
+  const cleanDescription = description.replace(/\s+/g, " ").trim().slice(0, 160);
   const canonical = absoluteUrl(path);
   const ogImages = (images && images.length > 0 ? images : ["/og-default.png"]).map((src) =>
     src.startsWith("http") ? src : absoluteUrl(src),
   );
-  const ogImageObjects = ogImages.map((url) => ({ url, width: 1200, height: 630, alt: title }));
+  const ogImageObjects = ogImages.map((url) => ({ url, width: 1200, height: 630, alt: cleanTitle }));
 
   const openGraph: Metadata["openGraph"] =
     type === "article"
       ? {
           type: "article",
           url: canonical,
-          title,
-          description,
+          title: cleanTitle,
+          description: cleanDescription,
           siteName: site.name,
           locale: site.locale,
           images: ogImageObjects,
@@ -49,16 +75,16 @@ export function buildMetadata({
       : {
           type: "website",
           url: canonical,
-          title,
-          description,
+          title: cleanTitle,
+          description: cleanDescription,
           siteName: site.name,
           locale: site.locale,
           images: ogImageObjects,
         };
 
   return {
-    title,
-    description,
+    title: cleanTitle,
+    description: cleanDescription,
     keywords,
     alternates: { canonical },
     robots: noindex
@@ -77,8 +103,8 @@ export function buildMetadata({
     openGraph,
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: cleanTitle,
+      description: cleanDescription,
       images: ogImages,
     },
   };
@@ -107,14 +133,17 @@ export function buildServiceLocationMetadata(args: {
   let description: string;
 
   if (isQuoteIntent) {
-    title = `${serviceName} in ${place} — Free Quote | Deva Safety Nets`;
-    description = `Looking for ${serviceName.toLowerCase()} in ${place}, ${state}? Free site survey, transparent itemised quote and professional installation. Deva Safety Nets — Kochi, Ernakulam and Kerala-wide.`;
+    title = `${serviceName} Price in ${place} — Free Quote`;
+    description = `Get ${serviceName.toLowerCase()} price in ${place}, ${state}. Free site survey, itemised quote in 24 hours, expert install. Call Deva Safety Nets Kochi.`;
   } else if (isInstallIntent) {
-    title = `${serviceName} in ${place} — Certified Installers | Deva Safety Nets`;
-    description = `Professional ${serviceName.toLowerCase()} in ${place}, ${state}. Trained Deva Safety Nets technicians, IS-compliant materials, warranty-backed work. Book a free survey today.`;
+    title = `${serviceName} in ${place} — Expert Install`;
+    description = `Book ${serviceName.toLowerCase()} in ${place}, ${state}. Certified installers, IS materials, warranty. Free survey across Kochi & Ernakulam.`;
+  } else if (areaName) {
+    title = `${serviceName} in ${areaName}, ${cityName}`;
+    description = `${serviceName} installation in ${areaName}, ${cityName}, ${state}. Free inspection, fast install, up to 10-year warranty. Deva Safety Nets near you.`;
   } else {
-    title = `${serviceName} in ${place} — Free Survey | Deva Safety Nets`;
-    description = `${serviceName} in ${place}, ${state}. Local Deva Safety Nets team, free inspection, premium materials and long-term warranty. Request your quote today.`;
+    title = `${serviceName} in ${place} — Free Survey`;
+    description = `Best ${serviceName.toLowerCase()} in ${place}, ${state}. Free site inspection, premium materials, warranty-backed install. Serving Kochi, Ernakulam & Kerala.`;
   }
 
   const keywords = [
@@ -124,10 +153,7 @@ export function buildServiceLocationMetadata(args: {
     `best ${serviceName} in ${place}`,
     `best ${serviceName} near me ${place}`,
     `top ${serviceName} Kerala`,
-    `high quality #1 ${serviceName} Kerala`,
     `best ${serviceName} Kerala`,
-    `premium ${serviceName} in ${place}`,
-    `${serviceName} for ${place}`,
     `${serviceName} ${cityName}`,
     `${serviceName} Kerala`,
     ...serviceKeywords.slice(0, 12),
@@ -151,14 +177,12 @@ export function buildLocationSeoKeywords(placeName: string, cityName?: string): 
     `best safety nets ${p}`,
     `best safety nets near me ${p}`,
     `top safety nets Kerala`,
-    `high quality safety nets #1 Kerala`,
     `best safety nets Kerala`,
     `premium invisible grills in ${p}`,
     `invisible grills near me ${p}`,
     `safety nets near me ${p}`,
     `best invisible grills near me ${p}`,
     `top invisible grills Kerala`,
-    `high quality #1 invisible grills Kerala`,
     `invisible grills for ${p}`,
     `safety nets for ${p}`,
     `invisible grills ${c}`,

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GuideView } from "@/components/GuideView";
 import { getGuideBySlug, getGuideServiceSlugs } from "@/lib/queries";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, withKeralaTitle } from "@/lib/seo";
 
 export const dynamicParams = false;
 export async function generateStaticParams() {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const guide = await getGuideBySlug(`installation-${service}`);
   if (!guide) return {};
   return buildMetadata({
-    title: guide.title,
+    title: withKeralaTitle(guide.title),
     description: guide.excerpt,
     path: `/installation-guide/${service}`,
     type: "article",

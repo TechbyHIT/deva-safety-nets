@@ -7,9 +7,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Blog — Invisible Grills & Safety Nets Guides | Deva Safety Nets Kerala",
+  title: "Blog — Safety Nets & Invisible Grill Guides Kerala",
   description:
-    "Expert guides on invisible grills, balcony safety nets, child and pet safety, pigeon control, materials, installation, maintenance and Kerala-specific buying advice from Deva Safety Nets.",
+    "Guides on invisible grills, balcony safety nets, bird control, materials and installation for Kerala homes — tips from Deva Safety Nets.",
   path: "/blog",
 });
 

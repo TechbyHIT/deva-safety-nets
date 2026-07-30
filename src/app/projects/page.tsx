@@ -10,9 +10,9 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Projects & Case Studies — Deva Safety Nets Kerala",
+  title: "Projects — Invisible Grill & Safety Net Work Kerala",
   description:
-    "Explore completed invisible grill and safety net projects by Deva Safety Nets across Kerala — real installations with challenge, solution and outcome.",
+    "Real invisible grill and safety net projects across Kochi & Ernakulam — case studies with challenge, solution and outcome.",
   path: "/projects",
 });
 

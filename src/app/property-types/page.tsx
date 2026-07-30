@@ -8,9 +8,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Solutions by Property Type",
+  title: "Safety Solutions by Property Type Kerala",
   description:
-    "Invisible grills and safety nets tailored to your property — apartments, villas, independent houses, commercial buildings, industrial facilities and more.",
+    "Invisible grills and safety nets for apartments, villas, houses and commercial buildings in Kochi, Ernakulam and Kerala.",
   path: "/property-types",
 });
 

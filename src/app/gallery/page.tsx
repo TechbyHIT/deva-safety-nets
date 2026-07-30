@@ -11,9 +11,9 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Gallery — Deva Safety Nets Installation Photos Kerala",
+  title: "Gallery — Real Installation Photos in Kerala",
   description:
-    "Browse completed invisible grill and safety net installations by Deva Safety Nets across Kerala — balconies, windows, terraces and commercial projects in Kochi and Ernakulam.",
+    "Browse real invisible grill and safety net installations across Kochi & Ernakulam — balconies, windows, terraces and commercial projects by Deva Safety Nets.",
   path: "/gallery",
 });
 

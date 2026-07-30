@@ -1,6 +1,10 @@
 import { absoluteUrl } from "./site";
-import { catalogServiceFilter, catalogCityFilter, isExcludedService } from "./catalog";
+import {
+  catalogCityFilter,
+  isExcludedService,
+} from "./catalog";
 import { catalogIndex, staticCatalog } from "./static-data/build-catalog";
+import { SERVICE_MENU } from "./service-menu";
 
 export type SitemapEntry = {
   url: string;
@@ -16,15 +20,51 @@ export type SitemapEntry = {
   priority?: number;
 };
 
+/**
+ * Money-page services for area-level sitemap URLs only.
+ * Full menu × 100+ areas creates thin duplicates — keep area combos tight.
+ */
+const FLAGSHIP_AREA_SERVICE_SLUGS = new Set([
+  "balcony-invisible-grills",
+  "window-invisible-grills",
+  "ss-invisible-grills",
+  "stainless-steel-invisible-grills",
+  "balcony-safety-nets",
+  "window-safety-nets",
+  "children-safety-nets",
+  "kids-safety-nets",
+  "pet-safety-nets",
+  "terrace-safety-nets",
+  "pigeon-nets",
+  "bird-nets",
+  "bird-spikes",
+  "invisible-grill-installation",
+  "balcony-pigeon-nets",
+]);
+
+/** Menu service slugs only — no keyword “best near me / #1” rows. */
+function getMenuServiceSlugs(): Set<string> {
+  const slugs = new Set<string>();
+  for (const cat of SERVICE_MENU) {
+    for (const s of cat.services) {
+      if (!isExcludedService(s)) slugs.add(s.slug);
+    }
+  }
+  return slugs;
+}
+
 function buildAllSitemapEntries(): SitemapEntry[] {
   const supported = new Set(catalogCityFilter.slug.in);
+  const menuSlugs = getMenuServiceSlugs();
 
   const services = staticCatalog.services
-    .filter((s) => !isExcludedService(s))
+    .filter((s) => menuSlugs.has(s.slug) && !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
-  const coreServices = staticCatalog.services
-    .filter((s) => s.order < catalogServiceFilter.order.lt && !isExcludedService(s))
-    .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
+
+  const locationServices = services;
+
+  const areaServices = services.filter((s) => FLAGSHIP_AREA_SERVICE_SLUGS.has(s.slug));
+
   const cities = staticCatalog.cities
     .filter((c) => supported.has(c.slug))
     .map((c) => ({ slug: c.slug, updatedAt: c.updatedAt }));
@@ -45,10 +85,17 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     .filter((b) => b.published)
     .map((b) => ({ slug: b.slug, updatedAt: b.updatedAt }));
   const guides = staticCatalog.guides
-    .filter((g) => g.published)
-    .map((g) => ({ slug: g.slug, type: g.type, service: g.service ? { slug: g.service.slug } : null }));
+    .filter((g) => g.published && g.service && menuSlugs.has(g.service.slug))
+    .map((g) => ({ slug: g.slug, type: g.type, service: g.service! }));
 
+  const seen = new Set<string>();
   const entries: SitemapEntry[] = [];
+
+  function add(entry: SitemapEntry) {
+    if (seen.has(entry.url)) return;
+    seen.add(entry.url);
+    entries.push(entry);
+  }
 
   const staticPaths: [string, number, SitemapEntry["changeFrequency"]][] = [
     ["/", 1, "daily"],
@@ -58,62 +105,120 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     ["/materials", 0.6, "monthly"],
     ["/industries", 0.6, "monthly"],
     ["/compare", 0.6, "monthly"],
-    ["/projects", 0.6, "weekly"],
-    ["/reviews", 0.6, "weekly"],
-    ["/gallery", 0.5, "monthly"],
-    ["/blog", 0.7, "daily"],
+    ["/projects", 0.7, "weekly"],
+    ["/reviews", 0.7, "weekly"],
+    ["/gallery", 0.7, "weekly"],
+    ["/blog", 0.7, "weekly"],
     ["/faq", 0.6, "monthly"],
     ["/about", 0.5, "yearly"],
-    ["/contact", 0.7, "yearly"],
+    ["/contact", 0.8, "monthly"],
   ];
   for (const [path, priority, changeFrequency] of staticPaths) {
-    entries.push({ url: absoluteUrl(path), priority, changeFrequency });
+    add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
   for (const s of services)
-    entries.push({ url: absoluteUrl(`/services/${s.slug}`), lastModified: s.updatedAt, changeFrequency: "weekly", priority: 0.9 });
+    add({
+      url: absoluteUrl(`/services/${s.slug}`),
+      lastModified: s.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    });
   for (const m of materials)
-    entries.push({ url: absoluteUrl(`/materials/${m.slug}`), lastModified: m.updatedAt, changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/materials/${m.slug}`),
+      lastModified: m.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
   for (const i of industries)
-    entries.push({ url: absoluteUrl(`/industries/${i.slug}`), lastModified: i.updatedAt, changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/industries/${i.slug}`),
+      lastModified: i.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
   for (const p of propertyTypes)
-    entries.push({ url: absoluteUrl(`/property-types/${p.slug}`), lastModified: p.updatedAt, changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/property-types/${p.slug}`),
+      lastModified: p.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
   for (const c of comparisons)
-    entries.push({ url: absoluteUrl(`/compare/${c.slug}`), lastModified: c.updatedAt, changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/compare/${c.slug}`),
+      lastModified: c.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
   for (const b of blog)
-    entries.push({ url: absoluteUrl(`/blog/${b.slug}`), lastModified: b.updatedAt, changeFrequency: "monthly", priority: 0.7 });
+    add({
+      url: absoluteUrl(`/blog/${b.slug}`),
+      lastModified: b.updatedAt,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
   for (const g of guides)
-    if (g.service)
-      entries.push({ url: absoluteUrl(`/${g.type.toLowerCase()}-guide/${g.service.slug}`), changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/${g.type.toLowerCase()}-guide/${g.service.slug}`),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
 
   for (const c of cities)
-    entries.push({ url: absoluteUrl(`/locations/${c.slug}`), lastModified: c.updatedAt, changeFrequency: "weekly", priority: 0.8 });
+    add({
+      url: absoluteUrl(`/locations/${c.slug}`),
+      lastModified: c.updatedAt,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    });
   for (const a of areas)
-    entries.push({ url: absoluteUrl(`/locations/${a.city.slug}/${a.slug}`), changeFrequency: "monthly", priority: 0.6 });
+    add({
+      url: absoluteUrl(`/locations/${a.city.slug}/${a.slug}`),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
 
-  for (const s of coreServices) {
+  // Menu × city (primary local money pages)
+  for (const s of locationServices) {
     for (const c of cities) {
-      entries.push({ url: absoluteUrl(`/services/${s.slug}/${c.slug}`), changeFrequency: "weekly", priority: 0.7 });
-    }
-  }
-  for (const s of coreServices) {
-    for (const a of areas) {
-      entries.push({
-        url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
-        changeFrequency: "monthly",
-        priority: 0.5,
+      add({
+        url: absoluteUrl(`/services/${s.slug}/${c.slug}`),
+        changeFrequency: "weekly",
+        priority: 0.8,
       });
     }
   }
 
-  for (const s of coreServices) {
+  // Flagship × area only (high-intent localities, not every menu × area)
+  for (const s of areaServices) {
+    for (const a of areas) {
+      add({
+        url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
+        changeFrequency: "monthly",
+        priority: 0.6,
+      });
+    }
+  }
+
+  // Flagship × property type
+  for (const s of areaServices) {
     for (const p of propertyTypes) {
-      entries.push({ url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`), changeFrequency: "monthly", priority: 0.6 });
+      add({
+        url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`),
+        changeFrequency: "monthly",
+        priority: 0.55,
+      });
     }
   }
   for (const p of propertyTypes) {
     for (const c of cities) {
-      entries.push({ url: absoluteUrl(`/property-types/${p.slug}/${c.slug}`), changeFrequency: "monthly", priority: 0.5 });
+      add({
+        url: absoluteUrl(`/property-types/${p.slug}/${c.slug}`),
+        changeFrequency: "monthly",
+        priority: 0.5,
+      });
     }
   }
 

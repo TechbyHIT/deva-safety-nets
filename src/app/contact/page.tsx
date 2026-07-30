@@ -10,9 +10,9 @@ import { site, telHref, whatsappHref } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Contact Us — Free Site Inspection in Kerala",
+  title: "Contact — Free Safety Net Survey in Kerala",
   description:
-    "Contact Deva Safety Nets for a free site inspection and transparent quote on invisible grills and safety nets in Kochi, Ernakulam and across Kerala. Call, WhatsApp or submit the form.",
+    "Book a free site inspection for invisible grills and safety nets in Kochi, Ernakulam & Kerala. Call, WhatsApp or request a quote online.",
   path: "/contact",
 });
 

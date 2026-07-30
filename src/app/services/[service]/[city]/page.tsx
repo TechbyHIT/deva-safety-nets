@@ -10,10 +10,9 @@ import {
   getCityBySlug,
   getContentOverride,
   getDistrictAreasGrouped,
-  getKeywordLinksForService,
-  getIntentLinksForService,
 } from "@/lib/queries";
 import { buildMetadata, buildServiceLocationMetadata } from "@/lib/seo";
+import { isKeywordSeoService } from "@/lib/catalog";
 import {
   serviceSchema,
   faqSchema,
@@ -32,24 +31,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getCityBySlug(citySlug),
   ]);
   if (!service || !city) return {};
+  const noindex = isKeywordSeoService(service);
   const override = await getContentOverride(`services/${serviceSlug}/${citySlug}`);
   if (override?.metaTitle || override?.metaDesc) {
     return buildMetadata({
-      title: override.metaTitle ?? `${service.name} in ${city.name}`,
+      title: override.metaTitle ?? `${service.name} in ${city.name} — Free Survey`,
       description:
         override.metaDesc ??
-        `Professional ${service.name.toLowerCase()} in ${city.name}, ${city.state}. Local team, free site survey and warranty.`,
+        `Best ${service.name.toLowerCase()} in ${city.name}, ${city.state}. Free survey, local install, warranty. Call Deva Safety Nets.`,
       path: `/services/${serviceSlug}/${citySlug}`,
       keywords: [...service.keywords, city.name, `${service.name} ${city.name}`],
+      noindex,
     });
   }
-  return buildServiceLocationMetadata({
+  const meta = buildServiceLocationMetadata({
     serviceName: service.name,
     serviceKeywords: service.keywords,
     cityName: city.name,
     state: city.state,
     path: `/services/${serviceSlug}/${citySlug}`,
   });
+  if (!noindex) return meta;
+  return { ...meta, robots: { index: false, follow: true } };
 }
 
 export default async function ServiceCityPage({ params }: Props) {
@@ -61,11 +64,7 @@ export default async function ServiceCityPage({ params }: Props) {
   ]);
   if (!service || !city) notFound();
 
-  const [related, keywordLinks, intentLinks] = await Promise.all([
-    getRelatedServices(service.categoryId, service.id),
-    getKeywordLinksForService(serviceSlug),
-    getIntentLinksForService(serviceSlug),
-  ]);
+  const related = await getRelatedServices(service.categoryId, service.id);
   const path = `/services/${serviceSlug}/${citySlug}`;
   const routeKey = `services/${serviceSlug}/${citySlug}`;
   const faqs = service.faqs.map((f) => ({ question: f.question, answer: f.answer }));
@@ -123,8 +122,6 @@ export default async function ServiceCityPage({ params }: Props) {
         related={related}
         districtAreaGroups={districtAreas}
         currentCitySlug={citySlug}
-        keywordLinks={keywordLinks}
-        intentLinks={intentLinks}
       />
       <CTABand
         title={`Get ${service.name.toLowerCase()} in ${city.name}`}

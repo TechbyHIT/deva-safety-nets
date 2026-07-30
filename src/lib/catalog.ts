@@ -30,3 +30,8 @@ export function isExcludedService(service: { slug: string; name?: string; catego
   if (service.category?.slug && isExcludedCategorySlug(service.category.slug)) return true;
   return isExcludedServiceSlug(service.slug, service.name ?? "");
 }
+
+/** Thin programmatic keyword rows (order ≥ 9000) — not for location combo indexing. */
+export function isKeywordSeoService(service: { order?: number | null }): boolean {
+  return typeof service.order === "number" && service.order >= KEYWORD_SERVICE_ORDER_FLOOR;
+}

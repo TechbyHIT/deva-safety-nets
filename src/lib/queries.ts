@@ -89,8 +89,9 @@ export async function getServiceBySlug(slug: string) {
 }
 
 export async function getAllServiceSlugs() {
+  // Prebuild menu / core hubs only — keyword SEO rows stay on-demand + noindex
   return staticCatalog.services
-    .filter((s) => !isExcludedService(s))
+    .filter((s) => !isExcludedService(s) && s.order < KEYWORD_SERVICE_ORDER_FLOOR)
     .map(({ slug }) => ({ slug }));
 }
 
@@ -119,7 +120,13 @@ export async function getFeaturedServices() {
 
 export async function getRelatedServices(categoryId: string, excludeId: string) {
   return staticCatalog.services
-    .filter((s) => s.categoryId === categoryId && s.id !== excludeId)
+    .filter(
+      (s) =>
+        s.categoryId === categoryId &&
+        s.id !== excludeId &&
+        s.order < KEYWORD_SERVICE_ORDER_FLOOR &&
+        !isExcludedService(s),
+    )
     .sort((a, b) => a.order - b.order)
     .slice(0, 6)
     .map(({ slug, name, tagline }) => ({ slug, name, tagline }));

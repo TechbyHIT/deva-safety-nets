@@ -10,9 +10,9 @@ import { faqSchema } from "@/lib/schema";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Frequently Asked Questions — Deva Safety Nets Kerala",
+  title: "FAQ — Invisible Grills & Safety Nets Kerala",
   description:
-    "Extensive FAQs on invisible grills, balcony safety nets, child and pet safety, pigeon nets, bird spikes, sports nets, cloth hangers, installation, maintenance, materials, pricing and Kerala service areas.",
+    "FAQs on invisible grills, balcony safety nets, pricing, installation, materials and Kerala service areas. Honest answers from Deva Safety Nets.",
   path: "/faq",
 });
 

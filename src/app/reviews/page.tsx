@@ -12,9 +12,9 @@ import { reviewAggregateSchema } from "@/lib/schema";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Customer Reviews — Invisible Grills & Safety Nets Kerala",
+  title: "Customer Reviews — Safety Nets & Grills Kerala",
   description:
-    "Read verified customer reviews for invisible grills and safety nets in Kerala. Rated 4.9/5 by homeowners and businesses in Kochi, Ernakulam and across the state.",
+    "4.9★ customer reviews for invisible grills and safety nets in Kochi, Ernakulam and Kerala. Real homeowners and businesses — Deva Safety Nets.",
   path: "/reviews",
 });
 

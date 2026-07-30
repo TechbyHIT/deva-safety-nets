@@ -19,9 +19,9 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "About Us — Kerala's Trusted Invisible Grills & Safety Nets Experts",
+  title: "About Us — Invisible Grills & Safety Nets Kerala",
   description:
-    "Deva Safety Nets is Kerala's premium invisible grills and safety net specialist — certified materials, local expert teams in Kochi and Ernakulam, and warranty-backed installations.",
+    "Kerala's trusted invisible grills and safety nets team in Kochi & Ernakulam — certified materials, local technicians, up to 10-year warranty.",
   path: "/about",
 });
 

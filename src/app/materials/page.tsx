@@ -7,9 +7,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Materials — SS304, SS316, Nylon & HDPE",
+  title: "Materials — SS304, SS316, Nylon & HDPE Kerala",
   description:
-    "Understand the materials behind quality invisible grills and safety nets — SS304, marine-grade SS316, braided nylon and UV-treated HDPE.",
+    "SS304, marine SS316, nylon and HDPE for invisible grills and safety nets in Kerala — what we use and why for Kochi & coastal homes.",
   path: "/materials",
 });
 

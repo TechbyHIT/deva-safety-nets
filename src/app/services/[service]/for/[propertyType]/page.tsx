@@ -12,9 +12,8 @@ import {
   getAllCities,
   getContentOverride,
   getDistrictAreasGrouped,
-  getKeywordLinksForService,
-  getIntentLinksForService,
 } from "@/lib/queries";
+import { isKeywordSeoService } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema } from "@/lib/schema";
 
@@ -31,12 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service || !pt) return {};
   const override = await getContentOverride(`services/${serviceSlug}/for/${ptSlug}`);
   return buildMetadata({
-    title: override?.metaTitle ?? `${service.name} for ${pt.plural} — Expert Solutions`,
+    title: override?.metaTitle ?? `${service.name} for ${pt.plural} in Kerala`,
     description:
       override?.metaDesc ??
-      `${service.name} designed for ${pt.plural.toLowerCase()}. ${pt.summary} Free site survey, expert installation and warranty.`,
+      `${service.name} for ${pt.plural.toLowerCase()} in Kochi & Ernakulam. ${pt.summary} Free survey, expert install, warranty.`,
     path: `/services/${serviceSlug}/for/${ptSlug}`,
     keywords: [...service.keywords, pt.name, `${service.name} for ${pt.name}`],
+    noindex: isKeywordSeoService(service),
   });
 }
 
@@ -48,13 +48,11 @@ export default async function ServicePropertyTypePage({ params }: Props) {
   ]);
   if (!service || !pt) notFound();
 
-  const [related, propertyTypes, cities, districtAreas, keywordLinks, intentLinks] = await Promise.all([
+  const [related, propertyTypes, cities, districtAreas] = await Promise.all([
     getRelatedServices(service.categoryId, service.id),
     getPropertyTypes(),
     getAllCities(),
     getDistrictAreasGrouped(),
-    getKeywordLinksForService(serviceSlug),
-    getIntentLinksForService(serviceSlug),
   ]);
 
   const path = `/services/${serviceSlug}/for/${ptSlug}`;
@@ -112,8 +110,6 @@ export default async function ServicePropertyTypePage({ params }: Props) {
           name: c.name,
           href: `/services/${serviceSlug}/${c.slug}`,
         }))}
-        keywordLinks={keywordLinks}
-        intentLinks={intentLinks}
       />
       <CTABand
         title={`${service.name} for your ${pt.name.toLowerCase()}`}

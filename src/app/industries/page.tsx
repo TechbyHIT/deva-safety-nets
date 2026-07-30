@@ -7,9 +7,9 @@ import { buildMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = buildMetadata({
-  title: "Industries We Serve",
+  title: "Industries — Safety Nets & Grills Kerala",
   description:
-    "Tailored invisible grill and safety net solutions for residential, commercial, industrial, education, healthcare and hospitality sectors.",
+    "Invisible grills and safety nets for residential, commercial, industrial, schools and hospitality across Kochi, Ernakulam & Kerala.",
   path: "/industries",
 });
 

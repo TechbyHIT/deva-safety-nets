@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   ]);
   if (!pt || !city) return {};
   return buildMetadata({
-    title: `Invisible Grills & Safety Nets for ${pt.plural} in ${city.name}`,
-    description: `Safety solutions for ${pt.plural.toLowerCase()} in ${city.name}, ${city.state}. Local team, free site survey, transparent pricing and warranty.`,
+    title: `${pt.plural} Safety Nets & Grills in ${city.name}`,
+    description: `Invisible grills and safety nets for ${pt.plural.toLowerCase()} in ${city.name}, ${city.state}. Free survey, local install, warranty.`,
     path: `/property-types/${ptSlug}/${citySlug}`,
     keywords: [pt.name, city.name, `${pt.name} safety ${city.name}`],
   });

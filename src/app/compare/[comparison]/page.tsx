@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await getComparisonBySlug(slug);
   if (!c) return {};
   return buildMetadata({
-    title: `${c.serviceA.name} vs ${c.serviceB.name} — Which Is Better?`,
+    title: `${c.serviceA.name} vs ${c.serviceB.name} in Kerala`,
     description: c.intro,
     path: `/compare/${slug}`,
     type: "article",

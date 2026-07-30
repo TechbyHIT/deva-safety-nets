@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { Section, CTABand } from "@/components/ui";
 import { getBlogPostBySlug, getBlogPosts } from "@/lib/queries";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, withKeralaTitle } from "@/lib/seo";
 import { articleSchema } from "@/lib/schema";
 
 export const dynamicParams = false;
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getBlogPostBySlug(slug);
   if (!post) return {};
   return buildMetadata({
-    title: post.title,
+    title: withKeralaTitle(post.title),
     description: post.excerpt,
     path: `/blog/${slug}`,
     type: "article",
