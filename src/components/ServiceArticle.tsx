@@ -64,6 +64,9 @@ export function ServiceArticle({
   otherCities,
   alsoFor,
   alsoForHeading = "Also available for",
+  // Accepted but unused — old pages may still pass these; do not render keyword spam
+  keywordLinks: _keywordLinks,
+  intentLinks: _intentLinks,
 }: {
   service: {
     name: string;
@@ -91,7 +94,13 @@ export function ServiceArticle({
   otherCities?: { slug: string; name: string; href: string }[];
   alsoFor?: { slug: string; name: string; href: string }[];
   alsoForHeading?: string;
+  /** @deprecated ignored — keyword SEO pages are noindex */
+  keywordLinks?: LinkItem[];
+  /** @deprecated ignored — keyword SEO pages are noindex */
+  intentLinks?: { slug: string; name: string; label: string }[];
 }) {
+  void _keywordLinks;
+  void _intentLinks;
   const content = generateContent(service.name, routeKey, location);
   const specs = (service.specifications ?? {}) as Record<string, string>;
   const benefits = varyList(service.benefits, routeKey);
