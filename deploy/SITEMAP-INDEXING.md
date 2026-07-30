@@ -1,18 +1,25 @@
 # Sitemap & indexing
 
-## Current (all phases + all service hubs)
+## Indexable
 
-| Indexable (in sitemap) | Noindex (not in sitemap) |
-|------------------------|--------------------------|
-| Home, hubs, blog, materials, guides | Privacy, terms, search |
-| **All** `/services/{slug}` hubs (~35k menu + long-tail) | Keyword service × city |
-| Menu × Kochi / Ernakulam | Keyword service × area |
-| Menu × areas + property combos | Keyword service × property |
-| Location city + area pages | |
+| In sitemap (indexable) | Notes |
+|------------------------|--------|
+| All `/services/{slug}` hubs | Menu + long-tail |
+| All services × Kochi / Ernakulam | Keyword × city included |
+| All services × property types | Keyword × property included |
+| **Menu** services × areas | Area capped (not 35k × 102) |
+| Locations, blog, materials, guides | |
 
-`SITEMAP_PHASE = 4` in `src/lib/sitemap-urls.ts`.
+`SITEMAP_PHASE = 4`. Keyword × city / area / property **pages are indexable** (no `noindex`). Area URLs in the sitemap stay menu-scale.
 
-~**44k** URLs — under Google’s 50k/sitemap limit. Kochi+Ernakulam location combos stay menu-only (quality ceiling).
+## Size
+
+~**535k** URLs across sharded urlsets (build-time).
+
+## Sitemap format
+
+- `public/sitemap.xml` — **sitemap index** (committed)
+- `public/sitemaps/sitemap-N.xml` — urlset shards ≤40k each (gitignored; created on `npm run build`)
 
 ## After deploy
 
@@ -21,3 +28,5 @@ bash deploy/pm2-deploy.sh
 ```
 
 Resubmit `https://devasafetynets.com/sitemap.xml` in GSC.
+
+Google may still leave many programmatic URLs as “Discovered – not indexed”; that is normal at this scale.

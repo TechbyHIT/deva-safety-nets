@@ -17,14 +17,15 @@ export type SitemapEntry = {
   priority?: number;
 };
 
+/** Max URLs per sitemap shard (Google limit is 50k). */
+export const SITEMAP_SHARD_SIZE = 40_000;
+
 /**
  * Sitemap growth phase (1–4 all implemented).
- * Set to 4 to include every high-intent location tier.
- * All service hubs (menu + long-tail) are indexable; keyword×area stays noindex.
+ * Hubs + all services × city/property are indexable; area combos stay menu-scale.
  */
 export const SITEMAP_PHASE = 4 as 1 | 2 | 3 | 4;
 
-/** Flagship subset used in Phase 2–3 before full menu expansion in Phase 4. */
 const FLAGSHIP_SERVICE_SLUGS = new Set([
   "balcony-invisible-grills",
   "window-invisible-grills",
@@ -54,20 +55,19 @@ function buildAllSitemapEntries(): SitemapEntry[] {
   const supported = new Set(catalogCityFilter.slug.in);
   const menuSlugs = getMenuServiceSlugs();
 
-  const services = staticCatalog.services
+  const menuServices = staticCatalog.services
     .filter((s) => menuSlugs.has(s.slug) && !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
 
-  /** Every published service hub — menu + long-tail (indexable). */
-  const allServiceHubs = staticCatalog.services
+  /** Every published service — menu + long-tail. */
+  const allServices = staticCatalog.services
     .filter((s) => !isExcludedService(s))
     .map((s) => ({ slug: s.slug, updatedAt: s.updatedAt }));
 
-  const flagshipServices = services.filter((s) => FLAGSHIP_SERVICE_SLUGS.has(s.slug));
+  const flagshipServices = menuServices.filter((s) => FLAGSHIP_SERVICE_SLUGS.has(s.slug));
 
-  /** Phase 4 = full menu; Phase 2–3 = flagship only for heavy combos. */
-  const areaComboServices = SITEMAP_PHASE >= 4 ? services : flagshipServices;
-  const propertyComboServices = SITEMAP_PHASE >= 4 ? services : flagshipServices;
+  /** Area combos: menu at phase 4 (not full 35k × areas). */
+  const areaComboServices = SITEMAP_PHASE >= 4 ? menuServices : flagshipServices;
 
   const cities = staticCatalog.cities
     .filter((c) => supported.has(c.slug))
@@ -101,7 +101,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     entries.push(entry);
   }
 
-  // ——— Phase 1: hubs + menu services + menu × city + locations ———
   const staticPaths: [string, number, SitemapEntry["changeFrequency"]][] = [
     ["/", 1, "daily"],
     ["/services", 0.9, "weekly"],
@@ -122,7 +121,8 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
-  for (const s of allServiceHubs) {
+  // All service hubs
+  for (const s of allServices) {
     add({
       url: absoluteUrl(`/services/${s.slug}`),
       lastModified: s.updatedAt,
@@ -130,6 +130,7 @@ function buildAllSitemapEntries(): SitemapEntry[] {
       priority: menuSlugs.has(s.slug) ? 0.9 : 0.65,
     });
   }
+
   for (const m of materials) {
     add({
       url: absoluteUrl(`/materials/${m.slug}`),
@@ -194,37 +195,38 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     });
   }
 
-  for (const s of services) {
+  // All services × city (menu + keyword long-tail)
+  for (const s of allServices) {
     for (const c of cities) {
       add({
         url: absoluteUrl(`/services/${s.slug}/${c.slug}`),
         changeFrequency: "weekly",
-        priority: 0.85,
+        priority: menuSlugs.has(s.slug) ? 0.85 : 0.55,
       });
     }
   }
 
-  // ——— Phase 2: service × area (flagship); Phase 4: full menu × area ———
+  // Menu × area (capped — not full keyword × area)
   if (SITEMAP_PHASE >= 2) {
     for (const s of areaComboServices) {
       for (const a of areas) {
         add({
           url: absoluteUrl(`/services/${s.slug}/${a.city.slug}/${a.slug}`),
           changeFrequency: "monthly",
-          priority: SITEMAP_PHASE >= 4 ? 0.6 : 0.65,
+          priority: 0.6,
         });
       }
     }
   }
 
-  // ——— Phase 3: service × property + property × city (flagship; full menu at Phase 4) ———
+  // All services × property type
   if (SITEMAP_PHASE >= 3) {
-    for (const s of propertyComboServices) {
+    for (const s of allServices) {
       for (const p of propertyTypes) {
         add({
           url: absoluteUrl(`/services/${s.slug}/for/${p.slug}`),
           changeFrequency: "monthly",
-          priority: 0.55,
+          priority: menuSlugs.has(s.slug) ? 0.55 : 0.4,
         });
       }
     }
@@ -238,9 +240,6 @@ function buildAllSitemapEntries(): SitemapEntry[] {
       }
     }
   }
-
-  // Phase 4 = full menu location/property combos.
-  // All service hubs are in the sitemap; keyword×city/area stay noindex (thin).
 
   return entries;
 }
@@ -272,4 +271,24 @@ export function renderUrlsetXml(entries: SitemapEntry[]): string {
     })
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
+}
+
+export function renderSitemapIndexXml(shardUrls: string[]): string {
+  const now = new Date().toISOString();
+  const body = shardUrls
+    .map(
+      (loc) =>
+        `<sitemap><loc>${xmlEscape(loc)}</loc><lastmod>${now}</lastmod></sitemap>`,
+    )
+    .join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
+}
+
+/** Split entries into chunks of SITEMAP_SHARD_SIZE. */
+export function shardSitemapEntries(entries: SitemapEntry[], size = SITEMAP_SHARD_SIZE): SitemapEntry[][] {
+  const shards: SitemapEntry[][] = [];
+  for (let i = 0; i < entries.length; i += size) {
+    shards.push(entries.slice(i, i + size));
+  }
+  return shards.length > 0 ? shards : [[]];
 }

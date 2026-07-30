@@ -12,7 +12,6 @@ import {
   getDistrictAreasGrouped,
 } from "@/lib/queries";
 import { buildMetadata, buildServiceLocationMetadata } from "@/lib/seo";
-import { isKeywordSeoService } from "@/lib/catalog";
 import {
   serviceSchema,
   faqSchema,
@@ -31,7 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getCityBySlug(citySlug),
   ]);
   if (!service || !city) return {};
-  const noindex = isKeywordSeoService(service);
   const override = await getContentOverride(`services/${serviceSlug}/${citySlug}`);
   if (override?.metaTitle || override?.metaDesc) {
     return buildMetadata({
@@ -41,18 +39,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         `Best ${service.name.toLowerCase()} in ${city.name}, ${city.state}. Free survey, local install, warranty. Call Deva Safety Nets.`,
       path: `/services/${serviceSlug}/${citySlug}`,
       keywords: [...service.keywords, city.name, `${service.name} ${city.name}`],
-      noindex,
     });
   }
-  const meta = buildServiceLocationMetadata({
+  return buildServiceLocationMetadata({
     serviceName: service.name,
     serviceKeywords: service.keywords,
     cityName: city.name,
     state: city.state,
     path: `/services/${serviceSlug}/${citySlug}`,
   });
-  if (!noindex) return meta;
-  return { ...meta, robots: { index: false, follow: true } };
 }
 
 export default async function ServiceCityPage({ params }: Props) {

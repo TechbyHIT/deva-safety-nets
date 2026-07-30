@@ -33,8 +33,12 @@ npm ci
 log "clean previous .next output"
 rm -rf .next
 
-log "production build"
+# Sitemap shards (~500k+ URLs) need more heap than the running app
+BUILD_HEAP_MB="${BUILD_HEAP_MB:-2048}"
+log "production build (NODE_OPTIONS heap=${BUILD_HEAP_MB}MB)"
+export NODE_OPTIONS="--max-old-space-size=${BUILD_HEAP_MB}"
 npm run build:prod
+unset NODE_OPTIONS
 
 log "restart PM2 app=$APP_NAME port=$APP_PORT"
 if pm2 describe "$APP_NAME" >/dev/null 2>&1; then

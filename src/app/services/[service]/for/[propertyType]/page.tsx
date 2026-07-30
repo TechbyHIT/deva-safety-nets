@@ -13,7 +13,6 @@ import {
   getContentOverride,
   getDistrictAreasGrouped,
 } from "@/lib/queries";
-import { isKeywordSeoService } from "@/lib/catalog";
 import { buildMetadata } from "@/lib/seo";
 import { serviceSchema, faqSchema } from "@/lib/schema";
 
@@ -36,7 +35,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${service.name} for ${pt.plural.toLowerCase()} in Kochi & Ernakulam. ${pt.summary} Free survey, expert install, warranty.`,
     path: `/services/${serviceSlug}/for/${ptSlug}`,
     keywords: [...service.keywords, pt.name, `${service.name} for ${pt.name}`],
-    noindex: isKeywordSeoService(service),
   });
 }
 

@@ -49,3 +49,6 @@ logs
 *.w640.webp
 *.w1280.webp
 *.enhancing
+
+# Generated sitemap shards (index at public/sitemap.xml is small; shards rebuilt on deploy)
+/public/sitemaps/

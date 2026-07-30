@@ -12,7 +12,6 @@ import {
   getDistrictAreasGrouped,
 } from "@/lib/queries";
 import { buildMetadata, buildServiceLocationMetadata } from "@/lib/seo";
-import { isKeywordSeoService } from "@/lib/catalog";
 import { serviceSchema, faqSchema, localBusinessSchema } from "@/lib/schema";
 
 type Props = { params: Promise<{ service: string; city: string; area: string }> };
@@ -25,7 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getAreaBySlug(citySlug, areaSlug),
   ]);
   if (!service || !loc) return {};
-  const noindex = isKeywordSeoService(service);
   const override = await getContentOverride(`services/${serviceSlug}/${citySlug}/${areaSlug}`);
   if (override?.metaTitle || override?.metaDesc) {
     return buildMetadata({
@@ -35,10 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         `${service.name} in ${loc.area.name}, ${loc.city.name}, Kerala. Free measurement, fast install, warranty. Local Deva Safety Nets team.`,
       path: `/services/${serviceSlug}/${citySlug}/${areaSlug}`,
       keywords: [...service.keywords, loc.area.name, loc.city.name],
-      noindex,
     });
   }
-  const meta = buildServiceLocationMetadata({
+  return buildServiceLocationMetadata({
     serviceName: service.name,
     serviceKeywords: service.keywords,
     cityName: loc.city.name,
@@ -46,8 +43,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     areaName: loc.area.name,
     path: `/services/${serviceSlug}/${citySlug}/${areaSlug}`,
   });
-  if (!noindex) return meta;
-  return { ...meta, robots: { index: false, follow: true } };
 }
 
 export default async function ServiceAreaPage({ params }: Props) {
