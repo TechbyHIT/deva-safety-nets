@@ -7,7 +7,7 @@ cd "$ROOT"
 
 APP_NAME="${PM2_APP_NAME:-deva-safety-nets}"
 APP_PORT="${APP_PORT:-3000}"
-NODE_HEAP_MB="${NODE_HEAP_MB:-384}"
+NODE_HEAP_MB="${NODE_HEAP_MB:-768}"
 
 log() { echo "[pm2-deploy] $(date -Iseconds) $*"; }
 
