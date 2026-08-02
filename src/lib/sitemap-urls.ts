@@ -22,9 +22,15 @@ export const SITEMAP_SHARD_SIZE = 40_000;
 
 /**
  * Sitemap growth phase (1–4 all implemented).
+ * Override with env SITEMAP_PHASE=1 for emergency/low-memory deploys.
  * Hubs + all services × city/property are indexable; area combos stay menu-scale.
  */
-export const SITEMAP_PHASE = 4 as 1 | 2 | 3 | 4;
+function resolveSitemapPhase(): 1 | 2 | 3 | 4 {
+  const raw = Number(process.env.SITEMAP_PHASE || 4);
+  if (raw === 1 || raw === 2 || raw === 3 || raw === 4) return raw;
+  return 4;
+}
+export const SITEMAP_PHASE = resolveSitemapPhase();
 
 const FLAGSHIP_SERVICE_SLUGS = new Set([
   "balcony-invisible-grills",
