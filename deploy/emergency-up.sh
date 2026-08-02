@@ -32,6 +32,13 @@ log "sync origin/main"
 git fetch origin
 git reset --hard origin/main
 
+# Parent lockfile makes Next write standalone to /root/.next instead of this project
+if [ -f /root/package-lock.json ] && [ "$(pwd)" = "/root/deva-safety-nets" ]; then
+  log "moving misplaced /root/package-lock.json aside (Next workspace root bug)"
+  mv -f /root/package-lock.json /root/package-lock.json.bak-deva 2>/dev/null || true
+fi
+rm -rf /root/.next
+
 # Persist runtime heap / port in .env
 touch .env
 grep -q '^APP_PORT=' .env && sed -i 's/^APP_PORT=.*/APP_PORT=3000/' .env || echo 'APP_PORT=3000' >> .env

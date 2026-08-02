@@ -127,8 +127,9 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     add({ url: absoluteUrl(path), priority, changeFrequency });
   }
 
-  // All service hubs
-  for (const s of allServices) {
+  // Service hubs — menu only in Phase 1; all long-tail from Phase 2+
+  const hubServices = SITEMAP_PHASE >= 2 ? allServices : menuServices;
+  for (const s of hubServices) {
     add({
       url: absoluteUrl(`/services/${s.slug}`),
       lastModified: s.updatedAt,
@@ -201,8 +202,9 @@ function buildAllSitemapEntries(): SitemapEntry[] {
     });
   }
 
-  // All services × city (menu + keyword long-tail)
-  for (const s of allServices) {
+  // × city — menu in Phase 1; all services from Phase 2+
+  const cityComboServices = SITEMAP_PHASE >= 2 ? allServices : menuServices;
+  for (const s of cityComboServices) {
     for (const c of cities) {
       add({
         url: absoluteUrl(`/services/${s.slug}/${c.slug}`),

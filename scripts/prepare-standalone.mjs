@@ -1,6 +1,9 @@
 /**
  * Copy static assets into .next/standalone for PM2 / direct Node deploy.
  * Docker copies these in the Dockerfile — this script is for non-Docker VPS.
+ *
+ * Also recovers when Next mis-detects workspace root (parent package-lock.json)
+ * and writes standalone to ../.next/standalone instead of ./.next/standalone.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -9,9 +12,26 @@ import { fileURLToPath } from "node:url";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const standalone = path.join(root, ".next/standalone");
 const serverJs = path.join(standalone, "server.js");
+const parentStandalone = path.join(root, "..", ".next", "standalone");
+const parentServerJs = path.join(parentStandalone, "server.js");
+
+function recoverMisplacedStandalone() {
+  if (fs.existsSync(serverJs)) return;
+  if (!fs.existsSync(parentServerJs)) return;
+
+  console.warn(
+    "[prepare-standalone] Found standalone under parent .next — moving into project .next/standalone",
+  );
+  fs.mkdirSync(path.join(root, ".next"), { recursive: true });
+  fs.rmSync(standalone, { recursive: true, force: true });
+  fs.renameSync(parentStandalone, standalone);
+}
+
+recoverMisplacedStandalone();
 
 if (!fs.existsSync(serverJs)) {
   console.error("Missing .next/standalone/server.js — run npm run build first.");
+  console.error("If Next warned about multiple lockfiles, remove /root/package-lock.json (or parent lockfile) and rebuild.");
   process.exit(1);
 }
 

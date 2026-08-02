@@ -1,5 +1,8 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === "production";
 
 const cspDirectives = [
@@ -30,6 +33,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   output: "standalone",
+  // Prevent Next from treating /root as workspace when a parent package-lock exists
+  outputFileTracingRoot: projectRoot,
+  turbopack: {
+    root: projectRoot,
+  },
   productionBrowserSourceMaps: false,
   images: {
     unoptimized: isProd,
