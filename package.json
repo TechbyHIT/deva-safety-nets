@@ -5,7 +5,7 @@
   "description": "Static services website for Deva Safety Nets — invisible grills and safety nets in Kerala.",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npm run logos:generate && node scripts/validate-images.mjs && npm run catalog:build && npm run sitemap:build && next build",
+    "build": "npm run logos:generate && node scripts/validate-images.mjs && npm run images:responsive && npm run catalog:build && npm run sitemap:build && next build",
     "build:prod": "npm run build && node scripts/prepare-standalone.mjs",
     "prepare:standalone": "node scripts/prepare-standalone.mjs",
     "start": "node .next/standalone/server.js",

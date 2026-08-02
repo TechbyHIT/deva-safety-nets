@@ -56,4 +56,12 @@ curl -sf "http://127.0.0.1:${APP_PORT}/api/health" && echo || {
   exit 1
 }
 
+# Prefer disk-served images (see deploy/nginx.conf) — reload if config changed
+if [ -f /etc/nginx/sites-enabled/deva-safety-nets ] || [ -f /etc/nginx/sites-available/deva-safety-nets ]; then
+  if sudo nginx -t 2>/dev/null; then
+    sudo cp -f "$ROOT/deploy/nginx.conf" /etc/nginx/sites-available/deva-safety-nets 2>/dev/null || true
+    sudo nginx -t && sudo systemctl reload nginx || true
+  fi
+fi
+
 log "done — $APP_NAME on http://127.0.0.1:$APP_PORT"

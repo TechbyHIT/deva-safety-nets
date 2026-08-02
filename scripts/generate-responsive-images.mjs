@@ -22,15 +22,20 @@ async function processFile(filePath) {
   const publicSrc = `/images/${rel}`;
   const widths = [];
 
+  const srcStat = fs.statSync(filePath);
   for (const width of WIDTHS) {
     const out = filePath.replace(/\.[^.]+$/, `.w${width}.webp`);
-    await sharp(filePath, { failOn: "none" })
-      .rotate()
-      .resize(width, null, { withoutEnlargement: true, kernel: sharp.kernel.lanczos3 })
-      .webp({ quality: 82, effort: 4 })
-      .toFile(out);
+    const needsWrite =
+      !fs.existsSync(out) || fs.statSync(out).mtimeMs < srcStat.mtimeMs;
+    if (needsWrite) {
+      await sharp(filePath, { failOn: "none" })
+        .rotate()
+        .resize(width, null, { withoutEnlargement: true, kernel: sharp.kernel.lanczos3 })
+        .webp({ quality: 78, effort: 4 })
+        .toFile(out);
+      console.log(`Wrote images/${rel.replace(/\.[^.]+$/, `.w${width}.webp`)}`);
+    }
     widths.push(width);
-    console.log(`Wrote images/${rel.replace(/\.[^.]+$/, `.w${width}.webp`)}`);
   }
 
   if (widths.length) manifest[publicSrc] = widths;
