@@ -54,7 +54,7 @@ log "clean + light production build (SITEMAP_PHASE=1)"
 rm -rf .next
 npm ci
 log "generate responsive WebP variants (skip if up to date)"
-npm run images:responsive
+npm run images:responsive || log "WARN: images:responsive failed — originals still used"
 npm run build:prod
 
 if [ ! -f .next/standalone/server.js ]; then

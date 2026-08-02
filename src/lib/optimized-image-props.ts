@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { resolveImagePreset, type ImagePreset } from "@/lib/image-settings";
 import { RESPONSIVE_IMAGE_MANIFEST } from "@/lib/responsive-image-manifest";
 
@@ -15,9 +17,21 @@ function variantPath(src: string, width: number): string {
   return src.replace(/\.[^.]+$/i, `.w${width}.webp`);
 }
 
+/** Resolve a /public URL to a file on disk (dev + PM2 standalone). */
+function publicFileExists(publicUrl: string): boolean {
+  const rel = publicUrl.replace(/^\//, "").replace(/\//g, path.sep);
+  const candidates = [
+    path.join(process.cwd(), "public", rel),
+    path.join(process.cwd(), rel),
+    // next build sometimes resolves from project root while cwd is standalone
+    path.join(process.cwd(), "..", "..", "public", rel),
+  ];
+  return candidates.some((p) => fs.existsSync(p));
+}
+
 /**
- * Prefer build-time WebP variants (srcSet). Fall back to the original /public file
- * when variants are missing so images never break.
+ * Always keep the original file as `src` (never broken).
+ * Add WebP srcSet only when those variant files exist on disk.
  */
 export function optimizedImageProps({
   src,
@@ -32,6 +46,7 @@ export function optimizedImageProps({
   const widths = RESPONSIVE_IMAGE_MANIFEST[src];
 
   const base = {
+    src,
     alt,
     title: title ?? alt,
     decoding: priority || isHero ? ("sync" as const) : ("async" as const),
@@ -40,17 +55,16 @@ export function optimizedImageProps({
     sizes: sizes ?? presetOpts?.sizes ?? "100vw",
   };
 
-  if (widths && widths.length > 0) {
-    const sorted = [...widths].sort((a, b) => a - b);
-    const srcSet = sorted.map((w) => `${variantPath(src, w)} ${w}w`).join(", ");
-    // Default to mid size so mobile/desktop don't pull multi‑MB originals
-    const defaultWidth = sorted.includes(1280) ? 1280 : sorted[sorted.length - 1]!;
-    return {
-      ...base,
-      src: variantPath(src, defaultWidth),
-      srcSet,
-    };
-  }
+  if (!widths?.length) return base;
 
-  return { ...base, src };
+  const available = [...widths]
+    .sort((a, b) => a - b)
+    .filter((w) => publicFileExists(variantPath(src, w)));
+
+  if (available.length === 0) return base;
+
+  return {
+    ...base,
+    srcSet: available.map((w) => `${variantPath(src, w)} ${w}w`).join(", "),
+  };
 }
