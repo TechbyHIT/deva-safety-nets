@@ -33,7 +33,7 @@ sudo ln -sf /etc/nginx/sites-available/deva-safety-nets /etc/nginx/sites-enabled
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-App listens on **127.0.0.1:3000** — nginx proxies HTTPS to it.
+App listens on **127.0.0.1:3006** — nginx proxies HTTPS to it.
 
 ---
 
@@ -57,7 +57,7 @@ pm2 status
 pm2 logs deva-safety-nets
 pm2 restart deva-safety-nets
 pm2 stop deva-safety-nets
-curl http://127.0.0.1:3000/api/health
+curl http://127.0.0.1:3006/api/health
 ```
 
 ---
@@ -116,7 +116,7 @@ bash deploy/pm2-logrotate-setup.sh
 
 ```bash
 pm2 status
-curl http://127.0.0.1:3000/api/health
+curl http://127.0.0.1:3006/api/health
 pm2 logs deva-safety-nets --lines 50
 ```
 

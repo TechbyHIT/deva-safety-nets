@@ -14,11 +14,11 @@ log() { echo "[emergency-up] $(date -Iseconds) $*"; }
 [ -f .env ] && load_env_file .env
 
 APP_NAME="${PM2_APP_NAME:-deva-safety-nets}"
-APP_PORT="${APP_PORT:-3000}"
+APP_PORT="${APP_PORT:-3006}"
 
 # Force safe values for this recovery
 export PM2_APP_NAME="$APP_NAME"
-export APP_PORT=3000
+export APP_PORT=3006
 export NODE_HEAP_MB=1024
 export BUILD_HEAP_MB=3072
 export SITEMAP_PHASE=1
@@ -41,7 +41,7 @@ rm -rf /root/.next
 
 # Persist runtime heap / port in .env
 touch .env
-grep -q '^APP_PORT=' .env && sed -i 's/^APP_PORT=.*/APP_PORT=3000/' .env || echo 'APP_PORT=3000' >> .env
+grep -q '^APP_PORT=' .env && sed -i 's/^APP_PORT=.*/APP_PORT=3006/' .env || echo 'APP_PORT=3006' >> .env
 grep -q '^NODE_HEAP_MB=' .env && sed -i 's/^NODE_HEAP_MB=.*/NODE_HEAP_MB=1024/' .env || echo 'NODE_HEAP_MB=1024' >> .env
 grep -q '^PM2_APP_NAME=' .env && sed -i "s/^PM2_APP_NAME=.*/PM2_APP_NAME=${APP_NAME}/" .env || echo "PM2_APP_NAME=${APP_NAME}" >> .env
 
@@ -71,26 +71,26 @@ bash "$(dirname "$0")/lean-post-build.sh"
 log "start PM2"
 unset NODE_OPTIONS
 load_env_file .env
-export APP_PORT=3000 NODE_HEAP_MB=1024 PM2_APP_NAME="$APP_NAME"
+export APP_PORT=3006 NODE_HEAP_MB=1024 PM2_APP_NAME="$APP_NAME"
 pm2 start ecosystem.config.cjs --env production
 pm2 save
 
 log "health loop"
 ok=0
 for i in $(seq 1 20); do
-  if curl -sf "http://127.0.0.1:3000/api/health" >/dev/null; then
+  if curl -sf "http://127.0.0.1:3006/api/health" >/dev/null; then
     ok=1
     break
   fi
   sleep 2
 done
 
-log "listeners on 3000"
-ss -ltnp | grep ':3000' || netstat -tlnp 2>/dev/null | grep ':3000' || true
+log "listeners on 3006"
+ss -ltnp | grep ':3006' || netstat -tlnp 2>/dev/null | grep ':3006' || true
 
 if [ "$ok" -eq 1 ]; then
   log "SUCCESS"
-  curl -sf http://127.0.0.1:3000/api/health; echo
+  curl -sf http://127.0.0.1:3006/api/health; echo
   pm2 status
   exit 0
 fi

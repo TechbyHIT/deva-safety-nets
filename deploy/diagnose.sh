@@ -7,7 +7,7 @@ docker compose ps 2>/dev/null || docker ps --filter name=deva
 
 echo ""
 echo "=== Health ==="
-curl -sf http://127.0.0.1:3000/api/health && echo || echo "FAIL: app not responding"
+curl -sf http://127.0.0.1:3006/api/health && echo || echo "FAIL: app not responding"
 
 echo ""
 echo "=== Sample images (app direct) ==="
@@ -15,7 +15,7 @@ for path in \
   /images/invisible-grill-balcony/i3.jpg \
   /images/safety-nets-balcony/b1.jpg \
   /logo.png; do
-  code=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:3000${path}")
+  code=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:3006${path}")
   echo "  ${path} -> ${code}"
 done
 

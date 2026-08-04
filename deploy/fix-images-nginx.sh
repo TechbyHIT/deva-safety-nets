@@ -59,7 +59,7 @@ sudo systemctl reload nginx
 log "nginx reloaded"
 
 echo -n "app direct: "
-curl -s -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:3000/images/invisible-grill-balcony/i3.jpg" || echo fail
+curl -s -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:3006/images/invisible-grill-balcony/i3.jpg" || echo fail
 echo -n "via https:  "
 curl -sk -o /dev/null -w "%{http_code}\n" "https://devasafetynets.com/images/invisible-grill-balcony/i3.jpg" || echo fail
 log "done — expect 200 on both"

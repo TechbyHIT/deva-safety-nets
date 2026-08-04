@@ -2,7 +2,7 @@
 # Production startup — graceful shutdown, bounded Node heap, pre-flight checks.
 set -eu
 
-PORT="${PORT:-3000}"
+PORT="${PORT:-3006}"
 HOSTNAME="${HOSTNAME:-0.0.0.0}"
 NODE_HEAP_MB="${NODE_HEAP_MB:-256}"
 

@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 APP_NAME="${PM2_APP_NAME:-deva-safety-nets}"
-APP_PORT="${APP_PORT:-3000}"
+APP_PORT="${APP_PORT:-3006}"
 # Runtime heap for large catalog (override in .env)
 NODE_HEAP_MB="${NODE_HEAP_MB:-768}"
 BUILD_HEAP_MB="${BUILD_HEAP_MB:-2048}"
@@ -19,7 +19,7 @@ if [ -f .env ]; then
   . "$(dirname "$0")/load-env.sh"
   load_env_file .env
   APP_NAME="${PM2_APP_NAME:-$APP_NAME}"
-  APP_PORT="${APP_PORT:-3000}"
+  APP_PORT="${APP_PORT:-3006}"
   NODE_HEAP_MB="${NODE_HEAP_MB:-768}"
   BUILD_HEAP_MB="${BUILD_HEAP_MB:-2048}"
 fi
@@ -42,9 +42,9 @@ if [ -f .env ]; then
     echo "NODE_HEAP_MB=768" >> .env
   fi
   if grep -q '^APP_PORT=' .env; then
-    sed -i 's/^APP_PORT=.*/APP_PORT=3000/' .env
+    sed -i 's/^APP_PORT=.*/APP_PORT=3006/' .env
   else
-    echo "APP_PORT=3000" >> .env
+    echo "APP_PORT=3006" >> .env
   fi
 fi
 
@@ -68,7 +68,7 @@ log "start PM2 on port ${APP_PORT} heap ${NODE_HEAP_MB}MB"
 # shellcheck disable=SC1091
 . "$(dirname "$0")/load-env.sh"
 load_env_file .env
-export APP_PORT=3000 NODE_HEAP_MB=768 PM2_APP_NAME="$APP_NAME"
+export APP_PORT=3006 NODE_HEAP_MB=768 PM2_APP_NAME="$APP_NAME"
 pm2 start ecosystem.config.cjs --env production
 pm2 save
 

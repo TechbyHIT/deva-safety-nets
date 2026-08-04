@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 APP_NAME="${PM2_APP_NAME:-deva-safety-nets}"
-APP_PORT="${APP_PORT:-3000}"
+APP_PORT="${APP_PORT:-3006}"
 NODE_HEAP_MB="${NODE_HEAP_MB:-768}"
 
 log() { echo "[pm2-deploy] $(date -Iseconds) $*"; }
