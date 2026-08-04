@@ -97,6 +97,19 @@ Add nginx `server` block per domain → `proxy_pass http://127.0.0.1:3001;`
 
 ---
 
+## Lean deploy (50+ sites)
+
+See **[LEAN-MULTI-SITE.md](./LEAN-MULTI-SITE.md)**.
+
+After each successful build, `pm2-deploy.sh` / `emergency-up.sh` run `lean-post-build.sh` to drop `node_modules` and `.next` caches while keeping `.next/standalone` (runtime).
+
+```bash
+bash deploy/disk-report.sh
+bash deploy/pm2-logrotate-setup.sh
+```
+
+---
+
 ## Troubleshooting
 
 **502 from nginx**

@@ -65,6 +65,9 @@ fi
 # Ensure public (incl. sitemaps) is inside standalone
 node scripts/prepare-standalone.mjs
 
+log "lean post-build (drop node_modules + build cache; keep standalone)"
+bash "$(dirname "$0")/lean-post-build.sh"
+
 log "start PM2"
 unset NODE_OPTIONS
 load_env_file .env

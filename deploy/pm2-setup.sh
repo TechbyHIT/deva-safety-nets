@@ -21,7 +21,12 @@ echo "=== PM2 startup on boot ==="
 pm2 startup systemd -u "${SUDO_USER:-$USER}" --hp "$(eval echo ~${SUDO_USER:-$USER})" || true
 
 echo ""
+echo "=== PM2 logrotate (lean) ==="
+bash "$(dirname "$0")/pm2-logrotate-setup.sh" || true
+
+echo ""
 echo "Done. Next:"
 echo "  cd ~/deva-safety-nets"
 echo "  cp .env.example .env && nano .env"
 echo "  bash deploy/pm2-deploy.sh"
+echo "  See deploy/LEAN-MULTI-SITE.md for 50+ sites"

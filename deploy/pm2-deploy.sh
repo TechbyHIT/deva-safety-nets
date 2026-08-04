@@ -40,6 +40,9 @@ export NODE_OPTIONS="--max-old-space-size=${BUILD_HEAP_MB}"
 npm run build:prod
 unset NODE_OPTIONS
 
+log "lean post-build (drop node_modules + .next cache; keep standalone)"
+bash "$(dirname "$0")/lean-post-build.sh"
+
 log "restart PM2 app=$APP_NAME port=$APP_PORT"
 if pm2 describe "$APP_NAME" >/dev/null 2>&1; then
   pm2 restart ecosystem.config.cjs --env production --update-env

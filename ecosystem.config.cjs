@@ -1,5 +1,5 @@
 /**
- * PM2 — production deploy without Docker (see deploy/PM2-DEPLOY.md).
+ * PM2 — production deploy without Docker (see deploy/PM2-DEPLOY.md + LEAN-MULTI-SITE.md).
  * Loads .env from project root. Run after: npm run build:prod
  */
 const fs = require("node:fs");
@@ -42,8 +42,14 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: `${heap + 128}M`,
+      min_uptime: "10s",
+      max_restarts: 15,
+      restart_delay: 2000,
       kill_timeout: 5000,
       listen_timeout: 15000,
+      // Smaller log noise; pm2-logrotate handles rotation
+      merge_logs: true,
+      time: false,
       node_args: `--max-old-space-size=${heap}`,
       env_production: {
         NODE_ENV: "production",
