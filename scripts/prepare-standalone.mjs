@@ -50,4 +50,20 @@ for (const [src, dest] of pairs) {
   console.log(`Copied ${path.relative(root, src)} → ${path.relative(root, dest)}`);
 }
 
+// Header logo must exist in standalone public (PM2 serves from here)
+const logoFiles = ["logo.png", "logo-256.webp", "logo-384.webp", "logo-512.webp", "logo-640.webp"];
+for (const name of logoFiles) {
+  const dest = path.join(standalone, "public", name);
+  const src = path.join(root, "public", name);
+  if (!fs.existsSync(src)) {
+    console.warn(`[prepare-standalone] WARN missing ${name} in public/`);
+    continue;
+  }
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+}
+const logoOk = fs.existsSync(path.join(standalone, "public", "logo.png"));
+console.log(logoOk ? "Logo OK in standalone/public/logo.png" : "ERROR: logo.png missing in standalone");
+if (!logoOk) process.exit(1);
+
 console.log("Standalone bundle ready for PM2:", standalone);

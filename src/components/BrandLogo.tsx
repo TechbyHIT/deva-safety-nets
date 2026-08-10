@@ -1,5 +1,5 @@
 import { PAGE_IMAGES } from "@/lib/images";
-import { LOGO_DEFAULT_SRC } from "@/lib/logo";
+import { LOGO_DEFAULT_SRC, LOGO_SIZES, LOGO_SRCSET } from "@/lib/logo";
 
 type BrandLogoProps = {
   alt: string;
@@ -7,7 +7,7 @@ type BrandLogoProps = {
   variant?: "header" | "footer";
 };
 
-/** Plain img + srcset — avoids next/image hydration issues; uses small WebP variants. */
+/** Plain img + srcset — small WebP variants for fast header paint. */
 export function BrandLogo({ alt, priority = false, variant = "header" }: BrandLogoProps) {
   if (variant === "footer") {
     return (
@@ -25,6 +25,8 @@ export function BrandLogo({ alt, priority = false, variant = "header" }: BrandLo
   return (
     <img
       src={LOGO_DEFAULT_SRC}
+      srcSet={LOGO_SRCSET}
+      sizes={LOGO_SIZES}
       alt={alt}
       title={alt}
       width={320}
