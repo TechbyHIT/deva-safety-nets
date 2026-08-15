@@ -38,27 +38,38 @@ export const HERO_SLIDES: {
   },
 ];
 
+/** Unique HD photo for each slide's full-bleed background. */
 const HERO_SLIDE_SRC: Record<string, string> = {
-  "invisible-grills": getBestFolderImage("invisible-grill-balcony"),
-  "balcony-safety-nets": getBestFolderImage("safety-nets-balcony"),
-  "cricket-nets": getBestFolderImage("cricket-nets"),
-  home: PAGE_IMAGES.hero,
+  "invisible-grills": getBestFolderImage("invisible-grill-balcony", 0),
+  "balcony-safety-nets": getBestFolderImage("safety-nets-balcony", 0),
+  "cricket-nets": getBestFolderImage("cricket-nets", 0),
+  home: getBestFolderImage("invisible-grill-window", 0),
 };
 
+/** A different unique HD photo for each slide's side card (never the same as the background). */
+const HERO_SLIDE_SIDE_SRC: Record<string, string> = {
+  "invisible-grills": getBestFolderImage("invisible-grill-balcony", 3),
+  "balcony-safety-nets": getBestFolderImage("child-safety-nets", 0),
+  "cricket-nets": getBestFolderImage("bird-spikes", 0),
+  home: getBestFolderImage("invisible-grill-window", 2),
+};
+
+function slideKey(slide: (typeof HERO_SLIDES)[0]): string {
+  return slide.serviceSlug ?? slide.imageKey ?? "home";
+}
+
 export function heroSlideImage(slide: (typeof HERO_SLIDES)[0]): SiteImageMeta {
-  if (slide.serviceSlug) {
-    const src = HERO_SLIDE_SRC[slide.serviceSlug] ?? PAGE_IMAGES.hero;
-    const name = slide.serviceSlug.replace(/-/g, " ");
-    return {
-      src,
-      alt: buildAltText(name, src),
-      title: `${name} | ${site.name}`,
-    };
-  }
-  const key = slide.imageKey ?? "home";
+  const key = slideKey(slide);
   const src = HERO_SLIDE_SRC[key] ?? PAGE_IMAGES.hero;
-  const context = `${site.name} hero`;
-  return { src, alt: buildAltText(context, src), title: `${context} | ${site.name}` };
+  const name = slide.serviceSlug ? slide.serviceSlug.replace(/-/g, " ") : `${site.name} hero`;
+  return { src, alt: buildAltText(name, src), title: `${name} | ${site.name}` };
+}
+
+export function heroSlideSideImage(slide: (typeof HERO_SLIDES)[0]): SiteImageMeta {
+  const key = slideKey(slide);
+  const src = HERO_SLIDE_SIDE_SRC[key] ?? getBestFolderImage("invisible-grill-balcony", 1);
+  const name = slide.serviceSlug ? slide.serviceSlug.replace(/-/g, " ") : `${site.name} installation`;
+  return { src, alt: buildAltText(name, src), title: `${name} | ${site.name}` };
 }
 
 /** Thumbnails for the auto-scrolling hero strip — HD invisible-grill photos. */

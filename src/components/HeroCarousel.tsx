@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { TrustBadges } from "./TrustBadges";
-import { HERO_SCROLL_STRIP, HERO_SLIDES, heroSlideImage } from "@/lib/hero-slides";
+import { HERO_SCROLL_STRIP, HERO_SLIDES, heroSlideImage, heroSlideSideImage } from "@/lib/hero-slides";
 import type { SiteImageMeta } from "@/lib/images";
 import { optimizedImageProps } from "@/lib/optimized-image-props";
 import { site, telHref } from "@/lib/site";
@@ -32,6 +32,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
 
   const slide = HERO_SLIDES[active];
   const img = active === 0 ? initialImage : heroSlideImage(slide);
+  const sideImg = heroSlideSideImage(slide);
   const showOverlay = active !== 0;
 
   const prev = () => setActive((a) => (a - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
@@ -122,7 +123,8 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
           <div className="card premium-shadow overflow-hidden rounded-2xl border-white/10">
             <div className="relative aspect-[4/3] w-full">
               <img
-                {...optimizedImageProps({ src: img.src, alt: img.alt, preset: "heroSide", priority: true })}
+                key={sideImg.src}
+                {...optimizedImageProps({ src: sideImg.src, alt: sideImg.alt, preset: "heroSide", priority: true })}
                 className="object-cover object-center"
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
               />
