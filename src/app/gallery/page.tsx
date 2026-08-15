@@ -46,7 +46,7 @@ export default async function GalleryPage() {
             <Link
               key={s.slug}
               href={`/services/${s.slug}`}
-              className="rounded-md border border-[var(--border)] px-3 py-1.5 text-sm text-muted transition-colors hover:border-[var(--sage)] hover:text-[var(--forest)]"
+              className="rounded-full border px-3 py-1.5 text-sm text-muted transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
             >
               {s.name}
             </Link>

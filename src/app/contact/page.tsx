@@ -34,7 +34,7 @@ export default function ContactPage() {
           <div className="space-y-4">
             <a
               href={telHref()}
-              className="flex items-center gap-4 border-t border-[var(--border)] py-5 transition hover:text-[var(--forest)]"
+              className="card-hover flex items-center gap-4 p-5"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10">
                 <Phone className="text-[var(--primary)]" size={22} />
@@ -48,7 +48,7 @@ export default function ContactPage() {
               href={whatsappHref("Hi, I'd like a free site inspection for invisible grills / safety nets in Kerala.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 border-t border-[var(--border)] py-5 transition hover:text-[var(--forest)]"
+              className="card-hover flex items-center gap-4 p-5"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#25D366]/10">
                 <MessageCircle className="text-[#25D366]" size={22} />
@@ -60,7 +60,7 @@ export default function ContactPage() {
             </a>
             <a
               href={`mailto:${site.email}`}
-              className="flex items-center gap-4 border-t border-[var(--border)] py-5 transition hover:text-[var(--forest)]"
+              className="card-hover flex items-center gap-4 p-5"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10">
                 <Mail className="text-[var(--primary)]" size={22} />
@@ -70,7 +70,7 @@ export default function ContactPage() {
                 <p className="text-sm text-muted">{site.email}</p>
               </div>
             </a>
-            <div className="flex items-center gap-4 border-t border-b border-[var(--border)] py-5">
+            <div className="card-hover flex items-center gap-4 p-5">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10">
                 <MapPin className="text-[var(--primary)]" size={22} />
               </span>

@@ -127,38 +127,35 @@ export function ServiceArticle({
   return (
     <>
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--obsidian)] text-[var(--ivory)]">
-        <div className="absolute inset-0 opacity-35">
-          <SiteImage
-            src={heroImage.src}
-            alt=""
-            fill
-            priority
-            preset="hero"
-            className="object-cover"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-[var(--obsidian)] via-[var(--obsidian)]/90 to-[var(--forest)]/50"
-            aria-hidden
-          />
-        </div>
-        <div className="container-page relative z-10 grid items-center gap-8 py-12 md:py-16 lg:grid-cols-[1.2fr_1fr]">
+      <div className="hero-mesh border-b">
+        <div className="container-page grid items-center gap-8 py-10 md:py-14 lg:grid-cols-[1.2fr_1fr]">
           <div>
-            <span className="eyebrow mb-2 !bg-white/10 !text-[var(--sage)]">
+            <span className="eyebrow mb-2">
               <ShieldCheck size={14} /> {placeLabel ? `Serving ${placeLabel}, Kerala` : "Trusted across Kerala"}
             </span>
             <div className="gold-accent-line mb-4" />
-            <h1 className="text-3xl font-bold tracking-tight text-[var(--ivory)] md:text-4xl lg:text-5xl">
+            <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl">
               {content.heading}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/70">{content.intro}</p>
+            <p className="mt-4 max-w-2xl text-lg text-muted">{content.intro}</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="#quote" className="btn btn-accent">Get Free Quote</a>
-              <Link href="/contact" className="btn btn-ghost-light">Talk to an Expert</Link>
+              <a href="#quote" className="btn btn-primary premium-shadow">Get Free Quote</a>
+              <Link href="/contact" className="btn btn-outline">Talk to an Expert</Link>
             </div>
           </div>
-          <div className="space-y-4 lg:pl-4" id="quote">
-            <QuoteForm service={service.name} city={location?.cityName} source={path} compact />
+          <div className="space-y-4 lg:pl-4">
+            <div className="card premium-shadow relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <SiteImage
+                src={heroImage.src}
+                alt={heroImage.alt}
+                fill
+                priority
+                preset="heroSide"
+              />
+            </div>
+            <div id="quote">
+              <QuoteForm service={service.name} city={location?.cityName} source={path} compact />
+            </div>
           </div>
         </div>
       </div>

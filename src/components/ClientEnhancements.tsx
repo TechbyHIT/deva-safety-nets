@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { MobileCTA } from "@/components/layout/MobileCTA";
 
 const NavigationProgress = dynamic(
   () => import("./NavigationProgress").then((m) => m.NavigationProgress),
@@ -22,7 +21,6 @@ export function ClientEnhancements() {
     <>
       <NavigationProgress />
       <PrefetchRoutes />
-      <MobileCTA />
       <FloatingCTAs />
     </>
   );

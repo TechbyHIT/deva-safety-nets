@@ -55,36 +55,61 @@ export function Section({
 
 
 export function SectionHeading({
+
   eyebrow,
+
   title,
+
   subtitle,
+
   center = true,
+
   light = false,
+
 }: {
+
   eyebrow?: string;
+
   title: string;
+
   subtitle?: string;
+
   center?: boolean;
+
   light?: boolean;
+
 }) {
+
   return (
+
     <div className={`mb-10 md:mb-12 ${center ? "mx-auto max-w-2xl text-center" : ""}`}>
-      {eyebrow && <span className={`eyebrow mb-3 ${center ? "" : "inline-flex"}`}>{eyebrow}</span>}
-      <div className={`gold-accent-line mb-4 ${center ? "mx-auto" : ""}`} />
-      <h2
-        className={`text-2xl font-bold tracking-tight md:text-4xl ${light ? "text-[var(--ivory)]" : ""}`}
-      >
+
+      {eyebrow && <span className="eyebrow mb-2">{eyebrow}</span>}
+
+      {center && <div className="gold-accent-line mx-auto mb-4" />}
+
+      {!center && <div className="gold-accent-line mb-4" />}
+
+      <h2 className={`text-2xl font-extrabold tracking-tight md:text-4xl ${light ? "text-white" : ""}`}>
+
         {title}
+
       </h2>
+
       {subtitle && (
-        <p
-          className={`mt-3 text-base leading-relaxed md:text-lg ${light ? "text-white/80" : "text-muted"}`}
-        >
+
+        <p className={`mt-3 text-base leading-relaxed md:text-lg ${light ? "text-white/80" : "text-muted"}`}>
+
           {subtitle}
+
         </p>
+
       )}
+
     </div>
+
   );
+
 }
 
 
@@ -255,55 +280,85 @@ export function Stars({ rating }: { rating: number }) {
 
 
 export function PageHero({
+
   eyebrow,
+
   title,
+
   description,
+
   children,
+
   imageSrc,
+
   imageAlt,
+
 }: {
+
   eyebrow?: string;
+
   title: string;
+
   description?: string;
+
   children?: ReactNode;
+
   imageSrc?: string;
+
   imageAlt?: string;
+
 }) {
+
   return (
-    <div className="relative overflow-hidden border-b border-[var(--border)] bg-[var(--obsidian)] text-[var(--ivory)]">
-      {imageSrc && (
-        <div className="absolute inset-0">
-          <SiteImage
-            src={imageSrc}
-            alt={imageAlt ?? title}
-            fill
-            priority
-            preset="hero"
-            className="opacity-40"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-[var(--obsidian)] via-[var(--obsidian)]/85 to-[var(--forest)]/40"
-            aria-hidden
-          />
+
+    <div className="hero-mesh border-b">
+
+      <div className="container-page grid items-center gap-8 py-12 md:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+
+        <div>
+
+          {eyebrow && <span className="eyebrow mb-2">{eyebrow}</span>}
+
+          <div className="gold-accent-line mb-4" />
+
+          <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl">
+
+            {title}
+
+          </h1>
+
+          {description && (
+
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted md:text-lg">{description}</p>
+
+          )}
+
+          {children}
+
         </div>
-      )}
-      <div className="container-page relative z-10 py-14 md:py-20 lg:py-24">
-        {eyebrow && (
-          <span className="eyebrow mb-3 !bg-white/10 !text-[var(--sage)]">{eyebrow}</span>
+
+        {imageSrc && (
+
+          <div className="card premium-shadow relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl">
+
+            <SiteImage
+              src={imageSrc}
+              alt={imageAlt ?? title}
+              fill
+              priority
+              preset="heroSide"
+            />
+
+          </div>
+
         )}
-        <div className="gold-accent-line mb-4" />
-        <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-[var(--ivory)] md:text-4xl lg:text-5xl">
-          {title}
-        </h1>
-        {description && (
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
-            {description}
-          </p>
-        )}
-        {children}
+
       </div>
+
     </div>
+
   );
+
 }
 
 

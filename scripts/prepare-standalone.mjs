@@ -50,6 +50,19 @@ for (const [src, dest] of pairs) {
   console.log(`Copied ${path.relative(root, src)} → ${path.relative(root, dest)}`);
 }
 
+// Collapsed/unstyled pages usually mean CSS chunks were not copied into standalone
+const cssDir = path.join(standalone, ".next/static/css");
+const cssFiles = fs.existsSync(cssDir)
+  ? fs.readdirSync(cssDir).filter((f) => f.endsWith(".css"))
+  : [];
+if (!cssFiles.length) {
+  console.error(
+    "ERROR: no CSS in .next/standalone/.next/static/css — pages will look collapsed. Rebuild with npm run build:prod.",
+  );
+  process.exit(1);
+}
+console.log(`CSS OK (${cssFiles.length} file(s) in standalone static/css)`);
+
 // Header logo must exist in standalone public (PM2 serves from here)
 const logoFiles = ["logo.png", "logo-256.webp", "logo-384.webp", "logo-512.webp", "logo-640.webp"];
 for (const name of logoFiles) {
