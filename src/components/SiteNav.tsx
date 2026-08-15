@@ -131,7 +131,7 @@ export function SiteNav({
           </a>
           <a
             href={telHref()}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#e5c766] to-[#d4af37] text-[#0b1d33] shadow-md sm:h-9 sm:w-9"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#d4a84b] to-[#c9972b] text-[#0f172a] shadow-md sm:h-9 sm:w-9"
             aria-label={`Call ${phone}`}
           >
             <Phone size={15} strokeWidth={2.25} />

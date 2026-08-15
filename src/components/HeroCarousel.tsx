@@ -66,7 +66,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
             {slide.subtitle}
           </p>
 
-          <p className="mt-4 flex items-center gap-1.5 text-sm font-medium text-[var(--gold-light,#e5c766)]">
+          <p className="mt-4 flex items-center gap-1.5 text-sm font-medium text-[var(--gold-light,#d4a84b)]">
             <MapPin size={15} />
             {site.serviceArea}
           </p>
@@ -129,7 +129,7 @@ export function HeroCarousel({ initialImage }: { initialImage: SiteImageMeta }) 
             </div>
           </div>
           <div className="glass-dark absolute -bottom-5 -left-5 rounded-xl px-5 py-4 premium-shadow">
-            <p className="text-2xl font-extrabold text-[var(--gold-light,#e5c766)]">10-Yr</p>
+            <p className="text-2xl font-extrabold text-[var(--gold-light,#d4a84b)]">10-Yr</p>
             <p className="text-xs text-white/85">Warranty</p>
           </div>
           <div className="glass-dark absolute -right-4 -top-4 rounded-xl px-5 py-3 premium-shadow">

@@ -168,7 +168,7 @@ export function MobileNav({
           <a
             href={telHref()}
             onClick={close}
-            className="flex items-center justify-center gap-2 bg-gradient-to-b from-[#e5c766] to-[#d4af37] px-5 py-3.5 text-sm font-bold text-[#0b1d33]"
+            className="flex items-center justify-center gap-2 bg-gradient-to-b from-[#d4a84b] to-[#c9972b] px-5 py-3.5 text-sm font-bold text-[#0f172a]"
           >
             <Phone size={18} />
             Call Now — Free Site Inspection
@@ -285,7 +285,7 @@ export function MobileNav({
             <a
               href={telHref()}
               onClick={close}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-b from-[#e5c766] to-[#d4af37] py-3 text-sm font-bold text-[#0b1d33]"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-b from-[#d4a84b] to-[#c9972b] py-3 text-sm font-bold text-[#0f172a]"
             >
               <Phone size={16} />
               Call

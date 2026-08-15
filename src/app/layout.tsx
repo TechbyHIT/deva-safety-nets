@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { IBM_Plex_Sans, Sora } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -14,19 +14,20 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
 
-const inter = Inter({
+const bodyFont = IBM_Plex_Sans({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-body",
   preload: true,
   adjustFontFallback: true,
 });
 
-const poppins = Poppins({
+const displayFont = Sora({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["600", "700", "800"],
   display: "swap",
-  variable: "--font-poppins",
+  variable: "--font-display",
   preload: false,
   adjustFontFallback: true,
 });
@@ -72,7 +73,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${poppins.variable}`}
+      className={`${bodyFont.variable} ${displayFont.variable}`}
       style={{ colorScheme: "light" }}
       suppressHydrationWarning
     >
