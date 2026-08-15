@@ -212,13 +212,13 @@ const SLUG_FOLDER: Record<string, ImageFolderKey> = {
 
   "badminton-nets": "cricket-nets",
 
-  "cloth-hangers": "cloth-hangers",
+  "cloth-hangers": "safety-nets-balcony",
 
-  "balcony-cloth-hangers": "cloth-hangers",
+  "balcony-cloth-hangers": "safety-nets-balcony",
 
-  "ceiling-cloth-hangers": "cloth-hangers",
+  "ceiling-cloth-hangers": "safety-nets-balcony",
 
-  "foldable-cloth-hangers": "cloth-hangers",
+  "foldable-cloth-hangers": "safety-nets-balcony",
 
   "mosquito-nets": "mosquito-nets",
 
@@ -242,7 +242,7 @@ const KEYWORD_RULES: { test: (slug: string) => boolean; folder: ImageFolderKey }
 
   { test: (s) => s.includes("cricket") || s.includes("sport"), folder: "cricket-nets" },
 
-  { test: (s) => s.includes("cloth-hanger") || s.includes("cloth-hangers"), folder: "cloth-hangers" },
+  { test: (s) => s.includes("cloth-hanger") || s.includes("cloth-hangers"), folder: "safety-nets-balcony" },
 
   { test: (s) => s.includes("mosquito"), folder: "mosquito-nets" },
 
@@ -509,7 +509,7 @@ export function getCategoryImage(categorySlug: string): string {
     "invisible-grills": "invisible-grill-balcony",
     "safety-nets": "safety-nets-balcony",
     "bird-protection": "bird-spikes",
-    "cloth-hangers": "cloth-hangers",
+    "cloth-hangers": "safety-nets-balcony",
     "sports-nets": "cricket-nets",
     "special-safety-solutions": "safety-nets-balcony",
     "service-support": "invisible-grill-balcony",

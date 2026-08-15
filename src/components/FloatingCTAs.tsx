@@ -12,16 +12,17 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
+/** Desktop floating CTAs — mobile uses MobileCTA bar. */
 export function FloatingCTAs() {
   const waMsg = "Hi, I'd like a free site inspection for invisible grills / safety nets in Kerala.";
 
   return (
-    <div className="fab-stack" aria-label="Quick contact">
+    <div className="fab-stack hidden md:flex" aria-label="Quick contact">
       <Link
         href="/contact"
         aria-label="Free quote"
         title="Free quote"
-        className="fab fab-quote hidden md:inline-flex"
+        className="fab fab-quote inline-flex"
       >
         <FileText size={26} strokeWidth={2.25} />
         <span className="fab-tooltip">Free quote</span>

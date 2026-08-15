@@ -3,12 +3,6 @@ export const IMAGE_FOLDERS = {
   "child-safety-nets": [
     "/images/child-safety-nets/child-1.jpg"
   ],
-  "cloth-hangers": [
-    "/images/cloth-hangers/cloth7.webp",
-    "/images/cloth-hangers/cloth8.jpeg",
-    "/images/cloth-hangers/whatsapp-image-2026-07-04-at-090739.jpeg",
-    "/images/cloth-hangers/cloth9.jpeg"
-  ],
   "cricket-nets": [
     "/images/cricket-nets/sp-2.jpg",
     "/images/cricket-nets/n11.jpg"
@@ -226,10 +220,6 @@ export type ImageFolderKey = keyof typeof IMAGE_FOLDERS;
 export const ALL_IMAGES: readonly string[] = [
   "/images/bird-spikes/spike3.webp",
   "/images/child-safety-nets/child-1.jpg",
-  "/images/cloth-hangers/cloth7.webp",
-  "/images/cloth-hangers/cloth8.jpeg",
-  "/images/cloth-hangers/cloth9.jpeg",
-  "/images/cloth-hangers/whatsapp-image-2026-07-04-at-090739.jpeg",
   "/images/cricket-nets/n11.jpg",
   "/images/cricket-nets/sp-2.jpg",
   "/images/duct-area-nets/car-1.jpg",
@@ -429,7 +419,7 @@ export const PAGE_IMAGES = {
   logo: "/logo.png",
   hero: "/images/invisible-grill-balcony/img20251025132727jpg.jpeg",
   about: "/images/invisible-grill-balcony/i3.jpg",
-  contact: "/images/cloth-hangers/cloth7.webp",
+  contact: "/images/invisible-grill-balcony/i5.jpg",
   process: "/images/invisible-grill-balcony/i5.jpg",
   testimonials: "/images/child-safety-nets/child-1.jpg",
   cta: "/images/invisible-grill-balcony/i4.jpg",
@@ -442,10 +432,6 @@ export const PAGE_IMAGES = {
 export const GALLERY_IMAGES: readonly string[] = [
   "/images/bird-spikes/spike3.webp",
   "/images/child-safety-nets/child-1.jpg",
-  "/images/cloth-hangers/cloth7.webp",
-  "/images/cloth-hangers/cloth8.jpeg",
-  "/images/cloth-hangers/cloth9.jpeg",
-  "/images/cloth-hangers/whatsapp-image-2026-07-04-at-090739.jpeg",
   "/images/cricket-nets/n11.jpg",
   "/images/cricket-nets/sp-2.jpg",
   "/images/duct-area-nets/car-1.jpg",
@@ -646,6 +632,5 @@ export const CLIENT_LOGOS: readonly string[] = [
   "/images/safety-nets-balcony/img20251003165138jpg.jpeg",
   "/images/child-safety-nets/child-1.jpg",
   "/images/cricket-nets/sp-2.jpg",
-  "/images/cloth-hangers/cloth7.webp",
   "/images/bird-spikes/spike3.webp"
 ] as const;

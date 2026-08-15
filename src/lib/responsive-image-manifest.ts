@@ -8,19 +8,7 @@ export const RESPONSIVE_IMAGE_MANIFEST: Record<string, number[]> = {
     640,
     1280
   ],
-  "/images/cloth-hangers/cloth7.webp": [
-    640,
-    1280
-  ],
-  "/images/cloth-hangers/cloth8.jpeg": [
-    640,
-    1280
-  ],
-  "/images/cloth-hangers/cloth9.jpeg": [
-    640,
-    1280
-  ],
-  "/images/cloth-hangers/whatsapp-image-2026-07-04-at-090739.jpeg": [
+  "/images/duct-area-nets/dc7.jpg": [
     640,
     1280
   ],

@@ -93,7 +93,7 @@ export default function AboutPage() {
             <h2>Company overview</h2>
             <p>
               Deva Safety Nets is a Kerala-focused specialist in invisible grills, safety nets, bird
-              control, sports nets and cloth hangers. Since our founding, we have completed thousands
+              control, sports nets and maintenance. Since our founding, we have completed thousands
               of installations across Kochi, Ernakulam and the wider state — from single-balcony
               apartment jobs to full-tower society projects and commercial bird-proofing contracts.
             </p>
@@ -199,8 +199,8 @@ export default function AboutPage() {
       <Section>
         <StatBand
           stats={[
-            { value: "10,000+", label: "Kerala installations" },
             { value: "160+", label: "Localities served" },
+            { value: "6", label: "Service categories" },
             { value: "4.9★", label: "Google rating" },
             { value: "10-Yr", label: "Max warranty" },
           ]}

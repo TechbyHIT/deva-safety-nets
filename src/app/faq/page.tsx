@@ -58,7 +58,7 @@ export default async function FaqPage() {
           <h2>More answers about Deva Safety Nets in Kerala</h2>
           <p>
             This FAQ centre covers invisible grills, balcony and child safety nets, pet protection,
-            pigeon and bird control, bird spikes, sports nets, cloth hangers, installation,
+            pigeon and bird control, bird spikes, sports nets, installation,
             maintenance, materials, service areas, booking and safety standards. Each answer is
             written for Kerala homeowners, apartment residents, facility managers and commercial
             clients — practical guidance you can use before booking a survey.

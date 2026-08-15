@@ -78,8 +78,6 @@ export function categorizeImages(paths: string[]) {
 
     sportsNets: [] as string[],
 
-    clothHangers: [] as string[],
-
     industrial: [] as string[],
 
     heroes: [] as string[],
@@ -119,14 +117,6 @@ export function categorizeImages(paths: string[]) {
     } else if (lower.includes("/cricket-nets")) {
 
       groups.sportsNets.push(src);
-
-      groups.services.push(src);
-
-      groups.gallery.push(src);
-
-    } else if (lower.includes("/cloth-hangers")) {
-
-      groups.clothHangers.push(src);
 
       groups.services.push(src);
 
@@ -172,11 +162,11 @@ export function categorizeImages(paths: string[]) {
 
     groups.sportsNets[0],
 
-    groups.clothHangers[0],
-
     groups.birdControl[0],
 
     groups.industrial[0],
+
+    groups.gallery[5],
 
   ].filter(Boolean) as string[];
 

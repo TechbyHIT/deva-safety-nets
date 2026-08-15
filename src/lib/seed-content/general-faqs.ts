@@ -59,12 +59,9 @@ export const GENERAL_FAQS: GeneralFaqSeed[] = [
   { scope: "GENERAL", order: 55, question: "Do bird nets work for duct areas?", answer: "Yes. Duct and service-shaft netting is one of the most common bird-control jobs in Kerala apartments, where pigeons nest in unused shafts." },
   { scope: "GENERAL", order: 56, question: "How do I clean pigeon mess before installation?", answer: "We advise basic cleaning before netting. Our team can guide you on preparation during the survey. Severe infestation cases may need cleaning before mesh is fitted." },
 
-  // ── Sports nets & cloth hangers ──
+  // ── Sports nets ──
   { scope: "GENERAL", order: 60, question: "Do you install sports nets?", answer: "Yes. Deva Safety Nets installs cricket nets, football nets, badminton nets and multi-sport enclosures for homes, schools and clubs across Kerala." },
   { scope: "GENERAL", order: 61, question: "Can cricket nets be installed in a home backyard?", answer: "Yes. We build practice cages and boundary nets to fit available space, with galvanised poles and high-impact mesh rated for cricket balls." },
-  { scope: "GENERAL", order: 62, question: "Do you install cloth hangers?", answer: "Yes. We install ceiling cloth hangers, balcony cloth hangers and foldable drying systems for apartments and villas in Kochi and Ernakulam." },
-  { scope: "GENERAL", order: 63, question: "Ceiling cloth hangers vs balcony cloth hangers?", answer: "Ceiling systems save floor space indoors or on covered balconies. Balcony-mounted racks suit open drying with weatherproof hardware. We recommend based on your layout during inspection." },
-  { scope: "GENERAL", order: 64, question: "Are motorized cloth hangers worth it?", answer: "Motorized systems suit premium homes where convenience matters. Pulley and ceiling systems offer excellent value for most Kerala apartments. We explain options and pricing on site." },
 
   // ── Materials ──
   { scope: "GENERAL", order: 70, question: "SS304 vs SS316 — which should I choose?", answer: "SS304 suits most inland Kerala homes. SS316 marine-grade stainless is recommended for coastal areas like Fort Kochi, Vypin and other salt-air zones." },
@@ -127,11 +124,9 @@ export const GENERAL_FAQS: GeneralFaqSeed[] = [
   { scope: "GENERAL", order: 152, question: "How long do bird spikes last?", answer: "Stainless steel spikes last many years outdoors. Plastic bases may degrade faster in full sun — we specify grade suited to your exposure." },
   { scope: "GENERAL", order: 153, question: "Do bird spikes work on AC ledges?", answer: "Yes. Spikes and netting combinations are commonly used on AC platforms, window sills and parapets where birds roost." },
 
-  // ── Additional sports & cloth hangers ──
+  // ── Additional sports nets ──
   { scope: "GENERAL", order: 160, question: "What height should a home cricket net be?", answer: "Practice nets typically need eight to twelve feet clear height depending on bowling style. We measure your space and recommend pole height and mesh rating." },
   { scope: "GENERAL", order: 161, question: "Can sports nets be installed on terraces?", answer: "Yes where structure and clearance allow. We assess wind load, ball impact and neighbour boundaries before quoting terrace sports enclosures." },
-  { scope: "GENERAL", order: 162, question: "How much weight can ceiling cloth hangers hold?", answer: "Quality pulley and ceiling systems support a full household wash load when anchored into structural slabs — never hollow tiles alone." },
-  { scope: "GENERAL", order: 163, question: "Are cloth hangers suitable for monsoon drying?", answer: "Covered balcony and indoor ceiling systems allow drying during rain. We recommend layouts that suit Kerala's humid, rainy seasons." },
 
   // ── Additional booking & service ──
   { scope: "GENERAL", order: 170, question: "Can I get a quote from photos on WhatsApp?", answer: "Photos help us understand your requirement, but final pricing requires on-site measurement of spans, heights and fixing surfaces." },

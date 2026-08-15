@@ -75,8 +75,8 @@ export default async function BlogPage() {
           </p>
           <h3>Topics we publish regularly</h3>
           <p>
-            Child and pet balcony safety, apartment RWA requirements, sports net planning, cloth
-            hanger selection for humid climates, industrial fall protection and bird exclusion at
+            Child and pet balcony safety, apartment RWA requirements, sports net planning,
+            industrial fall protection and bird exclusion at
             scale. Each article links to relevant services and guides so you can move from research
             to a free site inspection when you are ready.
           </p>

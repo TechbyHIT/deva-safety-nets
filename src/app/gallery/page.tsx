@@ -37,7 +37,7 @@ export default async function GalleryPage() {
         <SectionHeading
           eyebrow="Installations"
           title="Balconies, windows, terraces & commercial projects"
-          subtitle={`${allGallery.length} real installation photos from Deva Safety Nets projects across Kerala — invisible grills, safety nets, sports nets, cloth hangers and bird control.`}
+          subtitle={`${allGallery.length} real installation photos from Deva Safety Nets projects across Kerala — invisible grills, safety nets, sports nets and bird control.`}
         />
         <GalleryGrid images={allGallery} columns={3} variant="masonry" />
 
@@ -46,7 +46,7 @@ export default async function GalleryPage() {
             <Link
               key={s.slug}
               href={`/services/${s.slug}`}
-              className="rounded-full border px-3 py-1.5 text-sm text-muted transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              className="rounded-md border border-[var(--border)] px-3 py-1.5 text-sm text-muted transition-colors hover:border-[var(--sage)] hover:text-[var(--forest)]"
             >
               {s.name}
             </Link>
@@ -80,9 +80,9 @@ export default async function GalleryPage() {
             typically complete within hours and demonstrate how airflow and daylight remain intact
             while openings are secured.
           </p>
-          <h3>Sports nets and cloth hangers</h3>
+          <h3>Sports nets and commercial projects</h3>
           <p>
-            Backyard cricket cages, terrace practice nets and ceiling cloth hanger systems also
+            Backyard cricket cages, terrace practice nets and commercial bird-control installs also
             feature in our portfolio. These solutions share the same survey-first approach: measure
             on site, specify materials for Kerala exposure, install with our own technicians and
             hand over with care instructions.

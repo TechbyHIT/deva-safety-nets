@@ -26,7 +26,8 @@ export default function ServicesPage() {
       />
       {categories.map((cat) => (
         <Section key={cat.slug} muted={cat.order % 2 === 1}>
-          <div id={cat.slug} className="mb-6 scroll-mt-24">
+          <div id={cat.slug} className="mb-8 scroll-mt-28 border-b border-[var(--border)] pb-4">
+            <p className="eyebrow mb-2">{cat.name}</p>
             <h2 className="section-title">{cat.name}</h2>
             <p className="mt-2 max-w-2xl text-muted">{cat.description}</p>
           </div>
