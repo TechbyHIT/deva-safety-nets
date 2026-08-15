@@ -1,4 +1,4 @@
-import { GALLERY_IMAGES, PAGE_IMAGES, buildAltText, getBestFolderImage, type SiteImageMeta } from "@/lib/images";
+import { PAGE_IMAGES, buildAltText, getBestFolderImage, type SiteImageMeta } from "@/lib/images";
 import { site } from "@/lib/site";
 
 export const HERO_SLIDES: {
@@ -61,5 +61,9 @@ export function heroSlideImage(slide: (typeof HERO_SLIDES)[0]): SiteImageMeta {
   return { src, alt: buildAltText(context, src), title: `${context} | ${site.name}` };
 }
 
-/** Thumbnails for the auto-scrolling hero strip — few images for fast paint. */
-export const HERO_SCROLL_STRIP = GALLERY_IMAGES.slice(0, 6);
+/** Thumbnails for the auto-scrolling hero strip — HD invisible-grill photos. */
+const HERO_STRIP_SOURCES = [
+  ...Array.from({ length: 5 }, (_, i) => getBestFolderImage("invisible-grill-balcony", i)),
+  ...Array.from({ length: 4 }, (_, i) => getBestFolderImage("invisible-grill-window", i)),
+];
+export const HERO_SCROLL_STRIP = Array.from(new Set(HERO_STRIP_SOURCES));

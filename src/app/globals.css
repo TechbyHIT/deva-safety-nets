@@ -605,6 +605,14 @@ html.theme-switching .mega-menu {
     object-position: left center;
     image-rendering: auto;
   }
+  /* The logo artwork sits on a white plate — keep it legible on the dark theme */
+  .dark .site-logo__img,
+  .dark .site-logo img {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    padding: 0.2rem 0.5rem;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
   .hero-cta {
     display: flex;
     flex-direction: column;
