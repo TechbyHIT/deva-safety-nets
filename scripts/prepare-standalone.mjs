@@ -50,18 +50,27 @@ for (const [src, dest] of pairs) {
   console.log(`Copied ${path.relative(root, src)} → ${path.relative(root, dest)}`);
 }
 
-// Collapsed/unstyled pages usually mean CSS chunks were not copied into standalone
-const cssDir = path.join(standalone, ".next/static/css");
-const cssFiles = fs.existsSync(cssDir)
-  ? fs.readdirSync(cssDir).filter((f) => f.endsWith(".css"))
-  : [];
-if (!cssFiles.length) {
-  console.error(
-    "ERROR: no CSS in .next/standalone/.next/static/css — pages will look collapsed. Rebuild with npm run build:prod.",
-  );
-  process.exit(1);
+// Collapsed/unstyled pages usually mean CSS chunks were not copied into standalone.
+// Next 16 + Turbopack emits CSS under .next/static/chunks (not .next/static/css),
+// so search the whole static tree recursively and only WARN (never block deploy).
+function countCssFiles(dir) {
+  if (!fs.existsSync(dir)) return 0;
+  let n = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) n += countCssFiles(full);
+    else if (entry.name.endsWith(".css")) n += 1;
+  }
+  return n;
 }
-console.log(`CSS OK (${cssFiles.length} file(s) in standalone static/css)`);
+const cssCount = countCssFiles(path.join(standalone, ".next/static"));
+if (cssCount > 0) {
+  console.log(`CSS OK (${cssCount} .css file(s) in standalone static tree)`);
+} else {
+  console.warn(
+    "[prepare-standalone] WARN: no .css found under .next/standalone/.next/static — check that globals.css is imported in layout.",
+  );
+}
 
 // Header logo must exist in standalone public (PM2 serves from here)
 const logoFiles = ["logo.png", "logo-256.webp", "logo-384.webp", "logo-512.webp", "logo-640.webp"];

@@ -8,10 +8,6 @@ export const RESPONSIVE_IMAGE_MANIFEST: Record<string, number[]> = {
     640,
     1280
   ],
-  "/images/duct-area-nets/dc7.jpg": [
-    640,
-    1280
-  ],
   "/images/cricket-nets/n11.jpg": [
     640,
     1280
